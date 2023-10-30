@@ -11,7 +11,7 @@
         color: #fff;
     }
 </style>
-<form action="{{ route('tambah.pemasukan') }}" method="post" enctype="multipart/form-data">
+<form action="{{ route('tambah.pengeluaran') }}" method="post" enctype="multipart/form-data">
     {{ csrf_field() }}
     <div class="modal-body">
         <div class="tab-content mt-1">
@@ -19,7 +19,7 @@
 
                 <div class="d-flex mb-3">
                     <span class="text-bold d-flex align-items-center" style="font-size: 16px">Tambah Data
-                        Pemasukan</span>
+                        Pengeluaran</span>
                     <span class="text-bold ml-auto text-center">
                         {{ Carbon\Carbon::now()->locale('id_ID')->isoFormat('D MMMM Y') }}</span>
                     {{-- <span class="ml-auto mr-3 text-center badge-abu">Belum Tersimpan</span> --}}
@@ -29,8 +29,8 @@
                         <div class="row">
                             <div class="col-4">
                                 <span>Kode Laporan</span><br>
-                                <span class="text-bold">{{ $kodeLaporan }}</span>
-                                <input type="hidden" id="kode_laporan" name="kode_laporan" value="{{ $kodeLaporan }}">
+                                <span class="text-bold kode_laporan">-</span>
+                                <input type="hidden" id="kode_laporan" name="kode_laporan" value="">
                             </div>
                             <div class="col-4">
                                 <span>Unit Usaha</span><br>
@@ -50,14 +50,23 @@
 
                 <div class="form-row mt-4">
                     <div class="form-group col-md-12">
+                        <label for="cariKlasifikasi">KLASIFIKASI &nbsp;</label>
+                        <select class="custom-select" name="id_klasifikasi" id="inputGroupKlasifikasi">
+                            <option disabled selected hidden>Pilih Klasifikasi</option>
+                            @foreach ($klasifikasiOptions as $dataKlasifikasi)
+                                <option value="{{ $dataKlasifikasi->id_klasifikasi }}"
+                                    data-klasifikasi="{{ $dataKlasifikasi->klasifikasi_laporan }}"
+                                    @if ($dataKlasifikasi->klasifikasi_laporan === 'Semua') selected @endif>
+                                    {{ $dataKlasifikasi->klasifikasi_laporan }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
                         <label for="cariAkun">AKUN &nbsp;</label>
                         <select class="custom-select" name="id_akun" id="inputGroupAkun">
                             <option disabled selected hidden>Pilih Akun</option>
-                            @foreach ($akunOptions as $dataAkun)
-                                <option value="{{ $dataAkun->id_akun }}"
-                                    @if ($dataAkun->akun === 'Semua') selected @endif>
-                                    {{ $dataAkun->akun }}</option>
-                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -120,7 +129,7 @@
 
                 <div class="d-flex bd-highlight justify-content-end mt-3">
                     <div class="bd-highlight">
-                        <button type="button" class="btn btn-secondary mr-2" id="resetData"><i
+                        <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal" id="resetData"><i
                                 class="fa fa-ban"></i>
                             Batal</button>
                         <button type="submit" class="btn btn-success text-white toastrDefaultSuccess"
@@ -134,6 +143,25 @@
 </form>
 
 @push('script')
+<script>
+    $(document).ready(function () {
+        // Memantau perubahan dropdown "KLASIFIKASI"
+        $('#inputGroupKlasifikasi').change(function () {
+            var selectedKlasifikasi = $(this).find(':selected').data('klasifikasi');
+            var kodeLaporan = '';
+
+            if (selectedKlasifikasi === 'Pengeluaran OP') {
+                kodeLaporan = '{{ $kodeOP }}';
+            } else if (selectedKlasifikasi === 'Pengeluaran NOP') {
+                kodeLaporan = '{{ $kodeNOP }}';
+            }
+
+            // Memperbarui tampilan kode laporan sesuai dengan pilihan
+            $('.kode_laporan').text(kodeLaporan);
+            $('#kode_laporan').val(kodeLaporan);
+        });
+    });
+</script>
     <script>
         function updateLabel() {
             const input = document.getElementById("customFileInput");
@@ -146,13 +174,9 @@
         }
     </script>
     <script>
-        $(document).ready(function() {
-            var kodeLaporan = document.getElementById("kode_laporan");
-            kodeLaporan.value = "{{ $kodeLaporan }}";
-        });
 
         $(document).ready(function() {
-            // $('#inputGroupAkun').select2();
+            $('#inputGroupAkun').select2();
             $('#inputGroupSubAkun1').select2();
             $('#inputGroupSubAkun2').select2();
             $('#inputGroupSubAkun3').select2();
@@ -180,6 +204,39 @@
         });
 
         $(document).ready(function() {
+            $('#inputGroupKlasifikasi').change(function() {
+                var selectedKlasifikasiId = $(this).val();
+                $('#inputGroupAkun').change(function() {
+                    if ($(this).val() === 'Pilih Akun' || $(this).val() === '?') {
+                        $(this).val(null);
+                    }
+                });
+
+                // console.log(selectedAkunId);
+
+                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                $.ajax({
+                    url: '/get-akun-opsi/' + selectedKlasifikasiId,
+                    type: 'GET',
+                    success: function(data) {
+                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                        $('#inputGroupAkun').empty();
+                        $('#inputGroupAkun').append($('<option>', {
+                            value: null,
+                            text: 'Pilih Akun',
+                            // disabled: 'disabled'
+                        }));
+                        $.each(data, function(key, value) {
+                            // console.log(key);
+                            $('#inputGroupAkun').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+
             $('#inputGroupAkun').change(function() {
                 var selectedAkunId = $(this).val();
                 $('#inputGroupSubAkun1').change(function() {
@@ -192,7 +249,7 @@
 
                 // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
                 $.ajax({
-                    url: '/get-sub-akun-1-select/' + selectedAkunId,
+                    url: '/get-sub-akun-1-opsi/' + selectedAkunId,
                     type: 'GET',
                     success: function(data) {
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
@@ -223,7 +280,7 @@
 
                 // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 2 berdasarkan id_akun yang dipilih.
                 $.ajax({
-                    url: '/get-sub-akun-2-select/' +
+                    url: '/get-sub-akun-2-opsi/' +
                         selectedAkunId, // Menggunakan ID dari #inputGroupAkun
                     type: 'GET',
                     success: function(data) {
@@ -254,7 +311,7 @@
 
                 // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
                 $.ajax({
-                    url: '/get-sub-akun-3-select/' + selectedAkunId,
+                    url: '/get-sub-akun-3-opsi/' + selectedAkunId,
                     type: 'GET',
                     success: function(data) {
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
@@ -276,38 +333,4 @@
             });
         });
     </script>
-    <script>
-        // Function to validate the form fields
-        function validateForm() {
-            // Get the values of the relevant form fields
-            var akunValue = document.getElementById('inputGroupAkun').value;
-            var subAkun1Value = document.getElementById('inputGroupSubAkun1').value;
-            var subAkun2Value = document.getElementById('inputGroupSubAkun2').value;
-            var subAkun3Value = document.getElementById('inputGroupSubAkun3').value;
-            var nominalValue = document.getElementById('besarNominal').value;
-            var gambarBuktiValue = document.getElementById('customFileInput').value;
-
-            // Check if any of the required fields are empty
-            if (akunValue === '' || subAkun1Value === '' || subAkun2Value === '' || subAkun3Value === '' || nominalValue ===
-                '' || gambarBuktiValue === '') {
-                // If any field is empty, disable the "Simpan" button
-                document.getElementById('simpanPemasukan').disabled = true;
-            } else {
-                // If all required fields are filled, enable the "Simpan" button
-                document.getElementById('simpanPemasukan').disabled = false;
-            }
-        }
-
-        // Add event listeners to form fields for input changes
-        document.getElementById('inputGroupAkun').addEventListener('change', validateForm);
-        document.getElementById('inputGroupSubAkun1').addEventListener('change', validateForm);
-        document.getElementById('inputGroupSubAkun2').addEventListener('change', validateForm);
-        document.getElementById('inputGroupSubAkun3').addEventListener('change', validateForm);
-        document.getElementById('besarNominal').addEventListener('input', validateForm);
-        document.getElementById('customFileInput').addEventListener('change', validateForm);
-
-        // Initially, disable the "Simpan" button when the page loads
-        document.getElementById('simpanPemasukan').disabled = true;
-    </script>
-
 @endpush

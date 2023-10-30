@@ -35,7 +35,7 @@
                         <li class="breadcrumb-item text-secondary">
                             Dashboard
                         </li>
-                        <li class="breadcrumb-item active">Pemasukan</li>
+                        <li class="breadcrumb-item active">Pengeluaran</li>
                     </ol>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
@@ -60,24 +60,35 @@
                             <div class="row">
                                 <div class="col-2 mt-3">
                                     <strong class="font-weight-bold text-center">
-                                        <h4 style="color:#28a745;">LAPORAN PEMASUKAN</h4>
+                                        <h4 style="color:#28a745;">LAPORAN PENGELUARAN</h4>
                                     </strong>
                                 </div>
                                 <div class="col-10">
                                     <div class="card">
                                         <div class="card-body p-3">
-                                            <div class="row">
-                                                {{-- filter tanggal owner --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
-                                                    <div class="col-12 col-md-3">
-                                                        <input type="text" class="form-control text-center icon-input"
-                                                            id="reportrange" name="filter_daterange" readonly=""
-                                                            style="background-color: white;cursor: pointer;min-width:175px;height:37.5px;">
+                                            {{-- filter role owner --}}
+                                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                                                <div class="row">
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="usaha"
+                                                                    style="width: 100px; text-align: center; display: block;">Klasifikasi</span>
+                                                            </div>
+                                                            <select class="custom-select" id="namaKlasifikasi"
+                                                                name="klasifikasi_laporan">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                                @foreach ($klasifikasiOptions as $dataKlasifikasi)
+                                                                    <option
+                                                                        value="{{ $dataKlasifikasi->klasifikasi_laporan }}"
+                                                                        @if ($dataKlasifikasi->klasifikasi_laporan === 'Semua') selected @endif>
+                                                                        {{ $dataKlasifikasi->klasifikasi_laporan }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                @endif
 
-                                                {{-- filter owner --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -94,7 +105,8 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-md-3">
+
+                                                    <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" for="akun"
@@ -105,7 +117,8 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12 col-md-3">
+
+                                                    <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text" for="sub_akun_1"
@@ -113,13 +126,35 @@
                                                                     Akun
                                                                     1</span>
                                                             </div>
-                                                            <select class="custom-select" id="namaSub" name="sub_akun_1">
+                                                            <select class="custom-select" id="namaSub" name="namaSub">
                                                                 <option value="Semua" selected>Semua Data</option>
                                                             </select>
                                                         </div>
                                                     </div>
-                                                @else
-                                                    {{-- filter selain owner --}}
+                                                </div>
+                                                {{-- filter selain role owner --}}
+                                            @else
+                                                <div class="row">
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="usaha"
+                                                                    style="width: 100px; text-align: center; display: block;">Klasifikasi</span>
+                                                            </div>
+                                                            <select class="custom-select" id="klasifikasi_laporan"
+                                                                name="klasifikasi_laporan">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                                @foreach ($klasifikasiOptions as $dataKlasifikasi)
+                                                                    <option
+                                                                        value="{{ $dataKlasifikasi->klasifikasi_laporan }}"
+                                                                        @if ($dataKlasifikasi->klasifikasi_laporan === 'Semua') selected @endif>
+                                                                        {{ $dataKlasifikasi->klasifikasi_laporan }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -132,6 +167,7 @@
                                                             </select>
                                                         </div>
                                                     </div>
+
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -140,14 +176,10 @@
                                                             </div>
                                                             <select class="custom-select" id="inputAkun" name="akun">
                                                                 <option value="Semua" selected>Semua Data</option>
-                                                                @foreach ($akunOptions as $dataAkun)
-                                                                    <option value="{{ $dataAkun->akun }}"
-                                                                        @if ($dataAkun->akun === 'Semua') selected @endif>
-                                                                        {{ $dataAkun->akun }}</option>
-                                                                @endforeach
                                                             </select>
                                                         </div>
                                                     </div>
+
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -156,141 +188,131 @@
                                                                     Akun
                                                                     1</span>
                                                             </div>
-                                                            <select class="custom-select" id="inputSub" name="sub_akun_1">
+                                                            <select class="custom-select" id="inputSub1"
+                                                                name="sub_akun_1">
                                                                 <option value="Semua" selected>Semua Data</option>
                                                             </select>
                                                         </div>
                                                     </div>
-                                                @endif
-
-                                                {{-- muncul ketika pemasukan belum dicek --}}
-                                                @if ($pemasukanBelumActive == true)
-                                                    <div class="col-3">
-                                                        <div class="d-flex flex-wrap">
-                                                            {{-- button tambah role kasir --}}
-                                                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
-                                                                <div class="col-md-12">
-                                                                    <!-- Adjust the width as needed -->
-                                                                    <button class="btn text-white w-100"
-                                                                        style="background-color: #28a745; border-radius: 10px;"
-                                                                        type="button" data-toggle="modal"
-                                                                        data-target="#tambahData" aria-expanded="false">
-                                                                        <i class="fas fa-plus-circle left-icon-holder"></i>
-                                                                        Tambah
-                                                                    </button>
-                                                                </div>
-                                                                {{-- button ekspor role manajer --}}
-                                                            @elseif (($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-danger"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-success"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-excel"></i> Excel
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    {{-- muncul ketika pemasukan sudah dicek --}}
-                                                @else
-                                                    {{-- button ekspor role manajer --}}
-                                                    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
-                                                        <div class="col-3">
-                                                            <div class="d-flex flex-wrap">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-danger"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-success"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-excel"></i> Excel
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-                                                @endif
-                                            </div>
+                                                </div>
+                                            @endif
 
                                             {{-- baris baru --}}
                                             <div class="row">
-                                                {{-- button export role kasir --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
-                                                    <div class="col-12 col-md-6 align-self-center">
-                                                        <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
-                                                            Klik
-                                                            Kode Laporan untuk
-                                                            melihat detail</span>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 ml-auto">
-                                                        <div class="row">
-                                                            <div class="col-6">
-                                                                <button class="btn btn-outline-danger"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="button" data-toggle="modal"
-                                                                    data-target="#eksporData" aria-expanded="false">
-                                                                    <i class="fas fa-file-pdf"></i> Pdf
-                                                                </button>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <button class="btn btn-outline-success"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="button" data-toggle="modal"
-                                                                    data-target="#eksporData" aria-expanded="false">
-                                                                    <i class="fas fa-file-excel"></i> Excel
-                                                                </button>
-                                                            </div>
-
+                                                {{-- muncul ketika pengeluaran belum dicek --}}
+                                                @if ($pengeluaranBelumActive == true)
+                                                    {{-- button export dan keterangan untuk role manajer --}}
+                                                    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
+                                                        <div class="col-12 col-md-6 align-self-center">
+                                                            <span style="font-size: 16px;"><i
+                                                                    class="fas fa-info-circle"></i> Klik Kode Laporan untuk
+                                                                melihat detail</span>
                                                         </div>
-                                                    </div>
-                                                    {{-- keterangan role manajer --}}
-                                                @elseif(($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
-                                                    <div class="col-12 col-md-6 align-self-center">
-                                                        <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
-                                                            Klik
-                                                            Kode
-                                                            Laporan untuk
-                                                            melihat detail</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            {{-- button dan keterangan export owner --}}
-                                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
-                                                <div class="row">
+                                                        <div class="col-12 col-md-3  ml-auto">
+                                                            <div class="row">
+                                                                <div class="col-6">
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="button" data-toggle="modal"
+                                                                        data-target="#eksporData" aria-expanded="false">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <button class="btn btn-outline-success"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="button" data-toggle="modal"
+                                                                        data-target="#eksporData" aria-expanded="false">
+                                                                        <i class="fas fa-file-excel"></i> Excel
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        {{-- button dan keterangan export untuk role owner --}}
+                                                    @elseif (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                                                        <div class="col-12 col-md-6 align-self-center">
+                                                            <span style="font-size: 16px;"><i
+                                                                    class="fas fa-info-circle"></i> Klik Kode Laporan untuk
+                                                                melihat detail</span>
+                                                        </div>
+                                                        <div class="col-12 col-md-3  ml-auto">
+                                                            <input type="text"
+                                                                class="form-control text-center icon-input"
+                                                                id="reportrange" name="filter_daterange" readonly=""
+                                                                style="background-color: white;cursor: pointer;min-width:175px;height:37.5px;">
+                                                        </div>
+                                                        <div class="col-12 col-md-3  ml-auto">
+                                                            <div class="row">
+                                                                <div class="col-6">
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="button" data-toggle="modal"
+                                                                        data-target="#eksporData" aria-expanded="false">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <button class="btn btn-outline-success"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="button" data-toggle="modal"
+                                                                        data-target="#eksporData" aria-expanded="false">
+                                                                        <i class="fas fa-file-excel"></i> Excel
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {{-- button dan keterangan export untuk kasir --}}
+                                                    @elseif (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
+                                                        <div class="col-12 col-md-6 align-self-center">
+                                                            <span style="font-size: 16px;"><i
+                                                                    class="fas fa-info-circle"></i> Klik Kode Laporan untuk
+                                                                melihat detail</span>
+                                                        </div>
+                                                        <div class="col-12 col-md-3  ml-auto">
+                                                            <div class="row">
+                                                                <div class="col-6">
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="button" data-toggle="modal"
+                                                                        data-target="#eksporData" aria-expanded="false">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <button class="btn btn-outline-success"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="button" data-toggle="modal"
+                                                                        data-target="#eksporData" aria-expanded="false">
+                                                                        <i class="fas fa-file-excel"></i> Excel
+                                                                    </button>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-md-3 ">
+                                                            <button class="btn text-white w-100"
+                                                                style="background-color: #28a745; border-radius: 10px;"
+                                                                type="button" data-toggle="modal"
+                                                                data-target="#tambahData" aria-expanded="false">
+                                                                <i class="fas fa-plus-circle left-icon-holder"></i>
+                                                                Tambah
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                    {{-- muncul ketika pengeluaran sudah dicek --}}
+                                                @else
                                                     <div class="col-12 col-md-6 align-self-center">
                                                         <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
                                                             Klik Kode Laporan untuk
                                                             melihat detail</span>
                                                     </div>
-                                                    <div class="col-12 col-md-3 ml-auto">
+                                                    <div class="col-12 col-md-3  ml-auto">
+                                                        <input type="text" class="form-control text-center icon-input"
+                                                            id="reportrange" name="filter_daterange" readonly=""
+                                                            style="background-color: white;cursor: pointer;min-width:175px;height:37.5px;">
+                                                    </div>
+                                                    <div class="col-12 col-md-3 ">
                                                         <div class="row">
                                                             <div class="col-6">
                                                                 <button class="btn btn-outline-danger"
@@ -311,15 +333,16 @@
 
                                                         </div>
                                                     </div>
-                                                </div>
-                                            @endif
+                                                @endif
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- modal tambah data kalo menu pemasukan belum dicek & role kasir --}}
-                            @if ($pemasukanBelumActive == true)
+                            {{-- modal untuk tambah data, ketika pengeluaran belum dicek, role kasir --}}
+                            @if ($pengeluaranBelumActive == true)
                                 @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
                                     <div class="modal fade" id="tambahData" data-backdrop="static" data-keyboard="false"
                                         aria-labelledby="staticBackdropLabel" aria-hidden="true"
@@ -328,14 +351,14 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="staticBackdropLabel">
-                                                        Tambah Data Pemasukan
+                                                        Tambah Data Pengeluaran
                                                     </h5>
                                                     <button type="button" class="close" data-dismiss="modal"
                                                         aria-label="Close" id="reset">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
-                                                @include('modals.tambah-pemasukan')
+                                                @include('modals.tambah-pengeluaran')
                                             </div>
                                         </div>
                                     </div>
@@ -363,36 +386,35 @@
                                 <tbody>
                                     @php
                                         $noUrut = 1;
-                                        if ($pemasukanBelumActive == true) {
+                                        if ($pengeluaranBelumActive == true) {
                                             $warna = 'kuning';
                                         } else {
                                             $warna = 'success';
                                         }
                                     @endphp
-                                    @foreach ($data as $pemasukan)
+                                    @foreach ($data as $pengeluaran)
                                         <tr>
                                             <td>{{ $noUrut++ }}</td>
                                             <td style="15%" data-toggle="modal"
-                                                data-target="#lihatPemasukan{{ $pemasukan->id_laporan }}">
-                                                {{ $pemasukan->kode_laporan }} <br>
+                                                data-target="#lihatPengeluaran{{ $pengeluaran->id_laporan }}">
+                                                {{ $pengeluaran->kode_laporan }} <br>
                                                 <span class="text-white badge badge-{{ $warna }}"
-                                                    style="font-size: 12px; border-radius: 10px;">{{ $pemasukan->status_cek }}</span>
+                                                    style="font-size: 12px; border-radius: 10px;">{{ $pengeluaran->status_cek }}</span>
                                             </td>
                                             <td style="12%">
-                                                {{ \Carbon\Carbon::parse($pemasukan->tanggal_laporan)->format('d/m/Y') }}
-                                                {{-- {{ \Carbon\Carbon::parse($pemasukan->tanggal_laporan)->format('d/m/Y H:i:s') }} --}}
+                                                {{ \Carbon\Carbon::parse($pengeluaran->tanggal_laporan)->format('d/m/Y H:i:s') }}
                                             </td>
-                                            <td style="15%">{{ $pemasukan->nama_kasir }}</td>
-                                            <td style="15%">{{ $pemasukan->klasifikasi }}</td>
-                                            <td style="12%">{{ $pemasukan->usaha }}</td>
-                                            <td style="15%">{{ $pemasukan->akun }}</td>
-                                            <td style="18%">{{ $pemasukan->sub_akun_1 ?? '-' }}</td>
-                                            <td style="18%">{{ $pemasukan->sub_akun_2 ?? '-' }}</td>
-                                            <td style="18%">{{ $pemasukan->sub_akun_3 ?? '-' }}</td>
-                                            <td style="15%">Rp. {{ number_format($pemasukan->nominal, 0, ',', '.') }}
+                                            <td style="15%">{{ $pengeluaran->nama_kasir }}</td>
+                                            <td style="15%">{{ $pengeluaran->klasifikasi }}</td>
+                                            <td style="12%">{{ $pengeluaran->usaha }}</td>
+                                            <td style="15%">{{ $pengeluaran->akun }}</td>
+                                            <td style="18%">{{ $pengeluaran->sub_akun_1 ?? '-' }}</td>
+                                            <td style="18%">{{ $pengeluaran->sub_akun_2 ?? '-' }}</td>
+                                            <td style="18%">{{ $pengeluaran->sub_akun_3 ?? '-' }}</td>
+                                            <td style="15%">Rp. {{ number_format($pengeluaran->nominal, 0, ',', '.') }}
                                             </td>
                                             <td style="10%"><a class="text-primary"
-                                                    href="{{ asset('nota/' . $pemasukan->gambar_bukti) }}"
+                                                    href="{{ asset('nota/' . $pengeluaran->gambar_bukti) }}"
                                                     target="_blank">Lihat</a>
                                             </td>
                                         </tr>
@@ -400,22 +422,22 @@
                                 </tbody>
                             </table>
 
-                            @foreach ($data as $pemasukan)
-                                <div class="modal fade" id="lihatPemasukan{{ $pemasukan->id_laporan }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
+                            @foreach ($data as $pengeluaran)
+                                <div class="modal fade" id="lihatPengeluaran{{ $pengeluaran->id_laporan }}"
+                                    tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
                                     data-backdrop="static">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="staticBackdropLabel">
-                                                    Data Laporan Pemasukan
+                                                    Data Laporan Pengeluaran
                                                 </h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close" id="reset">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
-                                            @include('modals.detail-pemasukan')
+                                            @include('modals.detail-pengeluaran')
                                         </div>
                                     </div>
                                 </div>
@@ -493,28 +515,51 @@
         });
     </script>
 
-
     <script>
         $(document).ready(function() {
-            $('#inputAkun').change(function() {
-                var selectedAkunId = $(this).val();
+            $('#klasifikasi_laporan').change(function() {
+                var selectedKlasifikasiId = $(this).val();
 
                 // console.log(selectedAkunId);
 
                 // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
                 $.ajax({
-                    url: '/get-sub-akun-1-options/' + selectedAkunId,
+                    url: '/get-akun-options/' + selectedKlasifikasiId,
                     type: 'GET',
                     success: function(data) {
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
-                        $('#inputSub').empty();
-                        $('#inputSub').append($('<option>', {
+                        $('#inputAkun').empty();
+                        $('#inputAkun').append($('<option>', {
                             value: 'Semua',
                             text: 'Semua Data'
                         }));
                         $.each(data, function(key, value) {
                             // console.log(key);
-                            $('#inputSub').append($('<option>', {
+                            $('#inputAkun').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+
+            $('#inputAkun').change(function() {
+                var selectedKlasifikasiId = $(this).val();
+
+                $.ajax({
+                    url: '/get-sub-akun-1-options/' + selectedKlasifikasiId,
+                    type: 'GET',
+                    success: function(data) {
+                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                        $('#inputSub1').empty();
+                        $('#inputSub1').append($('<option>', {
+                            value: 'Semua',
+                            text: 'Semua Data'
+                        }));
+                        $.each(data, function(key, value) {
+                            // console.log(key);
+                            $('#inputSub1').append($('<option>', {
                                 value: key,
                                 text: value
                             }));
@@ -523,15 +568,15 @@
                 });
             });
         });
+
         $(document).ready(function() {
-            $('#namaUsaha').change(function() {
-                var selectedUsahaId = $(this).val();
+            $('#namaKlasifikasi, #namaUsaha').change(function() {
+                var selectedKlasifikasi = $('#namaKlasifikasi').val();
+                var selectedUsaha = $('#namaUsaha').val();
 
-                console.log(selectedUsahaId);
-
-                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                // Make an AJAX request with both selected values
                 $.ajax({
-                    url: '/get-akun-filter/' + selectedUsahaId,
+                    url: '/get-akun-pengeluaran/' + selectedKlasifikasi + '/' + selectedUsaha,
                     type: 'GET',
                     success: function(data) {
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
@@ -550,16 +595,13 @@
                     }
                 });
             });
-        });
-        $(document).ready(function() {
+
             $('#namaAkun').change(function() {
-                var selectedAkun = $(this).val();
+                var selectedKlasifikasiId = $(this).val();
+                console.log(selectedKlasifikasiId);
 
-                console.log(selectedAkun);
-
-                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
                 $.ajax({
-                    url: '/get-sub1-filter/' + selectedAkun,
+                    url: '/get-sub1-pengeluaran/' + selectedKlasifikasiId,
                     type: 'GET',
                     success: function(data) {
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
@@ -569,7 +611,7 @@
                             text: 'Semua Data'
                         }));
                         $.each(data, function(key, value) {
-                            // console.log(key);
+                            console.log(key);
                             $('#namaSub').append($('<option>', {
                                 value: key,
                                 text: value
@@ -579,13 +621,27 @@
                 });
             });
         });
-    </script>
-    <script>
-        // Memasukkan kode di dalam fungsi ready
+
+
         $(document).ready(function() {
+            // Get the table and all the select elements
             var table = $('#example2').DataTable();
+            var klasifikasiSelect = $('#klasifikasi_laporan');
             var akunSelect = $('#inputAkun');
-            var subSelect = $('#inputSub');
+            var subSelect = $('#inputSub1');
+
+            // Handle filter change for Akun
+            klasifikasiSelect.on('change', function() {
+                var selectedKlasifikasi = $(this).val();
+                if (selectedKlasifikasi === 'Semua') {
+                    // Clear the Akun filter
+                    table.columns(4).search('').draw();
+
+                    akunSelect.val('Semua').trigger('change');
+                } else {
+                    table.columns(4).search(selectedKlasifikasi, true, false).draw();
+                }
+            });
 
             // Handle filter change for Akun
             akunSelect.on('change', function() {
@@ -612,32 +668,46 @@
                 }
             });
 
-            // Initially trigger the change event for Akun and Sub Akun filters
+            // Initially trigger the change event to apply the initial filters
+            klasifikasiSelect.trigger('change');
             akunSelect.trigger('change');
             subSelect.trigger('change');
         });
-    </script>
-    <script>
-        // Memasukkan kode di dalam fungsi ready
+
         $(document).ready(function() {
+            // Get the table and all the select elements
             var table = $('#example2').DataTable();
+            var klasifikasiSelect = $('#namaKlasifikasi');
             var usahaSelect = $('#namaUsaha');
             var akunSelect = $('#namaAkun');
             var subSelect = $('#namaSub');
 
             // Handle filter change for Akun
+            klasifikasiSelect.on('change', function() {
+                var selectedKlasifikasi = $(this).val();
+                if (selectedKlasifikasi === 'Semua') {
+                    // Clear the Akun filter
+                    table.columns(4).search('').draw();
+
+                    usahaSelect.val('Semua').trigger('change');
+                } else {
+                    table.columns(4).search(selectedKlasifikasi, true, false).draw();
+                }
+            });
+
             usahaSelect.on('change', function() {
                 var selectedUsaha = $(this).val();
                 if (selectedUsaha === 'Semua') {
                     // Clear the Akun filter
                     table.columns(5).search('').draw();
 
-                    // Clear the Sub Akun filter as well
                     akunSelect.val('Semua').trigger('change');
                 } else {
-                    table.columns(5).search(selectedUsaha).draw();
+                    table.columns(5).search(selectedUsaha, true, false).draw();
                 }
             });
+
+            // Handle filter change for Akun
             akunSelect.on('change', function() {
                 var selectedAkun = $(this).val();
                 if (selectedAkun === 'Semua') {
@@ -662,10 +732,11 @@
                 }
             });
 
-            // Initially trigger the change event for Akun and Sub Akun filters
+            // Initially trigger the change event to apply the initial filters
+            klasifikasiSelect.trigger('change');
+            usahaSelect.trigger('change');
             akunSelect.trigger('change');
             subSelect.trigger('change');
-            usahaSelect.trigger('change');
         });
     </script>
 @endpush

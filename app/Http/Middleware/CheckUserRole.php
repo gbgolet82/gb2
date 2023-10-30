@@ -18,6 +18,7 @@ class CheckUserRole
     $karyawanRoles = session('karyawanRoles');
     $selectedRole = session('selectedRole');
     $allowedRoles = explode('|', $roles);
+    // dd($karyawanRoles, $selectedRole, $allowedRoles);
 
     if ($karyawanRoles) {
         if ($karyawanRoles->count() === 1) {

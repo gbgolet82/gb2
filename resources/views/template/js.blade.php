@@ -30,6 +30,10 @@
 <script src="{{ asset('assets/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
 <script src="{{ asset('assets/plugins/bs-custom-file-input/bs-custom-file-input.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<!-- Daterangepicker -->
+<script src="https://adminlte.io/themes/v3/plugins/daterangepicker/daterangepicker.js"></script>
 
 @if (session('success'))
     <script>
@@ -59,12 +63,46 @@
 <script>
     $(document).ready(function() {
         $.ajax({
-            url: '/get-jumlah-belum-dicek',
+            url: '/pemasukan-belum-cek',
             method: 'GET',
             success: function(response) {
-                if (response.jumlah > 0) {
-                    $('#permintaan-badge').text('Blm dicek (' + response.jumlah + ')');
-                }
+                $('#jumlah-belum-dicek').text(response.jumlah);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    $(document).ready(function() {
+        $.ajax({
+            url: '/pemasukan-sudah-cek',
+            method: 'GET',
+            success: function(response) {
+                $('#jumlah-sudah-dicek').text(response.jumlah);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    $(document).ready(function() {
+        $.ajax({
+            url: '/pengeluaran-belum-cek',
+            method: 'GET',
+            success: function(response) {
+                $('#pengeluaran-belum-dicek').text(response.jumlah);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    });
+    $(document).ready(function() {
+        $.ajax({
+            url: '/pengeluaran-sudah-cek',
+            method: 'GET',
+            success: function(response) {
+                $('#pengeluaran-sudah-dicek').text(response.jumlah);
             },
             error: function(error) {
                 console.log(error);

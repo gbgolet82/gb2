@@ -140,7 +140,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card card-outline card-success shadow-lg">
+                    <div class="card card-outline card-success">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-3 mt-4">

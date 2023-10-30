@@ -33,7 +33,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card card-outline card-success shadow-lg mb-3">
+                    <div class="card card-outline card-success mb-3">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-2 mt-3">

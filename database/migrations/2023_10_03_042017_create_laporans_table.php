@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('laporan', function (Blueprint $table) {
             $table->uuid('id_laporan')->primary();
-            // $table->foreignUuid('id_usaha');
-            // $table->foreign('id_usaha')->references('id_usaha')->on('usaha');
             $table->foreignUuid('id_kasir');
             $table->foreign('id_kasir')->references('id_karyawan')->on('karyawan');
             $table->foreignUuid('id_manager');
             $table->foreign('id_manager')->references('id_karyawan')->on('karyawan');
-            // $table->foreignUuid('id_klasifikasi');
-            // $table->foreign('id_klasifikasi')->references('id_klasifikasi')->on('klasifikasi_laporan');
             $table->foreignUuid('id_akun');
             $table->foreign('id_akun')->references('id_akun')->on('akun');
+            $table->foreignUuid('id_klasifikasi');
+            $table->foreign('id_klasifikasi')->references('id_klasifikasi')->on('klasifikasi_laporan');
+            $table->foreignUuid('id_usaha');
+            $table->foreign('id_usaha')->references('id_usaha')->on('usaha');
             $table->foreignUuid('id_sub_akun_1')->nullable();
             $table->foreign('id_sub_akun_1')->references('id_sub_akun_1')->on('sub_akun_1');
             $table->foreignUuid('id_sub_akun_2')->nullable();

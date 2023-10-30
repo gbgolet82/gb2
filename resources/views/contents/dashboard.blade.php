@@ -106,7 +106,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card card-outline card-success shadow-lg mb-0 pb-0">
+                    <div class="card card-outline card-success mb-0 pb-0">
                         <div class="card-body">
                             <div class="row mb-0 pb-0 pl-0">
                                 <strong class="col pr-0 pt-0 d-highlight pr-0 mr-0 mb-3">

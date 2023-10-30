@@ -57,6 +57,7 @@ class LoginController extends Controller
         });
         session(['karyawanRoles' => $karyawanRoles]);
         session()->save(); // Simpan data sesi
+        // dd($karyawanRoles);
 
         session(['nama' => $karyawan->nama, 'nohp' => $karyawan->nohp, 'id_usaha' => $karyawan->id_usaha, 'id_karyawan' => $karyawan->id_karyawan]);
         session()->save();
@@ -105,10 +106,4 @@ class LoginController extends Controller
         return redirect()->route('login');
     }
 }
-
-    
-
-    
-
-
 }

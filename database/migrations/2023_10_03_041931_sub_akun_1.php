@@ -15,10 +15,6 @@ return new class extends Migration
             $table->uuid('id_sub_akun_1')->primary();
             $table->foreignUuid('id_akun');
             $table->foreign('id_akun')->references('id_akun')->on('akun');
-            $table->foreignUuid('id_klasifikasi');
-            $table->foreign('id_klasifikasi')->references('id_klasifikasi')->on('klasifikasi_laporan');
-            $table->foreignUuid('id_usaha');
-            $table->foreign('id_usaha')->references('id_usaha')->on('usaha');
             $table->string('sub_akun_1');
             $table->timestamps();
         });

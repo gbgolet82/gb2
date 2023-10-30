@@ -22,14 +22,19 @@ class DataKaryawanController extends Controller
 }
 
 
-    public function index(){
-
+    public function index()
+    {
+        $session = session('nama_usaha');
         $unit_usaha = DB::table('usaha')->orderBy('created_at', 'desc')->get();
         $karyawan = Karyawan::select('karyawan.*', 'usaha.nama_usaha')
         ->join('usaha', 'karyawan.id_usaha', '=', 'usaha.id_usaha')
-        ->where('usaha.id_usaha', session('id_usaha')) // Filter berdasarkan id_usaha dari sesi
-        ->orderBy('karyawan.created_at', 'desc')
-        ->get();
+        ->orderBy('karyawan.created_at', 'desc');
+
+        if ($session != 'SEMUA') {
+            $karyawan->where('usaha.id_usaha', session('id_usaha'));
+        }
+        
+        $karyawan = $karyawan->get();
 
         $active_page = "DATA KARYAWAN";
         return view('contents.karyawan',compact('active_page', 'unit_usaha', 'karyawan'));
