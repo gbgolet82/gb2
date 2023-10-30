@@ -431,23 +431,9 @@
 @push('script')
     <script>
         var originalData;
-
         $(document).ready(function() {
             var table = $('#example2').DataTable();
             originalData = table.rows().data().toArray();
-
-            var defaultStartDate = moment().subtract(29, 'days');
-            var defaultEndDate = moment();
-
-            // Filter data untuk 30 hari terakhir saat halaman dimuat
-            var defaultFilteredData = originalData.filter(function(dataRow) {
-                var dateValue = moment(dataRow[2], 'DD/MM/YYYY');
-                return dateValue.isBetween(defaultStartDate, defaultEndDate, null, '[]');
-            });
-
-            // Menampilkan data yang difilter pada DataTable
-            table.clear().rows.add(defaultFilteredData).draw();
-
             $('#reportrange').daterangepicker({
                 locale: {
                     format: 'DD/MM/YYYY',
@@ -474,19 +460,28 @@
                     'Bulan lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
                         'month').endOf('month')]
                 },
-                startDate: defaultStartDate,
-                endDate: defaultEndDate
+                startDate: moment().subtract(29, 'days'),
+                endDate: moment()
             }, function(start, end) {
-                var filteredData = originalData.filter(function(dataRow) {
-                    var dateValue = moment(dataRow[2], 'DD/MM/YYYY');
-                    return dateValue.isBetween(start, end, null, '[]');
+                var filteredData = [];
+
+                // Filter data sesuai dengan rentang tanggal yang dipilih
+                originalData.forEach(function(dataRow) {
+                    var dateValue = moment(dataRow[2],
+                        'DD/MM/YYYY'); // Sesuaikan dengan kolom tanggal Anda
+
+                    if (dateValue.isBetween(start, end, null, '[]')) {
+                        filteredData.push(dataRow);
+                    }
                 });
 
-                var selectedRange = $('#reportrange').data('daterangepicker').chosenLabel;
+                var table = $('#example2').DataTable();
 
-                if (filteredData.length === 0 && selectedRange !== '30 Hari Terakhir') {
+                if (filteredData.length === 0) {
+                    // Tidak ada data yang cocok, kosongkan tabel
                     table.clear().draw();
                 } else {
+                    // Jika ada data yang cocok, terapkan filter
                     table.clear().rows.add(filteredData).draw();
                 }
             });
