@@ -187,7 +187,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10">
     <link rel="icon" href="{!! asset('gambar/gunabakti-logo.png') !!}" />
-    <title>GUNA BAKTI | {{ $active_page }}</title>
+    <title>GUNA BAKTI | LOGIN</title>
 
     <link rel="stylesheet" type="text/css" href="/casgpo/asset/css/ppg.css">
 
@@ -216,13 +216,29 @@
             @if (isset(session('alert')[0]))
                 Swal.fire({
                     icon: 'error',
-                    text: "Anda tidak bisa mengakses halaman ini!",
+                    text: "Silahkan untuk login kembali!",
                     customClass: {
                         popup: 'small-alert' // Tambahkan kelas CSS "small-alert" di sini
                     }
                 });
             @endif
         </script>
+        @if (session('error'))
+            <script>
+                // Tampilkan pesan kesalahan dengan JavaScript (misalnya dengan SweetAlert)
+                Swal.fire({
+                    icon: 'error',
+                    text: '{{ session('error') }}',
+                    customClass: {
+                        popup: 'small-alert' // Tambahkan kelas CSS "small-alert" di sini
+                    }
+                });
+                @php
+                    session()->forget('error');
+                @endphp
+            </script>
+        @endif
+
     @endif
 
 
@@ -345,16 +361,6 @@
                 @endif
             });
         </script>
-        {{-- <script>
-        function myFunction() {
-            var x = document.getElementById("password");
-            if (x.type === "password") {
-                x.type = "text";
-            } else {
-                x.type = "password";
-            }
-        }
-    </script> --}}
         <script>
             function myFunction() {
                 var x = document.getElementById("password");

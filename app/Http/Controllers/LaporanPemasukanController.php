@@ -355,4 +355,61 @@ class LaporanPemasukanController extends Controller
             return redirect()->back()->with('error', 'Laporan tidak ditemukan');
         }
     } 
+
+    public function getPemasukanByUsaha($dateAwal, $dateAkhir)
+    {
+        // $dateAwal=03-10-2023;
+        if ($dateAwal!=0) {
+            $dateAwal = \Carbon\Carbon::createFromFormat('d-m-Y', $dateAwal)->format('Y-m-d');
+            $dateAkhir = \Carbon\Carbon::createFromFormat('d-m-Y', $dateAkhir)->format('Y-m-d');
+        }
+        // dd($dateAwal);
+        // dd($dateAkhir);
+
+        // Sesuaikan query dengan struktur basis data dan relasinya
+        $data = Laporan::
+        selectRaw('usaha.nama_usaha, MONTH(tanggal_laporan) as bulan, SUM(nominal) as total_nominal')
+            ->join('usaha', 'usaha.id_usaha', '=', 'laporan.id_usaha')
+            ->join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
+            ->where('klasifikasi_laporan.klasifikasi_laporan', '=', 'Pemasukan')
+            ->where('laporan.status_cek', '=', 'Belum Dicek')
+            ->when($dateAkhir!=0, function($query) use ($dateAwal,$dateAkhir){
+                $query->whereDate('tanggal_laporan', '>=', $dateAwal)
+                 ->whereDate('tanggal_laporan', '<=', $dateAkhir);
+
+            })
+            // ->whereBetween('tanggal_laporan', [$dateAwal, $dateAkhir])
+            ->groupBy('usaha.nama_usaha', 'bulan')
+            ->get();
+        // dd($data);
+
+        return response()->json($data);
+    }
+
+
+
+    public function getPemasukanByUsaha1(Request $request)
+{
+    // $startDate = '2023-10-01';
+    // $endDate = '2023-10-31';
+    dd($request->all());
+
+    $startDate = $request->input('startDate');
+    $endDate = $request->input('endDate');
+
+    $data = Laporan::selectRaw('usaha.nama_usaha, MONTH(tanggal_laporan) as bulan, SUM(nominal) as total_nominal')
+        ->join('usaha', 'usaha.id_usaha', '=', 'laporan.id_usaha')
+        ->join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
+        ->where('klasifikasi_laporan.klasifikasi_laporan', '=', 'Pemasukan')
+        ->whereBetween('tanggal_laporan', [$startDate, $endDate]) // Filter berdasarkan rentang tanggal
+        ->groupBy('usaha.nama_usaha', 'bulan')
+        ->get();
+
+    return response()->json($data);
+}
+
+    
+
+
+
 }

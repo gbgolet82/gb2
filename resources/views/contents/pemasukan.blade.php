@@ -4,6 +4,31 @@
 
 
 @section('content')
+    <style>
+        @media (max-width: 768px) {
+
+            /* Perubahan untuk tampilan mobile */
+            .col-md-3 {
+                width: 100%;
+                /* Membuat elemen dengan kelas col-md-3 menjadi lebar penuh pada tampilan mobile */
+                margin-bottom: 10px;
+                /* Memberikan margin bawah untuk elemen dengan kelas col-md-3 pada tampilan mobile */
+            }
+
+            .icon-input {
+                min-width: 100%;
+                /* Memperbesar lebar input field pada tampilan mobile */
+                height: 37.5px;
+                /* Mengatur tinggi input field pada tampilan mobile */
+            }
+
+            .btn {
+                width: 100%;
+                /* Membuat tombol menjadi lebar penuh pada tampilan mobile */
+            }
+        }
+    </style>
+
     <!-- Content Header (Page header) -->
     <style>
         .badge-kuning {
@@ -18,6 +43,10 @@
 
         td[data-toggle="modal"] {
             cursor: pointer;
+        }
+
+        <blade media|%20(max-width%3A%20820px)%20%7B%0D>.hidden {
+            display: none !important;
         }
     </style>
 
@@ -40,12 +69,13 @@
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <div class="col-auto">
+                        <li class="breadcrumb-item text-secondary">
                             {{ Carbon\Carbon::now()->locale('id_ID')->isoFormat('dddd, D MMMM Y') }}
-                        </div>
+                        </li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
+
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
@@ -58,18 +88,21 @@
                     <div class="card card-outline card-success mb-3">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-2 mt-3">
-                                    <strong class="font-weight-bold text-center">
+                                <div class="col-12 col-md-2 mt-3 text-center">
+                                    <strong class="font-weight-bold">
                                         <h4 style="color:#28a745;">LAPORAN PEMASUKAN</h4>
                                     </strong>
                                 </div>
-                                <div class="col-10">
-                                    <div class="card">
+
+                                <div class="col-10 mx-auto">
+                                    <div class="card col-12">
                                         <div class="card-body p-3">
                                             <div class="row">
                                                 {{-- filter tanggal owner --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
-                                                    <div class="col-12 col-md-3">
+                                                @if (
+                                                    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                                                        (isset($selectedRole) && $selectedRole != 'kasir'))
+                                                    <div class="col-12 col-md-3 mb-2">
                                                         <input type="text" class="form-control text-center icon-input"
                                                             id="reportrange" name="filter_daterange" readonly=""
                                                             style="background-color: white;cursor: pointer;min-width:175px;height:37.5px;">
@@ -165,154 +198,55 @@
 
                                                 {{-- muncul ketika pemasukan belum dicek --}}
                                                 @if ($pemasukanBelumActive == true)
-                                                    <div class="col-3">
-                                                        <div class="d-flex flex-wrap">
-                                                            {{-- button tambah role kasir --}}
-                                                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
-                                                                <div class="col-md-12">
-                                                                    <!-- Adjust the width as needed -->
-                                                                    <button class="btn text-white w-100"
-                                                                        style="background-color: #28a745; border-radius: 10px;"
-                                                                        type="button" data-toggle="modal"
-                                                                        data-target="#tambahData" aria-expanded="false">
-                                                                        <i class="fas fa-plus-circle left-icon-holder"></i>
-                                                                        Tambah
-                                                                    </button>
-                                                                </div>
-                                                                {{-- button ekspor role manajer --}}
-                                                            @elseif (($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-danger"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-success"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-excel"></i> Excel
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @endif
-                                                        </div>
+                                                    <div class="col-12 col-md-3">
+                                                        {{-- <div class="d-flex flex-wrap"> --}}
+                                                        {{-- button tambah role kasir --}}
+                                                        @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
+                                                            {{-- <div class="col-12 col-md-3"> --}}
+                                                            <!-- Adjust the width as needed -->
+                                                            <button class="btn text-white w-100"
+                                                                style="background-color: #28a745; border-radius: 10px;"
+                                                                type="button" data-toggle="modal" data-target="#tambahData"
+                                                                aria-expanded="false">
+                                                                <i class="fas fa-plus-circle left-icon-holder"></i>
+                                                                Tambah
+                                                            </button>
+                                                        @endif
+                                                        {{-- </div> --}}
                                                     </div>
-                                                    {{-- muncul ketika pemasukan sudah dicek --}}
-                                                @else
-                                                    {{-- button ekspor role manajer --}}
-                                                    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
-                                                        <div class="col-3">
-                                                            <div class="d-flex flex-wrap">
-                                                                <div class="col-md-12">
-                                                                    <div class="row">
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-danger"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                                            </button>
-                                                                        </div>
-                                                                        <div class="col-6">
-                                                                            <button class="btn btn-outline-success"
-                                                                                style="border-radius: 10px; width: 100%;"
-                                                                                type="button" data-toggle="modal"
-                                                                                data-target="#eksporData"
-                                                                                aria-expanded="false">
-                                                                                <i class="fas fa-file-excel"></i> Excel
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
                                                 @endif
                                             </div>
 
-                                            {{-- baris baru --}}
+
+
                                             <div class="row">
-                                                {{-- button export role kasir --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
-                                                    <div class="col-12 col-md-6 align-self-center">
-                                                        <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
-                                                            Klik
-                                                            Kode Laporan untuk
-                                                            melihat detail</span>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 ml-auto">
-                                                        <div class="row">
-                                                            <div class="col-6">
-                                                                <button class="btn btn-outline-danger"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="button" data-toggle="modal"
-                                                                    data-target="#eksporData" aria-expanded="false">
-                                                                    <i class="fas fa-file-pdf"></i> Pdf
-                                                                </button>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <button class="btn btn-outline-success"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="button" data-toggle="modal"
-                                                                    data-target="#eksporData" aria-expanded="false">
-                                                                    <i class="fas fa-file-excel"></i> Excel
-                                                                </button>
-                                                            </div>
-
+                                                <div class="col-12 col-md-6 mb-2 mb-md-0 align-self-center">
+                                                    <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
+                                                        Klik Kode Laporan untuk
+                                                        melihat detail</span>
+                                                </div>
+                                                <div class="col-12 col-md-3 ml-auto">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <button class="btn btn-outline-danger"
+                                                                style="border-radius: 10px; width: 100%;" type="button"
+                                                                data-toggle="modal" data-target="#eksporData"
+                                                                aria-expanded="false">
+                                                                <i class="fas fa-file-pdf"></i> Pdf
+                                                            </button>
                                                         </div>
-                                                    </div>
-                                                    {{-- keterangan role manajer --}}
-                                                @elseif(($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer')
-                                                    <div class="col-12 col-md-6 align-self-center">
-                                                        <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
-                                                            Klik
-                                                            Kode
-                                                            Laporan untuk
-                                                            melihat detail</span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            {{-- button dan keterangan export owner --}}
-                                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
-                                                <div class="row">
-                                                    <div class="col-12 col-md-6 align-self-center">
-                                                        <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
-                                                            Klik Kode Laporan untuk
-                                                            melihat detail</span>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 ml-auto">
-                                                        <div class="row">
-                                                            <div class="col-6">
-                                                                <button class="btn btn-outline-danger"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="button" data-toggle="modal"
-                                                                    data-target="#eksporData" aria-expanded="false">
-                                                                    <i class="fas fa-file-pdf"></i> Pdf
-                                                                </button>
-                                                            </div>
-                                                            <div class="col-6">
-                                                                <button class="btn btn-outline-success"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="button" data-toggle="modal"
-                                                                    data-target="#eksporData" aria-expanded="false">
-                                                                    <i class="fas fa-file-excel"></i> Excel
-                                                                </button>
-                                                            </div>
-
+                                                        <div class="col-6">
+                                                            <button class="btn btn-outline-success"
+                                                                style="border-radius: 10px; width: 100%;" type="button"
+                                                                data-toggle="modal" data-target="#eksporData"
+                                                                aria-expanded="false">
+                                                                <i class="fas fa-file-excel"></i> Excel
+                                                            </button>
                                                         </div>
+
                                                     </div>
                                                 </div>
-                                            @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -371,15 +305,19 @@
                                     @endphp
                                     @foreach ($data as $pemasukan)
                                         <tr>
+
                                             <td>{{ $noUrut++ }}</td>
-                                            <td style="15%" data-toggle="modal"
-                                                data-target="#lihatPemasukan{{ $pemasukan->id_laporan }}">
-                                                {{ $pemasukan->kode_laporan }} <br>
+                                            <td style="10%"><a href="#" class="text-black font-weight-bold"
+                                                    style="color: #212529;" data-toggle="modal"
+                                                    data-target="#lihatPemasukan{{ $pemasukan->id_laporan }}">
+                                                    {{ $pemasukan->kode_laporan }}
+                                                </a>
                                                 <span class="text-white badge badge-{{ $warna }}"
                                                     style="font-size: 12px; border-radius: 10px;">{{ $pemasukan->status_cek }}</span>
+
                                             </td>
                                             <td style="12%">
-                                                {{ \Carbon\Carbon::parse($pemasukan->tanggal_laporan)->format('d/m/Y') }}
+                                                {{ \Carbon\Carbon::parse($pemasukan->tanggal_laporan)->format('d/m/Y H:i:s') }}
                                                 {{-- {{ \Carbon\Carbon::parse($pemasukan->tanggal_laporan)->format('d/m/Y H:i:s') }} --}}
                                             </td>
                                             <td style="15%">{{ $pemasukan->nama_kasir }}</td>
@@ -395,6 +333,7 @@
                                                     href="{{ asset('nota/' . $pemasukan->gambar_bukti) }}"
                                                     target="_blank">Lihat</a>
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -422,6 +361,34 @@
                             @endforeach
                         </div>
                     </div>
+
+                    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                        <div class="row">
+                            <div class="col-12 col-sm-6">
+                                <!-- Untuk layar kecil (mobile) akan menempati seluruh lebar -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="text-center">Grafik Pemasukan Berdasarkan Usaha</h5>
+                                        <div class="chart-container">
+                                            <canvas id="lineChart" style="width: 100%; height: 300px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <!-- Untuk layar kecil (mobile) akan menempati seluruh lebar -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="text-center">Grafik Pemasukan Berdasarkan Akun</h5>
+                                        <div class="chart-container">
+                                            <canvas id="lineChart1" style="width: 100%; height: 300px;"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                 </div>
             </div>
         </div>
@@ -429,152 +396,184 @@
 @endsection
 
 @push('script')
-    <script>
-        var originalData;
-        $(document).ready(function() {
-            var table = $('#example2').DataTable();
-            originalData = table.rows().data().toArray();
-            $('#reportrange').daterangepicker({
-                locale: {
-                    format: 'DD/MM/YYYY',
-                    separator: ' - ',
-                    applyLabel: 'Pilih',
-                    cancelLabel: 'Batal',
-                    fromLabel: 'Dari',
-                    toLabel: 'Hingga',
-                    customRangeLabel: 'Pilih Tanggal',
-                    weekLabel: 'Mg',
-                    daysOfWeek: ['Mg', 'Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb'],
-                    monthNames: [
-                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-                        'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                    ],
-                    firstDay: 1
-                },
-                ranges: {
-                    'Hari ini': [moment(), moment()],
-                    'Kemarin': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                    '7 Hari Terakhir': [moment().subtract(6, 'days'), moment()],
-                    '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
-                    'Bulan ini': [moment().startOf('month'), moment().endOf('month')],
-                    'Bulan lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
-                        'month').endOf('month')]
-                },
-                startDate: moment().subtract(29, 'days'),
-                endDate: moment()
-            }, function(start, end) {
-                var filteredData = [];
+    @php
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+    @endphp
 
-                // Filter data sesuai dengan rentang tanggal yang dipilih
-                originalData.forEach(function(dataRow) {
-                    var dateValue = moment(dataRow[2],
-                        'DD/MM/YYYY'); // Sesuaikan dengan kolom tanggal Anda
+    @if (
+        ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+            (isset($selectedRole) && $selectedRole != 'kasir'))
+        <script>
+            var originalData;
 
-                    if (dateValue.isBetween(start, end, null, '[]')) {
-                        filteredData.push(dataRow);
-                    }
-                });
-
+            $(document).ready(function() {
                 var table = $('#example2').DataTable();
+                originalData = table.rows().data().toArray();
 
-                if (filteredData.length === 0) {
-                    // Tidak ada data yang cocok, kosongkan tabel
-                    table.clear().draw();
-                } else {
-                    // Jika ada data yang cocok, terapkan filter
-                    table.clear().rows.add(filteredData).draw();
-                }
-            });
-        });
-    </script>
+                var defaultStartDate = moment().subtract(29, 'days');
+                var defaultEndDate = moment();
 
+                // Filter data untuk 30 hari terakhir saat halaman dimuat
+                var defaultFilteredData = originalData.filter(function(dataRow) {
+                    var dateValue = moment(dataRow[2], 'DD/MM/YYYY');
+                    return dateValue.isBetween(defaultStartDate, defaultEndDate, null, '[]');
+                });
 
-    <script>
-        $(document).ready(function() {
-            $('#inputAkun').change(function() {
-                var selectedAkunId = $(this).val();
+                // Menampilkan data yang difilter pada DataTable
+                table.clear().rows.add(defaultFilteredData).draw();
 
-                // console.log(selectedAkunId);
-
-                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
-                $.ajax({
-                    url: '/get-sub-akun-1-options/' + selectedAkunId,
-                    type: 'GET',
-                    success: function(data) {
-                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
-                        $('#inputSub').empty();
-                        $('#inputSub').append($('<option>', {
-                            value: 'Semua',
-                            text: 'Semua Data'
-                        }));
-                        $.each(data, function(key, value) {
-                            // console.log(key);
-                            $('#inputSub').append($('<option>', {
-                                value: key,
-                                text: value
-                            }));
+                $('#reportrange').daterangepicker({
+                    locale: {
+                        format: 'DD/MM/YYYY',
+                        separator: ' - ',
+                        applyLabel: 'Pilih',
+                        cancelLabel: 'Batal',
+                        fromLabel: 'Dari',
+                        toLabel: 'Hingga',
+                        customRangeLabel: 'Pilih Tanggal',
+                        weekLabel: 'Mg',
+                        daysOfWeek: ['Mg', 'Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb'],
+                        monthNames: [
+                            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+                            'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                        ],
+                        firstDay: 1
+                    },
+                    ranges: {
+                        'Hari ini': [moment(), moment()],
+                        'Kemarin': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        '7 Hari Terakhir': [moment().subtract(6, 'days'), moment()],
+                        '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
+                        'Bulan ini': [moment().startOf('month'), moment().endOf('month')],
+                        'Bulan lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
+                            'month').endOf('month')]
+                    },
+                    startDate: defaultStartDate,
+                    endDate: defaultEndDate
+                }, function(start, end) {
+                    var filteredData = originalData.filter(
+                        function(dataRow) {
+                            var dateValue = moment(dataRow[2], 'DD/MM/YYYY');
+                            return dateValue.isBetween(start, end, null, '[]');
                         });
+
+                    var selectedRange = $('#reportrange').data('daterangepicker').chosenLabel;
+                    // console.log(start);
+                    // console.log(end);
+                    // console.log(dataRow);
+
+                    if (filteredData.length === 0 && selectedRange !== '30 Hari Terakhir') {
+                        table.clear().draw();
+                    } else {
+                        table.clear().rows.add(filteredData).draw();
                     }
                 });
             });
-        });
-        $(document).ready(function() {
-            $('#namaUsaha').change(function() {
-                var selectedUsahaId = $(this).val();
+        </script>
+    @endif
 
-                console.log(selectedUsahaId);
+    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+        <script>
+            $('#reportrange').on('change', function() {
+                // console.log('nik');
+                var filteredDate = $('#reportrange').val();
+                // console.log(filteredDate);
 
-                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                // Memisahkan rentang tanggal menjadi dua tanggal terpisah
+                var dateRange = filteredDate.split(" - ");
+                var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
+                var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
+
+                // console.log("Start Date:", startDate);
+                // console.log("End Date:", endDate);
+
+                // console.log('/getPemasukan/' + startDate + '/' + endDate);
+
                 $.ajax({
-                    url: '/get-akun-filter/' + selectedUsahaId,
-                    type: 'GET',
+                    url: '/getPemasukan/' + startDate + '/' + endDate,
+                    method: 'GET',
+                    dataType: 'json',
                     success: function(data) {
-                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
-                        $('#namaAkun').empty();
-                        $('#namaAkun').append($('<option>', {
-                            value: 'Semua',
-                            text: 'Semua Data'
-                        }));
-                        $.each(data, function(key, value) {
-                            // console.log(key);
-                            $('#namaAkun').append($('<option>', {
-                                value: key,
-                                text: value
-                            }));
+                        console.log(data);
+                        var datasets = {};
+
+                        // Daftar singkatan bulan dalam Bahasa Indonesia
+                        var namaBulan = [
+                            'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                            'Jul', 'Ag', 'Sep', 'Okt', 'Nov', 'Des'
+                        ];
+
+                        // Array warna yang telah ditentukan
+                        var colors = ['green', 'blue', 'orange', 'purple']; // Ganti warna sesuai kebutuhan
+
+                        // Memproses data untuk setiap entri dari respons
+                        data.forEach(function(item, index) {
+                            if (!datasets[item.nama_usaha]) {
+                                datasets[item.nama_usaha] = Array(12).fill(
+                                    null); // Inisialisasi array 12 bulan dengan nilai null
+                            }
+                            datasets[item.nama_usaha][item.bulan - 1] = item
+                                .total_nominal; // Mengisi data sesuai dengan bulan
                         });
+
+                        var labels = namaBulan; // Menggunakan singkatan bulan sebagai label
+
+                        var chartData = {
+                            labels: labels,
+                            datasets: Object.keys(datasets).map(function(usaha, index) {
+                                return {
+                                    label: usaha,
+                                    data: datasets[usaha],
+                                    borderColor: colors[index % colors
+                                        .length], // Gunakan warna berdasarkan indeks
+                                    borderWidth: 2,
+                                    fill: false
+                                };
+                            })
+                        };
+
+                        var ctx = document.getElementById('lineChart').getContext('2d');
+                        // Hancurkan grafik sebelumnya jika ada
+                        // if (window.lineChart !== undefined) {
+                        //     window.lineChart.destroy();
+                        // }
+                        if (window.lineChart instanceof Chart) {
+                            window.lineChart.destroy(); // Destroy the previous chart instance
+                        }
+
+                        // Buat grafik yang baru
+                        var chart = new Chart(ctx, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        type: 'category',
+                                        position: 'bottom',
+                                    },
+                                    y: {
+                                        type: 'linear',
+                                    },
+                                },
+                            },
+                        });
+                        window.lineChart = chart;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
                     }
                 });
             });
-        });
-        $(document).ready(function() {
-            $('#namaAkun').change(function() {
-                var selectedAkun = $(this).val();
+        </script>
+    @endif
 
-                console.log(selectedAkun);
 
-                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
-                $.ajax({
-                    url: '/get-sub1-filter/' + selectedAkun,
-                    type: 'GET',
-                    success: function(data) {
-                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
-                        $('#namaSub').empty();
-                        $('#namaSub').append($('<option>', {
-                            value: 'Semua',
-                            text: 'Semua Data'
-                        }));
-                        $.each(data, function(key, value) {
-                            // console.log(key);
-                            $('#namaSub').append($('<option>', {
-                                value: key,
-                                text: value
-                            }));
-                        });
-                    }
-                });
-            });
-        });
-    </script>
+
+
+
     <script>
         // Memasukkan kode di dalam fungsi ready
         $(document).ready(function() {

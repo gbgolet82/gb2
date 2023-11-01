@@ -7,9 +7,19 @@
 
     <title>GUNA BAKTI | {{ $active_page }}</title>
     <link rel="icon" href="{!! asset('gambar/gunabakti-logo.png') !!}" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     @include('template.css')
+    <style>
+        /* Misalnya, mengubah tata letak kolom pada layar kecil */
+        @media (max-width: 768px) {
+            .col-12 {
+                width: 100%;
+                /* Misalnya, lebar 100% saat tampilan mobile */
+            }
+        }
+    </style>
 
     {{-- @livewireStyles --}}
 

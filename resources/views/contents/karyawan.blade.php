@@ -1,44 +1,6 @@
 @extends('main')
 
 @section('content')
-    <style>
-        /* CSS untuk memperbesar ukuran modal */
-        .modal-dialog {
-            max-width: 600px;
-            /* Menentukan lebar maksimum modal */
-        }
-
-        .modal-content {
-            padding: 10px;
-            /* Menambahkan ruang padding di dalam modal */
-        }
-
-        /* Untuk mengatur tinggi modal, jika diperlukan */
-        .modal-body {
-            max-height: 500px;
-            /* Menentukan tinggi maksimum modal */
-            overflow-y: auto;
-            /* Tambahkan scrollbar jika kontennya melebihi tinggi maksimum */
-        }
-
-        /* Gaya untuk checkbox */
-        .form-check-input[type="checkbox"] {
-            width: 18px;
-            /* Lebar checkbox */
-            height: 18px;
-            /* Tinggi checkbox */
-            margin-right: 5px;
-            /* Jarak antara checkbox dan teks label */
-        }
-
-        /* Gaya untuk label checkbox */
-        .form-check-label {
-            margin-left: 5px;
-            /* Jarak antara label dan checkbox */
-            margin-bottom: 0;
-            /* Menghapus margin bawah untuk mempersempit jarak */
-        }
-    </style>
     <!-- Content Header (Page header) -->
     <div class="content-header">
         <div class="container-fluid">
@@ -189,25 +151,24 @@
                                                         Tambah
                                                     </button>
                                                     
-                                                    <div class="modal fade" id="tambahData" data-backdrop="static"
-                                                        data-keyboard="false" aria-labelledby="staticBackdropLabel"
-                                                        aria-hidden="true" data-target="#staticBackdrop">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="staticBackdropLabel">
-                                                                        Tambah
-                                                                        Karyawan
-                                                                    </h5>
-                                                                    <button type="button" class="close"
-                                                                        data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                @include('modals.tambah-karyawan')
+                                                    <div class="modal fade" id="tambahData" data-backdrop="static" data-keyboard="false"
+                                                    aria-labelledby="staticBackdropLabel" aria-hidden="true"
+                                                    data-target="#staticBackdrop">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="staticBackdropLabel">
+                                                                    Tambah Data Karyawan
+                                                                </h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close" id="reset">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
                                                             </div>
+                                                            @include('modals.tambah-karyawan')
                                                         </div>
                                                     </div>
+                                                </div>
                                                 </div>
                                             </div>
 

@@ -102,21 +102,23 @@
             $kasir = ($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir';
         @endphp
         <nav class="mt-1">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
-                data-accordion="false">
-                <li class="nav-item @yield('dashboard')">
-                    <a href="{{ route('dashboard') }}" class="nav-link @if (Request::url() == route('dashboard')) active @endif">
-                        {{-- <i class="nav-icon fas fa-users"></i> --}}
-                        <i class="bi bi-house-door-fill custom-icon"></i>
-                        <p>
-                            Dashboard
-                        </p>
-                    </a>
-                </li>
-            </ul>
+
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
                 @if ($owner)
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                        data-accordion="false">
+                        <li class="nav-item @yield('dashboard')">
+                            <a href="{{ route('dashboard') }}"
+                                class="nav-link @if (Request::url() == route('dashboard')) active @endif">
+                                {{-- <i class="nav-icon fas fa-users"></i> --}}
+                                <i class="bi bi-house-door-fill custom-icon"></i>
+                                <p>
+                                    Dashboard
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
                     <li class="nav-header font-weight-bolder">Data Master</li>
                     <li class="nav-item @yield('usaha')">
                         <a href="{{ route('usaha') }}" class="nav-link @if (Request::url() == route('usaha')) active @endif">
@@ -223,14 +225,6 @@
                     </li>
                 @elseif ($manajer)
                     <li class="nav-header font-weight-bolder mt-1">Data Laporan</li>
-                    <li class="nav-item @yield('labarugi')">
-                        <a href="#" class="nav-link @yield('labarugi')">
-                            {{-- <i class="bi bi-activity custom-icon"></i> --}}<i class="fas fa-chart-line"></i>
-                            <p>
-                                Laba Rugi
-                            </p>
-                        </a>
-                    </li>
                     <li class="nav-item @yield('pemasukan_blm')">
                         <a href="{{ route('pemasukan_blm') }}"
                             class="nav-link @if (Request::url() == route('pemasukan_blm')) active @endif">

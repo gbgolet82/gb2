@@ -18,7 +18,11 @@ class DataKaryawanController extends Controller
     session()->save();
     // dd($role);
 
-    return redirect()->route('dashboard'); // Arahkan ke halaman dashboard
+    if ($role == 'owner') {
+        return redirect()->route('dashboard'); // Arahkan ke halaman dashboard
+    } else {
+        return redirect()->route('pemasukan_blm'); // Arahkan ke halaman pemasukan
+    }
 }
 
 

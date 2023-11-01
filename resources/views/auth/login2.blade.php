@@ -341,24 +341,6 @@
 
         </div>
 
-        <script>
-            document.getElementById('modeTamuButton').addEventListener('click', function() {
-                // Cek apakah pengguna sudah login atau belum
-                @if (Auth::check())
-                    // Pengguna sudah login, cek apakah password tidak kosong
-                    @if (!empty(Auth::user()->password))
-                        // Password tidak kosong, alihkan ke halaman "konsultasi"
-                        window.location.href = "{{ URL::to('/konsultasi') }}";
-                    @else
-                        // Password kosong, tampilkan pesan
-                        alert('Anda belum login, silakan login terlebih dahulu!');
-                    @endif
-                @else
-                    // Pengguna belum login, tampilkan pesan
-                    alert('Anda belum login, silakan login terlebih dahulu!');
-                @endif
-            });
-        </script>
         {{-- <script>
         function myFunction() {
             var x = document.getElementById("password");

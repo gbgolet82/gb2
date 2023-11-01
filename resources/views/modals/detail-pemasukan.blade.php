@@ -30,6 +30,10 @@
             background-color: #28a745;
             color: #fff;
         }
+
+        <blade media|%20(max-width%3A%20820px)%20%7B%0D>.hidden {
+            display: none !important;
+        }
     </style>
     <div class="modal-body">
         <div class="d-flex mb-3">
@@ -129,7 +133,7 @@
 
         <div class="d-flex bd-highlight justify-content-end mt-3">
             <div class="bd-highlight">
-                <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal" id="resetData"><i
+                <button type="button" class="btn btn-secondary mb-2" data-dismiss="modal" id="resetData"><i
                         class="fa fa-ban"></i> Batal</button>
 
 

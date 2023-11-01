@@ -7,6 +7,7 @@ use App\Models\Usaha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class LoginController extends Controller
 {
@@ -46,8 +47,9 @@ class LoginController extends Controller
         $karyawan = Karyawan::where('nohp', $phone)->first();
         // dd($karyawan);
 
-        if (!$karyawan || !Hash::check($password, $karyawan->password)) {
-            return redirect()->back()->withErrors(['error' => 'Invalid phone number or password']);
+        if ($karyawan === null) {
+            // Akun tidak ditemukan, tampilkan pesan kesalahan
+            return redirect()->route('login')->with('error', 'Akun Anda belum terdaftar.');
         }
 
         // Check the user's roles.
@@ -76,9 +78,11 @@ class LoginController extends Controller
        
 
         if ($karyawanRoles->count() == 1) {
-            $role = $karyawanRoles->first();
-            return redirect()->route('dashboard');
-            // return redirect()->route($role . '.dashboard');
+            if ($karyawanRoles->contains('owner')) {
+                return redirect()->route('dashboard');
+            } else {
+                return redirect()->route('pemasukan_blm');
+            }
         }
 
         $userId = $karyawan->id_karyawan;

@@ -37,7 +37,6 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
 Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/pemasukan', [LaporanPemasukanController::class, 'index'])->name('pemasukan_blm');
     Route::get('/pemasukan/acc', [LaporanPemasukanController::class, 'pemasukan'])->name('pemasukan_sdh');
     Route::get('/pengeluaran', [LaporanPengeluaranController::class, 'index'])->name('pengeluaran_blm');
@@ -65,10 +64,14 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/get-sub-akun-2-opsi/{id_sub_akun_1}', [LaporanPengeluaranController::class, 'ambilSubAkun2']);
     Route::get('/get-sub-akun-3-opsi/{id_sub_akun_2}', [LaporanPengeluaranController::class, 'ambilSubAkun3']);
     Route::get('/get-last-report-number/{selectedKlasifikasi}', 'LaporanPengeluaranController@getLastReportNumber');
+    Route::get('/getPemasukan/{dateAwal}/{dateAkhir}', [LaporanPemasukanController::class, 'getPemasukanByUsaha']);
+    Route::post('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha1');
+    Route::get('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha');
 
 });
 
 Route::group(['middleware' => 'role:owner'], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('akun');
     Route::get('/tambah-klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('tambah.klasifikasi-akun');
     Route::post('/tambah-akun', [DataUsahaController::class, 'simpanAkun'])->name('tambah.akun');
