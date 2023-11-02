@@ -368,7 +368,7 @@ class LaporanPemasukanController extends Controller
 
         // Sesuaikan query dengan struktur basis data dan relasinya
         $data = Laporan::
-        selectRaw('usaha.nama_usaha, MONTH(tanggal_laporan) as bulan, SUM(nominal) as total_nominal')
+        selectRaw('usaha.nama_usaha, DAY(tanggal_laporan) as day, SUM(nominal) as total_nominal')
             ->join('usaha', 'usaha.id_usaha', '=', 'laporan.id_usaha')
             ->join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
             ->where('klasifikasi_laporan.klasifikasi_laporan', '=', 'Pemasukan')
@@ -379,13 +379,64 @@ class LaporanPemasukanController extends Controller
 
             })
             // ->whereBetween('tanggal_laporan', [$dateAwal, $dateAkhir])
-            ->groupBy('usaha.nama_usaha', 'bulan')
+            ->groupBy('usaha.nama_usaha', 'day')
             ->get();
         // dd($data);
 
         return response()->json($data);
     }
 
+    public function getPemasukanByAkun($dateAwal, $dateAkhir, $namaUsaha, $namaAkun)
+{
+    // inisialisasi variable id_usaha dan id_akun
+    $id_usaha = null;
+    $id_akun = null;
+
+    if ($dateAwal != 0) {
+        $dateAwal = \Carbon\Carbon::createFromFormat('d-m-Y', $dateAwal)->format('Y-m-d');
+        $dateAkhir = \Carbon\Carbon::createFromFormat('d-m-Y', $dateAkhir)->format('Y-m-d');
+
+        // jika bukan "semua", cari id_usaha
+        if ($namaUsaha !== 'Semua') {
+            $usahaNama = $namaUsaha;
+            $id_usaha = Usaha::where('nama_usaha', $usahaNama)->value('id_usaha');
+        }
+
+        // jika bukan "Semua", cari id_akun
+        if ($namaAkun !== 'Semua') {
+            $akunNama = $namaAkun;
+            $id_akun = Akun::where('akun', $akunNama)->value('id_akun');
+        }
+    }
+
+    $query = Laporan::
+        selectRaw('usaha.nama_usaha, DAY(tanggal_laporan) as day, SUM(nominal) as total_nominal, akun.akun')
+        ->join('usaha', 'usaha.id_usaha', '=', 'laporan.id_usaha')
+        ->join('akun', 'akun.id_akun', '=', 'laporan.id_akun')
+        ->join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
+        ->where('klasifikasi_laporan.klasifikasi_laporan', '=', 'Pemasukan')
+        ->where('laporan.status_cek', '=', 'Belum Dicek');
+
+    // jika bukan "Semua", tambahkan where laporan.id_usaha
+    if ($id_usaha !== null) {
+        $query->where('laporan.id_usaha', '=', $id_usaha);
+    }
+
+    // jika bukan "Semua", tambahkan where laporan.id_akun
+    if ($id_akun !== null) {
+        $query->where('laporan.id_akun', '=', $id_akun);
+    }
+
+    $query->when($dateAkhir != 0, function ($query) use ($dateAwal, $dateAkhir) {
+        $query->whereDate('tanggal_laporan', '>=', $dateAwal)
+            ->whereDate('tanggal_laporan', '<=', $dateAkhir);
+    });
+
+    $query->groupBy('usaha.nama_usaha', 'day', 'akun.akun');
+    $data = $query->get();
+
+    return response()->json($data);
+}
 
 
     public function getPemasukanByUsaha1(Request $request)

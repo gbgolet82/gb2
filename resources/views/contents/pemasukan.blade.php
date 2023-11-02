@@ -365,10 +365,16 @@
                     @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
                         <div class="row">
                             <div class="col-12 col-sm-6">
-                                <!-- Untuk layar kecil (mobile) akan menempati seluruh lebar -->
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="text-center">Grafik Pemasukan Berdasarkan Usaha</h5>
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h5>Grafik Pemasukan Berdasarkan Usaha</h5>
+                                            </div>
+                                            <div>
+                                                <span id="periodeUsaha"></span>
+                                            </div>
+                                        </div>
                                         <div class="chart-container">
                                             <canvas id="lineChart" style="width: 100%; height: 300px;"></canvas>
                                         </div>
@@ -379,7 +385,14 @@
                                 <!-- Untuk layar kecil (mobile) akan menempati seluruh lebar -->
                                 <div class="card">
                                     <div class="card-body">
-                                        <h5 class="text-center">Grafik Pemasukan Berdasarkan Akun</h5>
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h5>Grafik Pemasukan Berdasarkan Akun</h5>
+                                            </div>
+                                            <div>
+                                                <span id="periodeAkun"></span>
+                                            </div>
+                                        </div>
                                         <div class="chart-container">
                                             <canvas id="lineChart1" style="width: 100%; height: 300px;"></canvas>
                                         </div>
@@ -480,13 +493,26 @@
                 var filteredDate = $('#reportrange').val();
                 // console.log(filteredDate);
 
+                $('#periodeUsaha').val(filteredDate);
+                $('#periodeUsaha').text(filteredDate);
+
                 // Memisahkan rentang tanggal menjadi dua tanggal terpisah
                 var dateRange = filteredDate.split(" - ");
-                var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
-                var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
+                // var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
+                // var endDate = dateRange[1].replace(/\//g, '-');
 
-                // console.log("Start Date:", startDate);
-                // console.log("End Date:", endDate);
+                var startDate = new Date(dateRange[0].replace(/\//g, '-')); // Konversi string tanggal awal ke objek Date
+                var endDate = new Date(dateRange[1].replace(/\//g, '-')); // Konversi string tanggal akhir ke objek Date
+
+                var startMonth = startDate.getMonth(); // Mendapatkan bulan dari tanggal awal
+                var endMonth = endDate.getMonth(); // Mendapatkan bulan dari tanggal akhir
+
+
+                // var isMultipleMonths = startDate.getMonth() !== endDate.getMonth() || startDate.getFullYear() !== endDate.getFullYear();
+                // console.log(isMultipleMonths);
+
+                console.log("Start Date:", startDate);
+                console.log("End Date:", endDate);
 
                 // console.log('/getPemasukan/' + startDate + '/' + endDate);
 
@@ -498,26 +524,25 @@
                         console.log(data);
                         var datasets = {};
 
-                        // Daftar singkatan bulan dalam Bahasa Indonesia
-                        var namaBulan = [
-                            'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                            'Jul', 'Ag', 'Sep', 'Okt', 'Nov', 'Des'
-                        ];
-
                         // Array warna yang telah ditentukan
                         var colors = ['green', 'blue', 'orange', 'purple']; // Ganti warna sesuai kebutuhan
 
                         // Memproses data untuk setiap entri dari respons
                         data.forEach(function(item, index) {
+                            var day = item.day;
+
                             if (!datasets[item.nama_usaha]) {
-                                datasets[item.nama_usaha] = Array(12).fill(
-                                    null); // Inisialisasi array 12 bulan dengan nilai null
+                                datasets[item.nama_usaha] = Array(31).fill(
+                                    null); // Inisialisasi array 31 hari dengan nilai null
                             }
-                            datasets[item.nama_usaha][item.bulan - 1] = item
-                                .total_nominal; // Mengisi data sesuai dengan bulan
+                            datasets[item.nama_usaha][day - 1] = item
+                                .total_nominal; // Mengisi data sesuai dengan tanggal
+                            // console.log(datasets);
                         });
 
-                        var labels = namaBulan; // Menggunakan singkatan bulan sebagai label
+                        var labels = Array.from({
+                            length: 31
+                        }, (_, i) => (i + 1).toString()); // Label berdasarkan tanggal 1 hingga 31
 
                         var chartData = {
                             labels: labels,
@@ -568,10 +593,187 @@
                 });
             });
         </script>
+
+        <script>
+            $('#reportrange, #namaUsaha, #namaAkun').on('change', function() {
+                // console.log('nik');
+                var filteredDate = $('#reportrange').val();
+                var namaUsaha = $('#namaUsaha').val();
+                var namaAkun = $('#namaAkun').val();
+
+                $('#periodeAkun').val(filteredDate);
+                $('#periodeAkun').text(filteredDate);
+
+                // Memisahkan rentang tanggal menjadi dua tanggal terpisah
+                var dateRange = filteredDate.split(" - ");
+                var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
+                var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
+
+                $.ajax({
+                    url: '/getPemasukan/' + startDate + '/' + endDate + '/' + namaUsaha + '/' + namaAkun,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(data);
+                        var datasets = {};
+
+                        // Array warna yang telah ditentukan
+                        var colors = ['green', 'blue', 'orange', 'purple']; // Ganti warna sesuai kebutuhan
+
+                        // Memproses data untuk setiap entri dari respons
+                        data.forEach(function(item, index) {
+                            var day = item.day;
+
+                            if (!datasets[item.nama_usaha + ' - ' + item.akun]) {
+                                datasets[item.nama_usaha + ' - ' + item.akun] = Array(31)
+                                    .fill(null);
+                            }
+
+                            datasets[item.nama_usaha + ' - ' + item.akun][day - 1] = item
+                                .total_nominal;
+                        });
+
+                        var labels = Array.from({
+                            length: 31
+                        }, (_, i) => (i + 1).toString()); // Label berdasarkan tanggal 1 hingga 31
+
+                        var chartData = {
+                            labels: labels,
+                            datasets: Object.keys(datasets).map(function(label, index) {
+                                return {
+                                    label: label,
+                                    data: datasets[label],
+                                    borderColor: colors[index % colors.length],
+                                    borderWidth: 2,
+                                    fill: false
+                                };
+                            })
+                        };
+
+                        var ctx = document.getElementById('lineChart1').getContext('2d');
+                        // Hancurkan grafik sebelumnya jika ada
+                        // if (window.lineChart !== undefined) {
+                        //     window.lineChart.destroy();
+                        // }
+                        if (window.lineChart1 instanceof Chart) {
+                            window.lineChart1.destroy(); // Destroy the previous chart instance
+                        }
+
+                        // Buat grafik yang baru
+                        var chart = new Chart(ctx, {
+                            type: 'line',
+                            data: chartData,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    x: {
+                                        type: 'category',
+                                        position: 'bottom',
+                                    },
+                                    y: {
+                                        type: 'linear',
+                                    },
+                                },
+                            },
+                        });
+                        window.lineChart1 = chart;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
+        </script>
     @endif
 
 
+    <script>
+        $(document).ready(function() {
+            $('#inputAkun').change(function() {
+                var selectedAkunId = $(this).val();
 
+                // console.log(selectedAkunId);
+
+                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                $.ajax({
+                    url: '/get-sub-akun-1-options/' + selectedAkunId,
+                    type: 'GET',
+                    success: function(data) {
+                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                        $('#inputSub').empty();
+                        $('#inputSub').append($('<option>', {
+                            value: 'Semua',
+                            text: 'Semua Data'
+                        }));
+                        $.each(data, function(key, value) {
+                            // console.log(key);
+                            $('#inputSub').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+            $('#namaUsaha').change(function() {
+                var selectedUsahaId = $(this).val();
+
+                console.log(selectedUsahaId);
+
+                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                $.ajax({
+                    url: '/get-akun-filter/' + selectedUsahaId,
+                    type: 'GET',
+                    success: function(data) {
+                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                        $('#namaAkun').empty();
+                        $('#namaAkun').append($('<option>', {
+                            value: 'Semua',
+                            text: 'Semua Data'
+                        }));
+                        $.each(data, function(key, value) {
+                            // console.log(key);
+                            $('#namaAkun').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+            $('#namaAkun').change(function() {
+                var selectedAkun = $(this).val();
+
+                console.log(selectedAkun);
+
+                // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                $.ajax({
+                    url: '/get-sub1-filter/' + selectedAkun,
+                    type: 'GET',
+                    success: function(data) {
+                        // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                        $('#namaSub').empty();
+                        $('#namaSub').append($('<option>', {
+                            value: 'Semua',
+                            text: 'Semua Data'
+                        }));
+                        $.each(data, function(key, value) {
+                            // console.log(key);
+                            $('#namaSub').append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 
 
     <script>

@@ -454,7 +454,9 @@
         $karyawanRoles = session('karyawanRoles');
     @endphp
 
-    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+@if (
+    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+        (isset($selectedRole) && $selectedRole != 'kasir'))
         <script>
             var originalData;
 
