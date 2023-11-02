@@ -94,8 +94,9 @@ class LaporanPemasukanController extends Controller
         }
         
         $data = $data->get();
+        $status_cek = 'Belum Dicek';
         $active_page = "PEMASUKAN";
-        return view('contents.pemasukan', compact('active_page', 'data', 'akunOptions', 'kodeLaporan', 'idKlasifikasiPemasukan', 'pemasukanBelumActive', 'pemasukanSudahAktif', 'usahaOption'));
+        return view('contents.pemasukan', compact('status_cek','active_page', 'data', 'akunOptions', 'kodeLaporan', 'idKlasifikasiPemasukan', 'pemasukanBelumActive', 'pemasukanSudahAktif', 'usahaOption'));
     }
 
     public function pemasukan(Request $request)
@@ -156,8 +157,9 @@ class LaporanPemasukanController extends Controller
         }
         
         $data = $data->get();
+        $status_cek = 'Sudah Dicek';
         $active_page = "PEMASUKAN";
-        return view('contents.pemasukan', compact('active_page', 'data', 'pemasukanSudahAktif', 'akunOptions', 'pemasukanBelumActive', 'usahaOption'));
+        return view('contents.pemasukan', compact('status_cek','active_page', 'data', 'pemasukanSudahAktif', 'akunOptions', 'pemasukanBelumActive', 'usahaOption'));
     }
 
 

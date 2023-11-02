@@ -98,7 +98,8 @@ class LaporanPengeluaranController extends Controller
         $data = $data->get();
         // dd($data);
         $active_page = "PENGELUARAN";
-        return view('contents.pengeluaran', compact('active_page', 'data','pengeluaranBelumActive', 'pengeluaranSudahAktif', 'klasifikasiOptions', 'kodeOP', 'kodeNOP', 'usahaOption'));
+        $status_cek = 'Belum Dicek';
+        return view('contents.pengeluaran', compact('status_cek','active_page', 'data','pengeluaranBelumActive', 'pengeluaranSudahAktif', 'klasifikasiOptions', 'kodeOP', 'kodeNOP', 'usahaOption'));
     }
 
     public function pengeluaran(Request $request)
@@ -161,7 +162,8 @@ class LaporanPengeluaranController extends Controller
         $data = $data->get();
         // dd($data);
         $active_page = "PENGELUARAN";
-        return view('contents.pengeluaran', compact('active_page', 'data', 'pengeluaranBelumActive', 'pengeluaranSudahAktif', 'klasifikasiOptions', 'usahaOption'));
+        $status_cek = 'Sudah Dicek';
+        return view('contents.pengeluaran', compact('status_cek','active_page', 'data', 'pengeluaranBelumActive', 'pengeluaranSudahAktif', 'klasifikasiOptions', 'usahaOption'));
     }
 
     public function getLastReportNumber($selectedKlasifikasi)
