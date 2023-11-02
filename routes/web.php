@@ -9,6 +9,9 @@ use App\Http\Controllers\DataKaryawanController;
 use App\Http\Controllers\LaporanPemasukanController;
 use App\Http\Controllers\KlasifikasiLaporanController;
 use App\Http\Controllers\LaporanPengeluaranController;
+use App\Http\Controllers\PdfPemasukanController;
+use App\Http\Controllers\PdfPengeluaranController;
+use App\Http\Controllers\PrintLaporanPemasukan;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,10 +40,22 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
 Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/pemasukan', [LaporanPemasukanController::class, 'index'])->name('pemasukan_blm');
     Route::get('/pemasukan/acc', [LaporanPemasukanController::class, 'pemasukan'])->name('pemasukan_sdh');
+
+    Route::get('/pdf_pemasukan', [PdfPemasukanController::class, 'index'])->name('pdf_pemasukan_blm');
+    Route::get('/pdf_pemasukan/acc', [PdfPemasukanController::class, 'pemasukan'])->name('pdf_pemasukan_sdh');
+
+    Route::get('/pdf-pengeluaran', [PdfPengeluaranController::class, 'index'])->name('pdf_pengeluaran_blm');
+    Route::get('/pdf-pengeluaran/acc', [PdfPengeluaranController::class, 'pengeluaran'])->name('pdf_pengeluaran_sdh');
+
+
     Route::get('/pengeluaran', [LaporanPengeluaranController::class, 'index'])->name('pengeluaran_blm');
     Route::get('/pengeluaran/acc', [LaporanPengeluaranController::class, 'pengeluaran'])->name('pengeluaran_sdh');
+
+
     Route::post('/tambah-pemasukan', [LaporanPemasukanController::class, 'simpanPemasukan'])->name('tambah.pemasukan');
     Route::post('/acc-pemasukan/{id_laporan}', [LaporanPemasukanController::class, 'accPemasukan'])->name('acc.pemasukan');
     Route::post('/acc-pengeluaran/{id_laporan}', [LaporanPengeluaranController::class, 'accPengeluaran'])->name('acc.pengeluaran');
@@ -68,6 +83,8 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::post('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha1');
     Route::get('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha');
 
+    Route::get('/print_laporan_pemasukan/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan'])->name('print_laporan_pemasukan');
+
 });
 
 Route::group(['middleware' => 'role:owner'], function () {
@@ -89,7 +106,3 @@ Route::group(['middleware' => 'role:owner'], function () {
     Route::post('/detail-akun/{id_klasifikasi}', [KlasifikasiLaporanController::class, 'detailKlasifikasi'])->name('detail.klasifikasi');
     Route::post('/tambah-akun', [KlasifikasiLaporanController::class, 'simpanAkun'])->name('tambah.akun');
 });
-
-
-
-

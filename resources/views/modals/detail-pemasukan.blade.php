@@ -148,9 +148,10 @@
                         <i class="fas fa-check-circle"></i> ACC
                     </button>
                 @else
-                    <button type="submit" class="btn btn-success text-white toastrDefaultSuccess" id="simpanAcc">
+                    <a href="/print_laporan_pemasukan/{{ $pemasukan->id_laporan }}" target="_blank"
+                        class="btn btn-success text-white toastrDefaultSuccess">
                         <i class="fas fa-print"></i> Print
-                    </button>
+                    </a>
                 @endif
 
             </div>
