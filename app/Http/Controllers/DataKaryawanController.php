@@ -97,7 +97,6 @@ class DataKaryawanController extends Controller
             'kasir' => $role_kasir,
             'manajer' => $role_manajer,
             'owner' => $role_owner,
-            'status' => 'Aktif',
         ]);
         // dd($result);
 

@@ -372,7 +372,8 @@
                                                 <h5>Grafik Pemasukan Berdasarkan Usaha</h5>
                                             </div>
                                             <div>
-                                                <span id="periodeUsaha"></span>
+                                                <span id="periodeUsaha" class="text-center"
+                                                    style="font-size: 14px"></span>
                                             </div>
                                         </div>
                                         <div class="chart-container">
@@ -390,7 +391,8 @@
                                                 <h5>Grafik Pemasukan Berdasarkan Akun</h5>
                                             </div>
                                             <div>
-                                                <span id="periodeAkun"></span>
+                                                <span id="periodeAkun" class="text-center"
+                                                    style="font-size: 14px"></span>
                                             </div>
                                         </div>
                                         <div class="chart-container">
@@ -488,61 +490,85 @@
 
     @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
         <script>
-            $('#reportrange').on('change', function() {
-                // console.log('nik');
+            $('#reportrange, #namaUsaha').on('change', function() {
                 var filteredDate = $('#reportrange').val();
-                // console.log(filteredDate);
+                var namaUsaha = $('#namaUsaha').val();
+                console.log("namanama", namaUsaha);
 
                 $('#periodeUsaha').val(filteredDate);
                 $('#periodeUsaha').text(filteredDate);
 
                 // Memisahkan rentang tanggal menjadi dua tanggal terpisah
                 var dateRange = filteredDate.split(" - ");
-                // var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
-                // var endDate = dateRange[1].replace(/\//g, '-');
+                var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
+                var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
 
-                var startDate = new Date(dateRange[0].replace(/\//g, '-')); // Konversi string tanggal awal ke objek Date
-                var endDate = new Date(dateRange[1].replace(/\//g, '-')); // Konversi string tanggal akhir ke objek Date
-
-                var startMonth = startDate.getMonth(); // Mendapatkan bulan dari tanggal awal
-                var endMonth = endDate.getMonth(); // Mendapatkan bulan dari tanggal akhir
-
-
-                // var isMultipleMonths = startDate.getMonth() !== endDate.getMonth() || startDate.getFullYear() !== endDate.getFullYear();
-                // console.log(isMultipleMonths);
-
-                console.log("Start Date:", startDate);
-                console.log("End Date:", endDate);
-
-                // console.log('/getPemasukan/' + startDate + '/' + endDate);
+                var formattedStartDate = startDate.substr(3, 2);
+                var formattedEndDate = endDate.substr(3, 2);
 
                 $.ajax({
-                    url: '/getPemasukan/' + startDate + '/' + endDate,
+                    url: '/getPemasukan/' + startDate + '/' + endDate + '/' + namaUsaha,
                     method: 'GET',
                     dataType: 'json',
+
                     success: function(data) {
                         console.log(data);
                         var datasets = {};
+                        var namaBulan = [
+                            'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                            'Jul', 'Ag', 'Sep', 'Okt', 'Nov', 'Des'
+                        ];
 
                         // Array warna yang telah ditentukan
                         var colors = ['green', 'blue', 'orange', 'purple']; // Ganti warna sesuai kebutuhan
-
                         // Memproses data untuk setiap entri dari respons
+                        // Assuming 'data' is the array containing your data
+
+                        var daysInMonth; // Declare daysInMonth outside the loop
+
+                        // Proses data dari respons server
+                        // Proses data dari respons server
+                        // Modify the loop that processes the data to handle missing data
                         data.forEach(function(item, index) {
+                            var month = item.bulan; // Assuming 'bulan' represents the month
+
+                            // Determine the number of days in the given month
+                            var year = new Date().getFullYear(); // Get the current year
+                            daysInMonth = new Date(year, month, 0).getDate();
+
                             var day = item.day;
 
                             if (!datasets[item.nama_usaha]) {
-                                datasets[item.nama_usaha] = Array(31).fill(
-                                    null); // Inisialisasi array 31 hari dengan nilai null
+                                datasets[item.nama_usaha] = Array(daysInMonth).fill(null);
                             }
-                            datasets[item.nama_usaha][day - 1] = item
-                                .total_nominal; // Mengisi data sesuai dengan tanggal
-                            // console.log(datasets);
+                            datasets[item.nama_usaha][day - 1] = item.total_nominal;
                         });
 
+                        // Check and connect missing data points with previous available data
+                        Object.keys(datasets).forEach(function(usaha, index) {
+                            for (var i = 1; i < daysInMonth; i++) {
+                                if (datasets[usaha][i] === null) {
+                                    var j = i - 1;
+                                    while (j >= 0 && datasets[usaha][j] === null) {
+                                        j--;
+                                    }
+                                    if (j >= 0 && datasets[usaha][j] !== null) {
+                                        datasets[usaha][i] = datasets[usaha][j];
+                                    } else {
+                                        datasets[usaha][i] =
+                                        0; // If no previous data available, set value to 0
+                                    }
+                                }
+                            }
+                        });
+
+                        // Rest of your code for chart creation remains unchanged...
+
+
+                        // Generate labels based on the number of days in the month
                         var labels = Array.from({
-                            length: 31
-                        }, (_, i) => (i + 1).toString()); // Label berdasarkan tanggal 1 hingga 31
+                            length: daysInMonth
+                        }, (_, i) => (i + 1).toString());
 
                         var chartData = {
                             labels: labels,
@@ -587,6 +613,7 @@
                         });
                         window.lineChart = chart;
                     },
+
                     error: function(xhr, status, error) {
                         console.error(error);
                     }
@@ -595,93 +622,146 @@
         </script>
 
         <script>
-            $('#reportrange, #namaUsaha, #namaAkun').on('change', function() {
-                // console.log('nik');
-                var filteredDate = $('#reportrange').val();
-                var namaUsaha = $('#namaUsaha').val();
-                var namaAkun = $('#namaAkun').val();
+            $(document).ready(function() {
+                $('#reportrange, #namaUsaha, #namaAkun').on('change', function() {
+                    // console.log('nik');
+                    var filteredDate = $('#reportrange').val();
+                    var namaUsaha = $('#namaUsaha').val();
+                    var namaAkun = $('#namaAkun').val();
+                    // console.log("baba", namaUsaha);
 
-                $('#periodeAkun').val(filteredDate);
-                $('#periodeAkun').text(filteredDate);
+                    $('#periodeAkun').val(filteredDate);
+                    $('#periodeAkun').text(filteredDate);
 
-                // Memisahkan rentang tanggal menjadi dua tanggal terpisah
-                var dateRange = filteredDate.split(" - ");
-                var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
-                var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
+                    // $(document).ready(function() {
+                    //     // Tempatkan kode event listener di sini
+                    //     $('#namaUsaha').on('change', function() {
+                    //         console.log("baba");
+                    //     });
+                    // });
 
-                $.ajax({
-                    url: '/getPemasukan/' + startDate + '/' + endDate + '/' + namaUsaha + '/' + namaAkun,
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function(data) {
-                        console.log(data);
-                        var datasets = {};
 
-                        // Array warna yang telah ditentukan
-                        var colors = ['green', 'blue', 'orange', 'purple']; // Ganti warna sesuai kebutuhan
+                    // Memisahkan rentang tanggal menjadi dua tanggal terpisah
+                    var dateRange = filteredDate.split(" - ");
+                    var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
+                    var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
 
-                        // Memproses data untuk setiap entri dari respons
-                        data.forEach(function(item, index) {
-                            var day = item.day;
+                    var formattedStartDate = startDate.substr(3, 2);
+                    var formattedEndDate = endDate.substr(3, 2);
 
-                            if (!datasets[item.nama_usaha + ' - ' + item.akun]) {
-                                datasets[item.nama_usaha + ' - ' + item.akun] = Array(31)
-                                    .fill(null);
+                    $.ajax({
+                        url: '/getPemasukan/' + startDate + '/' + endDate + '/' + namaUsaha + '/' +
+                            namaAkun,
+                        method: 'GET',
+                        dataType: 'json',
+
+                        success: function(data) {
+                            console.log(data);
+                            var datasets = {};
+                            var namaBulan = [
+                                'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+                                'Jul', 'Ag', 'Sep', 'Okt', 'Nov', 'Des'
+                            ];
+
+                            // Array warna yang telah ditentukan
+                            var colors = ['green', 'blue', 'orange',
+                                'purple'
+                            ]; // Ganti warna sesuai kebutuhan
+
+                            if (formattedStartDate === formattedEndDate) {
+                                var daysInMonth; // Declare daysInMonth outside the loop
+
+                                data.forEach(function(item, index) {
+                                    var month = item
+                                        .bulan; // Assuming 'bulan' represents the month
+
+                                    // Determine the number of days in the given month
+                                    var year = new Date()
+                                        .getFullYear(); // Get the current year
+                                    daysInMonth = new Date(year, month, 0).getDate();
+
+                                    var day = item.day;
+
+                                    if (!datasets[item.nama_usaha]) {
+                                        datasets[item.nama_usaha] = Array(daysInMonth).fill(
+                                            null);
+                                    }
+                                    datasets[item.nama_usaha][day - 1] = item.total_nominal;
+                                });
+
+
+                                // Generate labels based on the number of days in the month
+                                var labels = Array.from({
+                                    length: daysInMonth
+                                }, (_, i) => (i + 1).toString());
+                            } else {
+                                data.forEach(function(item, index) {
+                                    var day = item.day;
+
+                                    if (!datasets[item.nama_usaha + ' - ' + item.akun]) {
+                                        datasets[item.nama_usaha + ' - ' + item.akun] =
+                                            Array(12)
+                                            .fill(
+                                                null
+                                            ); // Inisialisasi array 12 bulan dengan nilai null
+                                    }
+
+                                    datasets[item.nama_usaha + ' - ' + item.akun][item
+                                            .bulan - 1
+                                        ] =
+                                        item
+                                        .total_nominal;
+                                });
+
+                                var labels = namaBulan; // Menggunakan singkatan bulan sebagai label
                             }
 
-                            datasets[item.nama_usaha + ' - ' + item.akun][day - 1] = item
-                                .total_nominal;
-                        });
+                            var chartData = {
+                                labels: labels,
+                                datasets: Object.keys(datasets).map(function(label, index) {
+                                    return {
+                                        label: label,
+                                        data: datasets[label],
+                                        borderColor: colors[index % colors.length],
+                                        borderWidth: 2,
+                                        fill: false
+                                    };
+                                })
+                            };
 
-                        var labels = Array.from({
-                            length: 31
-                        }, (_, i) => (i + 1).toString()); // Label berdasarkan tanggal 1 hingga 31
+                            var ctx = document.getElementById('lineChart1').getContext('2d');
+                            // Hancurkan grafik sebelumnya jika ada
+                            // if (window.lineChart !== undefined) {
+                            //     window.lineChart.destroy();
+                            // }
+                            if (window.lineChart1 instanceof Chart) {
+                                window.lineChart1.destroy(); // Destroy the previous chart instance
+                            }
 
-                        var chartData = {
-                            labels: labels,
-                            datasets: Object.keys(datasets).map(function(label, index) {
-                                return {
-                                    label: label,
-                                    data: datasets[label],
-                                    borderColor: colors[index % colors.length],
-                                    borderWidth: 2,
-                                    fill: false
-                                };
-                            })
-                        };
-
-                        var ctx = document.getElementById('lineChart1').getContext('2d');
-                        // Hancurkan grafik sebelumnya jika ada
-                        // if (window.lineChart !== undefined) {
-                        //     window.lineChart.destroy();
-                        // }
-                        if (window.lineChart1 instanceof Chart) {
-                            window.lineChart1.destroy(); // Destroy the previous chart instance
-                        }
-
-                        // Buat grafik yang baru
-                        var chart = new Chart(ctx, {
-                            type: 'line',
-                            data: chartData,
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        type: 'category',
-                                        position: 'bottom',
-                                    },
-                                    y: {
-                                        type: 'linear',
+                            // Buat grafik yang baru
+                            var chart = new Chart(ctx, {
+                                type: 'line',
+                                data: chartData,
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    scales: {
+                                        x: {
+                                            type: 'category',
+                                            position: 'bottom',
+                                        },
+                                        y: {
+                                            type: 'linear',
+                                        },
                                     },
                                 },
-                            },
-                        });
-                        window.lineChart1 = chart;
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(error);
-                    }
+                            });
+                            window.lineChart1 = chart;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
                 });
             });
         </script>
