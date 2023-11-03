@@ -85,6 +85,7 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha');
 
     Route::get('/print_laporan_pemasukan/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan'])->name('print_laporan_pemasukan');
+    Route::get('/print_laporan_pemasukan_a4/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan_a4'])->name('print_laporan_pemasukan_a4');
 
 });
 
