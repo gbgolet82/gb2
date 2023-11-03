@@ -682,11 +682,11 @@
 
                                     var day = item.day;
 
-                                    if (!datasets[item.nama_usaha]) {
-                                        datasets[item.nama_usaha] = Array(daysInMonth).fill(
+                                    if (!datasets[item.akun]) {
+                                        datasets[item.akun] = Array(daysInMonth).fill(
                                             null);
                                     }
-                                    datasets[item.nama_usaha][day - 1] = item.total_nominal;
+                                    datasets[item.akun][day - 1] = item.total_nominal;
                                 });
 
 
@@ -698,15 +698,15 @@
                                 data.forEach(function(item, index) {
                                     var day = item.day;
 
-                                    if (!datasets[item.nama_usaha + ' - ' + item.akun]) {
-                                        datasets[item.nama_usaha + ' - ' + item.akun] =
+                                    if (!datasets[item.akun]) {
+                                        datasets[item.akun] =
                                             Array(12)
                                             .fill(
                                                 null
                                             ); // Inisialisasi array 12 bulan dengan nilai null
                                     }
 
-                                    datasets[item.nama_usaha + ' - ' + item.akun][item
+                                    datasets[item.akun][item
                                             .bulan - 1
                                         ] =
                                         item

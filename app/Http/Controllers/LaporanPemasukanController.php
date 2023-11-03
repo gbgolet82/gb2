@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Barryvdh\DomPDF\ServiceProvider;
 
 
 class LaporanPemasukanController extends Controller
@@ -413,13 +414,13 @@ class LaporanPemasukanController extends Controller
         // $bulanAkhir = \Carbon\Carbon::createFromFormat('Y-m-d', $dateAkhir)->month;
 
         // jika bukan "semua", cari id_usaha
-        if ($namaUsaha !== 'Semua') {
+        if ($namaUsaha !== 'semua') {
             $usahaNama = $namaUsaha;
             $id_usaha = Usaha::where('nama_usaha', $usahaNama)->value('id_usaha');
         }
 
-        // jika bukan "Semua", cari id_akun
-        if ($namaAkun !== 'Semua') {
+        // jika bukan "semua", cari id_akun
+        if ($namaAkun !== 'semua') {
             $akunNama = $namaAkun;
             $id_akun = Akun::where('akun', $akunNama)->value('id_akun');
         }
