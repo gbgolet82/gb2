@@ -148,13 +148,41 @@
                         <i class="fas fa-check-circle"></i> ACC
                     </button>
                 @else
-                    <a href="/print_laporan_pemasukan/{{ $pemasukan->id_laporan }}" target="_blank"
-                        class="btn btn-success text-white toastrDefaultSuccess">
-                        <i class="fas fa-print"></i> Print
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-success text-white toastrDefaultSuccess dropdown-toggle" type="button"
+                            id="printDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="printDropdown">
+                            <a href="/print_laporan_pemasukan/{{ $pemasukan->id_laporan }}" target="_blank"
+                                class="dropdown-item">
+                                <i class="fas fa-print"></i> Print Struck
+                            </a>
+                            <a class="dropdown-item"
+                                href="/print_laporan_pemasukan_a4/{{ $pemasukan->id_laporan }}"
+                                target="_blank"><i class="fas fa-print"></i> Print A4</a>
+                        </div>
+                    </div>
                 @endif
-
             </div>
         </div>
+         {{-- <a href="javascript:void(0);" onclick="printPage();"
+                class="btn btn-success text-white toastrDefaultSuccess">
+                <i class="fas fa-print"></i> Print
+             </a>
+             
+             <script>
+             function printPage() {
+                 const printWindow = window.open("/print_laporan_pemasukan/{{ $pemasukan->id_laporan }}", "_blank");
+                 if (printWindow) {
+                     printWindow.onload = function() {
+                         printWindow.print();
+                         printWindow.onafterprint = function() {
+                             printWindow.close();
+                         };
+                     };
+                 }
+             }
+             </script> --}}
     </div>
 </form>
