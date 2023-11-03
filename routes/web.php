@@ -8,6 +8,7 @@ use App\Http\Controllers\DataUsahaController;
 use App\Http\Controllers\DataKaryawanController;
 use App\Http\Controllers\LaporanPemasukanController;
 use App\Http\Controllers\KlasifikasiLaporanController;
+use App\Http\Controllers\LabaRugiController;
 use App\Http\Controllers\LaporanPengeluaranController;
 use App\Http\Controllers\PdfPemasukanController;
 use App\Http\Controllers\PdfPengeluaranController;
@@ -86,11 +87,12 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
 
     Route::get('/print_laporan_pemasukan/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan'])->name('print_laporan_pemasukan');
     Route::get('/print_laporan_pemasukan_a4/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan_a4'])->name('print_laporan_pemasukan_a4');
-
 });
 
 Route::group(['middleware' => 'role:owner'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/laba_rugi', [LabaRugiController::class, 'laba_rugi'])->name('laba_rugi');
+
     Route::get('/klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('akun');
     Route::get('/tambah-klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('tambah.klasifikasi-akun');
     Route::post('/tambah-akun', [DataUsahaController::class, 'simpanAkun'])->name('tambah.akun');

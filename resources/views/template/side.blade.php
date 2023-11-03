@@ -147,8 +147,9 @@
                     </li>
                     <li class="nav-header font-weight-bolder mt-1">Data Laporan</li>
                     <li class="nav-item @yield('labarugi')">
-                        <a href="#" class="nav-link @yield('labarugi')">
-                            {{-- <i class="bi bi-activity custom-icon"></i> --}}<i class="fas fa-chart-line"></i>
+                        <a href="{{ route('laba_rugi') }}"
+                            class="nav-link  @if (Request::url() == route('laba_rugi')) active @endif">
+                            <i class="fas fa-chart-line"></i>
                             <p>
                                 Laba Rugi
                             </p>
