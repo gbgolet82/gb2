@@ -80,7 +80,7 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/get-sub-akun-2-opsi/{id_sub_akun_1}', [LaporanPengeluaranController::class, 'ambilSubAkun2']);
     Route::get('/get-sub-akun-3-opsi/{id_sub_akun_2}', [LaporanPengeluaranController::class, 'ambilSubAkun3']);
     Route::get('/get-last-report-number/{selectedKlasifikasi}', 'LaporanPengeluaranController@getLastReportNumber');
-    Route::get('/getPemasukan/{dateAwal}/{dateAkhir}', [LaporanPemasukanController::class, 'getPemasukanByUsaha']);
+    Route::get('/getPemasukan/{dateAwal}/{dateAkhir}/{namaUsaha}', [LaporanPemasukanController::class, 'getPemasukanByUsaha']);
     Route::get('/getPemasukan/{dateAwal}/{dateAkhir}/{namaUsaha}/{namaAkun}', [LaporanPemasukanController::class, 'getPemasukanByAkun']);
     Route::post('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha1');
     Route::get('/getPemasukanByUsaha', 'LaporanPemasukanController@getPemasukanByUsaha');
