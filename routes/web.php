@@ -60,6 +60,7 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::post('/acc-pemasukan/{id_laporan}', [LaporanPemasukanController::class, 'accPemasukan'])->name('acc.pemasukan');
     Route::post('/acc-pengeluaran/{id_laporan}', [LaporanPengeluaranController::class, 'accPengeluaran'])->name('acc.pengeluaran');
     Route::get('/get-sub-akun-1-options/{akun}', [LaporanPemasukanController::class, 'getSubAkun1Options']);
+    Route::get('/get-akunn-select/{id_usaha}', [LaporanPemasukanController::class, 'ambilAkunn']);
     Route::get('/get-sub-akun-1-select/{id_akun}', [LaporanPemasukanController::class, 'ambilSubAkun1']);
     Route::get('/get-sub-akun-2-select/{id_sub_akun_1}', [LaporanPemasukanController::class, 'ambilSubAkun2']);
     Route::get('/get-sub-akun-3-select/{id_sub_akun_2}', [LaporanPemasukanController::class, 'ambilSubAkun3']);
@@ -67,6 +68,7 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/get-akun-filter/{nama_usaha}', [LaporanPemasukanController::class, 'getAkun']);
     Route::get('/get-sub1-filter/{akun}', [LaporanPemasukanController::class, 'getSub1']);
     Route::get('/get-akun-pengeluaran/{klasifikasi_laporan}/{nama_usaha}', [LaporanPengeluaranController::class, 'getPengeluaranAkun']);
+    Route::get('/ambil-akun-pengeluaran/{id_usaha}/{id_klasifikasi}', [LaporanPengeluaranController::class, 'getPengeluaranAkunn']);
     Route::get('/get-sub-akun-1-options/{id_akun}', [LaporanPengeluaranController::class, 'getSubAkun1Pengeluaran']);
     Route::get('/get-sub1-pengeluaran/{akun}', [LaporanPengeluaranController::class, 'getSubAkun1Filter']);
     Route::get('/pemasukan-belum-cek', [LaporanPemasukanController::class, 'getJumlahBelumDicek'])->name('get-jumlah-belum-dicek');

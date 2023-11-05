@@ -94,6 +94,11 @@
                                     </strong>
                                 </div>
 
+                                @php
+                                    $session = session('nama_usaha');
+                                    // dd($session);
+                                @endphp
+
                                 <div class="col-10 mx-auto">
                                     <div class="card col-12">
                                         <div class="card-body p-3">
@@ -110,7 +115,51 @@
                                                 @endif
 
                                                 {{-- filter owner --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                                                @if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') && $session != 'SEMUA')
+                                                    {{-- filter selain owner --}}
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="usaha"
+                                                                    style="width: 100px; text-align: center; display: block;">Usaha</span>
+                                                            </div>
+                                                            <select class="custom-select" id="usaha" name="usaha">
+                                                                <option value="{{ session('id_usaha') }}" selected>
+                                                                    {{ session('nama_usaha') }}</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                   
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="akun"
+                                                                    style="width: 100px; text-align: center; display: block;">Akun</span>
+                                                            </div>
+                                                            <select class="custom-select" id="inputAkun" name="akun">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                                @foreach ($akunOptions as $dataAkun)
+                                                                    <option value="{{ $dataAkun->akun }}"
+                                                                        @if ($dataAkun->akun === 'Semua') selected @endif>
+                                                                        {{ $dataAkun->akun }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="sub_akun_1"
+                                                                    style="width: 100px; text-align: center; display: block;">Sub
+                                                                    Akun
+                                                                    1</span>
+                                                            </div>
+                                                            <select class="custom-select" id="inputSub" name="sub_akun_1">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                @else
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -147,49 +196,6 @@
                                                                     1</span>
                                                             </div>
                                                             <select class="custom-select" id="namaSub" name="sub_akun_1">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    {{-- filter selain owner --}}
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="usaha"
-                                                                    style="width: 100px; text-align: center; display: block;">Usaha</span>
-                                                            </div>
-                                                            <select class="custom-select" id="usaha" name="usaha">
-                                                                <option value="{{ session('id_usaha') }}" selected>
-                                                                    {{ session('nama_usaha') }}</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="akun"
-                                                                    style="width: 100px; text-align: center; display: block;">Akun</span>
-                                                            </div>
-                                                            <select class="custom-select" id="inputAkun" name="akun">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                                @foreach ($akunOptions as $dataAkun)
-                                                                    <option value="{{ $dataAkun->akun }}"
-                                                                        @if ($dataAkun->akun === 'Semua') selected @endif>
-                                                                        {{ $dataAkun->akun }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="sub_akun_1"
-                                                                    style="width: 100px; text-align: center; display: block;">Sub
-                                                                    Akun
-                                                                    1</span>
-                                                            </div>
-                                                            <select class="custom-select" id="inputSub" name="sub_akun_1">
                                                                 <option value="Semua" selected>Semua Data</option>
                                                             </select>
                                                         </div>
@@ -526,63 +532,7 @@
 
                         var daysInMonth; // Declare daysInMonth outside the loop
 
-                        // Proses data dari respons server
-                        // Proses data dari respons server
-                        // Modify the loop that processes the data to handle missing data
-                        data.forEach(function(item, index) {
-                            var month = item.bulan; // Assuming 'bulan' represents the month
-
-                            // Determine the number of days in the given month
-                            var year = new Date().getFullYear(); // Get the current year
-                            daysInMonth = new Date(year, month, 0).getDate();
-
-                            var day = item.day;
-
-                            if (!datasets[item.nama_usaha]) {
-                                datasets[item.nama_usaha] = Array(daysInMonth).fill(null);
-                            }
-                            datasets[item.nama_usaha][day - 1] = item.total_nominal;
-                        });
-
-                        // Check and connect missing data points with previous available data
-                        Object.keys(datasets).forEach(function(usaha, index) {
-                            for (var i = 1; i < daysInMonth; i++) {
-                                if (datasets[usaha][i] === null) {
-                                    var j = i - 1;
-                                    while (j >= 0 && datasets[usaha][j] === null) {
-                                        j--;
-                                    }
-                                    if (j >= 0 && datasets[usaha][j] !== null) {
-                                        datasets[usaha][i] = datasets[usaha][j];
-                                    } else {
-                                        datasets[usaha][i] =
-                                        0; // If no previous data available, set value to 0
-                                    }
-                                }
-                            }
-                        });
-
-                        // Rest of your code for chart creation remains unchanged...
-
-
-                        // Generate labels based on the number of days in the month
-                        var labels = Array.from({
-                            length: daysInMonth
-                        }, (_, i) => (i + 1).toString());
-
-                        var chartData = {
-                            labels: labels,
-                            datasets: Object.keys(datasets).map(function(usaha, index) {
-                                return {
-                                    label: usaha,
-                                    data: datasets[usaha],
-                                    borderColor: colors[index % colors
-                                        .length], // Gunakan warna berdasarkan indeks
-                                    borderWidth: 2,
-                                    fill: false
-                                };
-                            })
-                        };
+                        
 
                         var ctx = document.getElementById('lineChart').getContext('2d');
                         // Hancurkan grafik sebelumnya jika ada

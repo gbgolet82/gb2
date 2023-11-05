@@ -165,7 +165,10 @@ class LaporanPemasukanController extends Controller
 
 
     public function simpanPemasukan(Request $request) {
-        // dd('abab');
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        $session = session('nama_usaha');
+
         // Validation rules
         $rules = [
             'id_akun' => 'required',
@@ -209,7 +212,13 @@ class LaporanPemasukanController extends Controller
             $pemasukan->id_kasir = session('id_karyawan');
             // sementara (belum tau cara ambil id klasifikasi)
             $pemasukan->id_klasifikasi = $idKlasifikasiPemasukan;
-            $pemasukan->id_usaha = session('id_usaha');
+
+            if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+            $session != 'SEMUA') {
+                $pemasukan->id_usaha = session('id_usaha');
+            } else {
+                $pemasukan->id_usaha = $request->input('id_usaha');
+            }
             $pemasukan->id_akun = $validatedData['id_akun'];
             $idSubAkun1 = $request->input('id_sub_akun_1'); // nilainya bisa berupa null jika dropdown tidak dipilih
                 if ($idSubAkun1 === 'Pilih Sub Akun 1' || $idSubAkun1 === '?') {
@@ -283,6 +292,18 @@ class LaporanPemasukanController extends Controller
         $ambilSubAkun1 = DB::table('sub_akun_1')->where('id_akun', $id_akun)->pluck('sub_akun_1', 'id_sub_akun_1');
 
         return response()->json($ambilSubAkun1);
+    }
+
+    public function ambilAkunn($id_usaha)
+    {
+        // Cari ID akun berdasarkan nama akun
+        $id_usaha = Akun::where('id_usaha', $id_usaha)->value('id_usaha');
+        $id_klasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', 'Pemasukan')->value('id_klasifikasi');
+
+        // Ambil data sub_akun_1 berdasarkan id_usaha yang sesuai
+        $ambilAkunn = DB::table('akun')->where('id_usaha', $id_usaha)->where('id_klasifikasi', $id_klasifikasi)->pluck('akun', 'id_akun');
+
+        return response()->json($ambilAkunn);
     }
 
     public function ambilSubAkun2($id_sub_akun_1)

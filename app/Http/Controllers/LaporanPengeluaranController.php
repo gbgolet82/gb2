@@ -268,6 +268,17 @@ class LaporanPengeluaranController extends Controller
             return response()->json($getAkun);
         }
 
+        public function getPengeluaranAkunn($id_usaha, $id_klasifikasi)
+        {
+            $id_usaha = Usaha::where('id_usaha', $id_usaha)->value('id_usaha');
+            $id_klasifikasi = KlasifikasiLaporan::where('id_klasifikasi', $id_klasifikasi)->value('id_klasifikasi');
+
+            $getAkun = DB::table('akun')->where('id_usaha', $id_usaha)->where('id_klasifikasi', $id_klasifikasi)
+                        ->pluck('akun', 'id_akun')->toArray();
+            
+            return response()->json($getAkun);
+        }
+
         public function ambilAkun($id_klasifikasi)
         {
             $id_klasifikasi = KlasifikasiLaporan::where('id_klasifikasi', $id_klasifikasi)->value('id_klasifikasi');
@@ -309,6 +320,9 @@ class LaporanPengeluaranController extends Controller
     }
     
     public function simpanPengeluaran(Request $request) {
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        $session = session('nama_usaha');
         $rules = [
             'id_klasifikasi' => 'required',
             'nominal' => 'required|numeric',
@@ -349,7 +363,12 @@ class LaporanPengeluaranController extends Controller
             $pemasukan->tanggal_laporan = $tanggalLaporan; 
             // sementara  (mengambil id karyawan yg login)
             $pemasukan->id_kasir = session('id_karyawan');
-            $pemasukan->id_usaha = session('id_usaha');
+            if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+            $session != 'SEMUA') {
+                $pemasukan->id_usaha = session('id_usaha');
+            } else {
+                $pemasukan->id_usaha = $request->input('id_usaha');
+            }
             $pemasukan->id_klasifikasi = $validatedData['id_klasifikasi'];
             $idAkun = $request->input('id_akun'); // nilainya bisa berupa null jika dropdown tidak dipilih
                 if ($idAkun === 'Pilih Akun' || $idAkun === '?') {

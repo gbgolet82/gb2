@@ -66,8 +66,72 @@
                                 <div class="col-10 mx-auto">
                                     <div class="card col-12">
                                         <div class="card-body p-3">
-                                            {{-- filter role owner --}}
-                                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                                            {{-- filter role kasir --}}
+                                            @if (
+                                                ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                                                    (isset($selectedRole) && $selectedRole != 'kasir'))
+                                                <div class="row">
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="usaha"
+                                                                    style="width: 100px; text-align: center; display: block;">Klasifikasi</span>
+                                                            </div>
+                                                            <select class="custom-select" id="klasifikasi_laporan"
+                                                                name="klasifikasi_laporan">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                                @foreach ($klasifikasiOptions as $dataKlasifikasi)
+                                                                    <option
+                                                                        value="{{ $dataKlasifikasi->klasifikasi_laporan }}"
+                                                                        @if ($dataKlasifikasi->klasifikasi_laporan === 'Semua') selected @endif>
+                                                                        {{ $dataKlasifikasi->klasifikasi_laporan }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="usaha"
+                                                                    style="width: 100px; text-align: center; display: block;">Usaha</span>
+                                                            </div>
+                                                            <select class="custom-select" id="usaha" name="usaha">
+                                                                <option value="{{ session('id_usaha') }}" selected>
+                                                                    {{ session('nama_usaha') }}</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="akun"
+                                                                    style="width: 100px; text-align: center; display: block;">Akun</span>
+                                                            </div>
+                                                            <select class="custom-select" id="inputAkun" name="akun">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="sub_akun_1"
+                                                                    style="width: 100px; text-align: center; display: block;">Sub
+                                                                    Akun
+                                                                    1</span>
+                                                            </div>
+                                                            <select class="custom-select" id="inputSub1" name="sub_akun_1">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {{-- filter selain role kasir --}}
+                                            @else
                                                 <div class="row">
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
@@ -127,69 +191,6 @@
                                                                     1</span>
                                                             </div>
                                                             <select class="custom-select" id="namaSub" name="namaSub">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {{-- filter selain role owner --}}
-                                            @else
-                                                <div class="row">
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="usaha"
-                                                                    style="width: 100px; text-align: center; display: block;">Klasifikasi</span>
-                                                            </div>
-                                                            <select class="custom-select" id="klasifikasi_laporan"
-                                                                name="klasifikasi_laporan">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                                @foreach ($klasifikasiOptions as $dataKlasifikasi)
-                                                                    <option
-                                                                        value="{{ $dataKlasifikasi->klasifikasi_laporan }}"
-                                                                        @if ($dataKlasifikasi->klasifikasi_laporan === 'Semua') selected @endif>
-                                                                        {{ $dataKlasifikasi->klasifikasi_laporan }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="usaha"
-                                                                    style="width: 100px; text-align: center; display: block;">Usaha</span>
-                                                            </div>
-                                                            <select class="custom-select" id="usaha" name="usaha">
-                                                                <option value="{{ session('id_usaha') }}" selected>
-                                                                    {{ session('nama_usaha') }}</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="akun"
-                                                                    style="width: 100px; text-align: center; display: block;">Akun</span>
-                                                            </div>
-                                                            <select class="custom-select" id="inputAkun" name="akun">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="sub_akun_1"
-                                                                    style="width: 100px; text-align: center; display: block;">Sub
-                                                                    Akun
-                                                                    1</span>
-                                                            </div>
-                                                            <select class="custom-select" id="inputSub1"
-                                                                name="sub_akun_1">
                                                                 <option value="Semua" selected>Semua Data</option>
                                                             </select>
                                                         </div>
@@ -454,9 +455,9 @@
         $karyawanRoles = session('karyawanRoles');
     @endphp
 
-@if (
-    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
-        (isset($selectedRole) && $selectedRole != 'kasir'))
+    @if (
+        ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+            (isset($selectedRole) && $selectedRole != 'kasir'))
         <script>
             var originalData;
 
