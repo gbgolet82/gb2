@@ -20,4 +20,19 @@ class Akun extends Model
         'created_at',
         'updated_at'
     ];
+
+    public function buktiValid()
+    {
+        return $this->hasMany(BuktiValid::class, 'id_akun');
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($akun) {
+            // Hapus data terkait pada tabel BuktiValid
+            $akun->buktiValid()->delete();
+        });
+    }
 }

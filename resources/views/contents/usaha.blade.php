@@ -29,7 +29,7 @@
     <!-- /.content-header -->
 
     <!-- card -->
-    <section class="content">
+    {{-- <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-xl-3 col-md-6 mb-2">
@@ -99,7 +99,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <!-- Main content -->
     <section class="content">
@@ -109,16 +109,16 @@
                     <div class="card card-outline card-success mb-3">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-3 mt-4">
+                                <div class="col-6 mt-4">
                                     <strong class="font-weight-bold">
                                         <h4 style="color:#28a745;">DATA USAHA</h4>
                                     </strong>
                                 </div>
-                                <div class="col-9">
+                                <div class="col-6">
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-12 col-md-4 mb-2">
+                                                {{-- <div class="col-12 col-md-4 mb-2">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text" for="namaUsaha">Nama
@@ -132,21 +132,22 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                </div>
-                                                <div class="col-12 col-md-4 mb-2">
+                                                </div> --}}
+                                                <div class="col-12 col-md-6 ml-auto">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
-                                                            <span class="input-group-text" for="inputGroupSelect02">Jenis
+                                                            <span class="input-group-text" for="jenisUsaha">Jenis
                                                                 Usaha</span>
                                                         </div>
-                                                        <select class="custom-select" id="inputGroupSelect02">
-                                                            <option selected">Semua</option>
+                                                        <select class="custom-select" id="jenisUsaha">
+                                                            <option selected">Semua Data</option>
                                                             @php
                                                                 $uniqueUsaha = [];
                                                             @endphp
                                                             @foreach ($dataUsaha as $usaha)
                                                                 @if (!empty($usaha->jenis_usaha) && !in_array($usaha->jenis_usaha, $uniqueUsaha))
-                                                                    <option value="{{ $usaha->jenis_usaha }}">{{ $usaha->jenis_usaha }}
+                                                                    <option value="{{ $usaha->jenis_usaha }}">
+                                                                        {{ $usaha->jenis_usaha }}
                                                                     </option>
                                                                     @php
                                                                         $uniqueUsaha[] = $usaha->jenis_usaha;
@@ -156,7 +157,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-2">
+                                                <div class="col-12 col-md-6 mb-2">
                                                     <button class="btn btn-block text-white"
                                                         style="background-color: #28a745; border-radius: 10px;"
                                                         type="button" data-toggle="modal" data-target="#tambahData"
@@ -179,8 +180,8 @@
                                             <h5 class="modal-title" id="staticBackdropLabel">
                                                 {{ $modelHead }}
                                             </h5>
-                                            <button type="button" class="close" data-dismiss="modal"
-                                                aria-label="Close" id="reset">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                                id="reset">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
                                         </div>
@@ -189,7 +190,8 @@
                                 </div>
                             </div>
 
-                            <table id="example2" class="table table-bordered table-hover mt-0 pt-0">
+                            <table id="Usaha" style="width:100%"
+                                class="table table-bordered table-hover display responsive mt-0 pt-0">
                                 <thead>
                                     <tr>
                                         <th>No</th>
@@ -236,18 +238,15 @@
 
                             {{-- modal untuk edit usaha --}}
                             @foreach ($dataUsaha as $usaha)
-                                <!-- Tambahkan modal edit dengan ID unik sesuai data -->
-                                <div class="modal fade" id="editModal{{ $usaha->id_usaha }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="editModalLabel{{ $usaha->id_usaha }}"
-                                    aria-hidden="true">
+                                <div class="modal fade" id="editModal{{ $usaha->id_usaha }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="editModalLabel" aria-hidden="true">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="editModalLabel{{ $usaha->id_usaha }}">Edit
-                                                    Data
+                                                <h5 class="modal-title" id="editModalLabel{{ $usaha->id_usaha }}">Edit Data
                                                     Usaha</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
-                                                    aria-label="Close">
+                                                    data-modal-id="{{ $usaha->id_usaha }}" aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
@@ -262,12 +261,13 @@
 
                             @foreach ($dataUsaha as $usaha)
                                 <!-- Modal konfirmasi hapus -->
-                                <div class="modal fade" id="hapusModal{{ $usaha->id_usaha }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="modalHapusLabel" aria-hidden="true">
+                                <div class="modal fade" id="hapusModal{{ $usaha->id_usaha }}" tabindex="-1" role="dialog"
+                                    aria-labelledby="modalHapusLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="modalHapusLabel">Konfirmasi Hapus</h5>
+                                                <h5 class="modal-title" id="modalHapusLabel">Konfirmasi
+                                                    Hapus</h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close">
                                                     <span aria-hidden="true">&times;</span>
@@ -278,7 +278,8 @@
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-dismiss="modal"><i
-                                                        class="fas fa-ban"></i> Batal</button>
+                                                        class="fas fa-ban"></i>
+                                                    Batal</button>
                                                 <form action="{{ route('hapus.usaha', $usaha->id_usaha) }}"
                                                     method="POST">
                                                     @csrf

@@ -154,6 +154,7 @@
 {{-- export data akun ke excel --}}
 <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
+
 <script>
     $(document).ready(function() {
         // $('.select2').select2();
@@ -217,6 +218,8 @@
 -
 </script> --}}
 
+
+
 <script>
     $(document).ready(function() {
         let table = $('#klasifikasiAkun').DataTable();
@@ -246,7 +249,6 @@
             applyFilters();
         });
 
-        // Handle filter change for Akun
         akunSelect.on('change', function() {
             filters.akun = $(this).val();
             applyFilters();
@@ -269,104 +271,30 @@
     });
 </script>
 
-{{-- <script>
-    $(document).ready(function() {
-        let table = $('#klasifikasiAkun').DataTable();
-        let klasifikasiSelect = $('#klasifikasi');
-        let usahaSelect = $('#inputGroupSelect01');
-        let akunSelect = $('#inputGroupSelect02');
-
-        // Handle filter change for Klasifikasi
-        klasifikasiSelect.on('change', function() {
-            let selectedKlasifikasi = $(this).val();
-            if (selectedKlasifikasi === 'Semua Data') {
-                // Clear the Akun filter
-                table.column(1).search('').draw();
-            } else {
-                table.column(1).search("^" + selectedKlasifikasi + "$", true, false).draw();
-            }
-        });
-
-        // Handle filter change for Usaha
-        usahaSelect.on('change', function() {
-            let selectedUsaha = $(this).val();
-            if (selectedUsaha === 'Semua Data') {
-                // Clear the Akun filter
-                table.column(2).search('').draw();
-            } else {
-                table.column(2).search(selectedUsaha).draw();
-            }
-        });
-
-        // Handle filter change for Akun
-        akunSelect.on('change', function() {
-            let selectedAkun = $(this).val();
-            if (selectedAkun === 'Semua Data') {
-                // Clear the Akun filter
-                table.column(3).search('').draw();
-            } else {
-                table.column(3).search(selectedAkun).draw();
-            }
-        });
-    });
-</script> --}}
-
 <script>
     $(document).ready(function() {
-        // Get the table and all the select elements
         var table = $('#Usaha').DataTable();
-        var namaUsahaSelect = $('#namaUsaha');
-        var jenisUsahaSelect = $('#jenisUsaha');
 
-        // Handle filter change for namaUsaha
-        namaUsahaSelect.on('change', function() {
-            var selectednamaUsaha = $(this).val();
-            if (selectednamaUsaha === 'Semua Data') {
-                // Clear the Akun filter
-                table.columns(1).search('').draw();
-            } else {
-                table.columns(1).search(selectednamaUsaha).draw();
-            }
-        });
+        // Mendengarkan perubahan pada select dengan ID jenisUsaha
+        $('#jenisUsaha').change(function() {
+            var selectedJenisUsaha = $(this).val();
 
-        // Handle filter change for Usaha
-        jenisUsahaSelect.on('change', function() {
-            var selectedjenisUsaha = $(this).val();
-            if (selectedjenisUsaha === 'Semua Data') {
-                // Clear the Akun filter
-                table.columns(2).search('').draw();
-            } else {
-                table.columns(2).search(selectedjenisUsaha).draw();
+            // Menampilkan semua baris tabel
+            $('#Usaha tbody tr').show();
+
+            if (selectedJenisUsaha !== 'Semua Data') {
+                // Menyembunyikan baris yang tidak sesuai dengan jenis usaha yang dipilih
+                $('#Usaha tbody tr').each(function() {
+                    var jenisUsaha = $(this).find('td:nth-child(4)')
+                        .text(); // Kolom ke-4 adalah kolom Jenis Usaha
+                    if (jenisUsaha !== selectedJenisUsaha) {
+                        $(this).hide();
+                    }
+                });
             }
         });
     });
 </script>
 
-{{-- nambah akun baru --}}
-{{-- <script>
-    $("#simpanButton").on("click", function() {
-        var akunValue = $("#inputGroupAkun").val();
-        var akunBaruValue = $("#input_Akun_Baru").val();
-        var idKlasifikasi = $("#selectKlasifikasi").val(); // Ganti dengan id yang sesuai
-        var idUsaha = $("#selectUsaha").val(); // Ganti dengan id yang sesuai
 
-        // if (window.confirm("Apakah Anda yakin ingin menyimpan data?")) {
-        // Kirim data ke server melalui AJAX
-        $.ajax({
-            url: "public/resources/views/modals/simpan_data.php",
-            method: "POST",
-            data: {
-                akun: akunValue,
-                akun_baru: akunBaruValue,
-                id_klasifikasi: idKlasifikasi,
-                id_usaha: idUsaha
-            },
-            success: function(response) {
-                // Handle respon dari server
-                console.log(response);
-                $("#tambahData").modal("show");
-            }
-        });
-        // }
-    });
-</script> --}}
+

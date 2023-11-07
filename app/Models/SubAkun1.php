@@ -16,7 +16,7 @@ class SubAkun1 extends Model
     protected $fillable = [
         'id_sub_akun_1',
         'id_akun',
-        'sub_akun_1	',
+        'sub_akun_1',
         'created_at',
         'updated_at'
     ];
