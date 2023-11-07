@@ -45,18 +45,8 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
 
     Route::get('/pemasukan', [LaporanPemasukanController::class, 'index'])->name('pemasukan_blm');
     Route::get('/pemasukan/acc', [LaporanPemasukanController::class, 'pemasukan'])->name('pemasukan_sdh');
-
-    Route::get('/pdf_pemasukan', [PdfPemasukanController::class, 'index'])->name('pdf_pemasukan_blm');
-    Route::get('/pdf_pemasukan/acc', [PdfPemasukanController::class, 'pemasukan'])->name('pdf_pemasukan_sdh');
-
-    Route::get('/pdf-pengeluaran', [PdfPengeluaranController::class, 'index'])->name('pdf_pengeluaran_blm');
-    Route::get('/pdf-pengeluaran/acc', [PdfPengeluaranController::class, 'pengeluaran'])->name('pdf_pengeluaran_sdh');
-
-
     Route::get('/pengeluaran', [LaporanPengeluaranController::class, 'index'])->name('pengeluaran_blm');
     Route::get('/pengeluaran/acc', [LaporanPengeluaranController::class, 'pengeluaran'])->name('pengeluaran_sdh');
-
-
     Route::post('/tambah-pemasukan', [LaporanPemasukanController::class, 'simpanPemasukan'])->name('tambah.pemasukan');
     Route::post('/acc-pemasukan/{id_laporan}', [LaporanPemasukanController::class, 'accPemasukan'])->name('acc.pemasukan');
     Route::post('/acc-pengeluaran/{id_laporan}', [LaporanPengeluaranController::class, 'accPengeluaran'])->name('acc.pengeluaran');

@@ -127,7 +127,7 @@
                                                                     style="width: 100px; text-align: center; display: block;">Usaha</span>
                                                             </div>
                                                             <select class="custom-select" id="usaha" name="usaha">
-                                                                <option value="{{ session('id_usaha') }}" selected>
+                                                                <option value="{{ session('nama_usaha') }}" selected>
                                                                     {{ session('nama_usaha') }}</option>
                                                             </select>
                                                         </div>
@@ -238,21 +238,35 @@
                                                     <div class="row">
                                                         <div class="col-6">
                                                             <form id="cetakForm" action="{{ route('cetak.laporan') }}"
-                                                                method="POST">
+                                                                target="_blank" method="POST">
                                                                 @csrf
-                                                                <input type="hidden" id="filter_daterange_hidden"
-                                                                    name="filter_daterange">
+                                                                @if (
+                                                                    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                                                                        (isset($selectedRole) && $selectedRole != 'kasir'))
+                                                                    <input type="hidden" id="filter_daterange_hidden"
+                                                                        name="filter_daterange">
+                                                                @endif
                                                                 <input type="hidden" id="usaha_hidden" name="usaha">
                                                                 <input type="hidden" id="akun_hidden" name="akun">
                                                                 <input type="hidden" id="sub_akun_1_hidden"
                                                                     name="sub_akun_1">
-
-                                                                <button class="btn btn-outline-danger"
-                                                                    style="border-radius: 10px; width: 100%;"
-                                                                    type="submit" aria-expanded="false"
-                                                                    onclick="submitForm()">
-                                                                    <i class="fas fa-file-pdf"></i> Pdf
-                                                                </button>
+                                                                @if (
+                                                                    (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                                                                        $session != 'SEMUA')
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="submit" aria-expanded="false"
+                                                                        onclick="simpanForm()">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                @else
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="submit" aria-expanded="false"
+                                                                        onclick="submitForm()">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                @endif
                                                             </form>
 
                                                         </div>
@@ -434,36 +448,45 @@
 @push('script')
     <script>
         function submitForm() {
-            @if (
-                (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
-                    $session != 'SEMUA')
-                // Collecting the selected values
-                var selectedUsaha = document.getElementById('usaha').value;
-                var selectedAkun = document.getElementById('inputAkun').value;
-                var selectedSubAkun = document.getElementById('inputSub').value;
-            @else
-                @if (
-                    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
-                        (isset($selectedRole) && $selectedRole != 'kasir'))
-                    var filterDaterange = document.getElementById('reportrange').value;
-                @endif
-                var selectedUsaha = document.getElementById('namaUsaha').value;
-                var selectedAkun = document.getElementById('namaAkun').value;
-                var selectedSubAkun = document.getElementById('namaSub').value;
-            @endif
+            @php
+                $selectedRole = session('selectedRole');
+                $karyawanRoles = session('karyawanRoles');
+            @endphp
 
-            // Assigning the values to hidden input fields within the form
             @if (
                 ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                     (isset($selectedRole) && $selectedRole != 'kasir'))
+                var filterDaterange = document.getElementById('reportrange').value;
                 document.getElementById('filter_daterange_hidden').value = filterDaterange;
             @endif
+            var selectedUsaha = document.getElementById('namaUsaha').value;
+            var selectedAkun = document.getElementById('namaAkun').value;
+            var selectedSubAkun = document.getElementById('namaSub').value;
+
+            // Assigning the values to hidden input fields within the form
+
             document.getElementById('usaha_hidden').value = selectedUsaha;
             document.getElementById('akun_hidden').value = selectedAkun;
             document.getElementById('sub_akun_1_hidden').value = selectedSubAkun;
 
             // Submit the form
             document.getElementById('cetakForm').submit();
+
+        }
+
+        function simpanForm() {
+            var selectedUsaha = document.getElementById('usaha').value;
+            var selectedAkun = document.getElementById('inputAkun').value;
+            var selectedSubAkun = document.getElementById('inputSub').value;
+
+            // Assigning the values to hidden input fields within the form
+            document.getElementById('usaha_hidden').value = selectedUsaha;
+            document.getElementById('akun_hidden').value = selectedAkun;
+            document.getElementById('sub_akun_1_hidden').value = selectedSubAkun;
+
+            // Submit the form
+            document.getElementById('cetakForm').submit();
+
         }
     </script>
 

@@ -112,18 +112,20 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
+                <input type="hidden" name="tanggal_cek"
+                                    value="{{ old('tanggal_cek',\Carbon\Carbon::now()->timezone('Asia/Jakarta')->format('Y-m-d\TH:i:s')) }}">
                 @if (!($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) && $selectedRole != 'manajer')
                     @if ($pemasukan->status_cek == 'Belum Dicek')
                         <textarea class="form-control" id="inputCatatan" name="catatan" placeholder="Belum Dicek Manajer" rows="3"
                             disabled></textarea>
                     @else
-                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>Dicek Oleh : {{ $pemasukan->nama_manager }}, Tgl Cek : {{ \Carbon\Carbon::parse($pemasukan->tanggal_cek)->locale('id_ID')->isoFormat('D MMMM Y') }} - {{ $pemasukan->catatan }}</textarea>
+                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>Dicek Oleh : {{ $pemasukan->nama_manager }}, Tgl Cek : {{ \Carbon\Carbon::parse($pemasukan->tanggal_cek)->locale('id_ID')->isoFormat('D MMMM Y HH:mm:ss') }} - {{ $pemasukan->catatan }}</textarea>
                     @endif
                 @else
                     @if ($pemasukan->status_cek == 'Belum Dicek')
                         <textarea class="form-control" id="inputCatatan" name="catatan" placeholder="Masukan catatan pengecekan" rows="3"></textarea>
                     @else
-                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>Dicek Oleh : {{ $pemasukan->nama_manager }}, Tgl Cek : {{ \Carbon\Carbon::parse($pemasukan->tanggal_cek)->locale('id_ID')->isoFormat('D MMMM Y') }} - {{ $pemasukan->catatan }}</textarea>
+                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>Dicek Oleh : {{ $pemasukan->nama_manager }}, Tgl Cek : {{ \Carbon\Carbon::parse($pemasukan->tanggal_cek)->locale('id_ID')->isoFormat('D MMMM Y HH:mm:ss') }} - {{ $pemasukan->catatan }}</textarea>
                     @endif
                 @endif
             </div>

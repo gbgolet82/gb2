@@ -62,6 +62,7 @@
             url: '/pemasukan-sudah-cek',
             method: 'GET',
             success: function(response) {
+                console.log(response);
                 $('#jumlah-sudah-dicek').text(response.jumlah);
             },
             error: function(error) {
