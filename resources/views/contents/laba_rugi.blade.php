@@ -451,8 +451,10 @@
                             borderWidth: 3,
                             fill: false,
                             xAxisID: "axis-bar", // Menggunakan sumbu waktu yang sama dengan Dataset2 dan Dataset3
-                            data: [-100000, 0, 0, 4000, 500322, 632660, 5550, 7770, 65560, 660, 6560,
-                                656
+                            data: [
+                                <?php foreach ($nominal_bulan_keuntungan as $keuntungan_bulanan) : ?>
+                                <?= $keuntungan_bulanan ?>,
+                                <?php endforeach; ?>
                             ] // Inisialisasi data dengan nilai 0
                         },
                         {
@@ -463,8 +465,10 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data: [-299405, 244029, -247191, 329711, 273855, 441914, 426271, 471912, 374388, 366864,
-                                326155, 277442
+                            data: [
+                                <?php foreach ($nominal_bulan_pemasukan as $nominal_pemasukan_bulanan) : ?>
+                                <?= $nominal_pemasukan_bulanan ?>,
+                                <?php endforeach; ?>
                             ]
                         },
                         {
@@ -475,8 +479,10 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data: [-150000, 180000, -200000, 160000, 250000, 300000, 280000, 210000, 220000, 190000,
-                                210000, 240000
+                            data: [
+                                <?php foreach ($nominal_bulan_pengeluaran as $nominal_pengeluaran_bulanan) : ?>
+                                <?= $nominal_pengeluaran_bulanan ?>,
+                                <?php endforeach; ?>
                             ]
                         }
                     ]
@@ -520,10 +526,10 @@
                             borderWidth: 3,
                             fill: false,
                             xAxisID: "axis-bar",
-                            data: [-100000, 0, -300000, 4000, 500322, 632660, 5550, 7770, 65560, 660, 6560, 656, -
-                                100000, 0, -300000, 4000, 500322, 632660, 5550, 7770, 65560, 660, 6560, 656,
-                                500322,
-                                632660, 5550, 7770, 65560, 660, 6560, 656
+                            data: [
+                                <?php foreach ($nominal_harian_keuntungan as $keuntungan) : ?>
+                                <?= $keuntungan ?>,
+                                <?php endforeach; ?>
                             ]
                         },
                         {
@@ -534,10 +540,10 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data: [-299405, 244029, -247191, 329711, 273855, 441914, 426271, 471912, 374388, 366864,
-                                326155, 277442, -299405, 244029, -247191, 329711, 273855, 441914, 426271,
-                                471912,
-                                374388, 366864, 326155, 277442, 441914, 426271, 471912, 374388, 366864
+                            data: [
+                                <?php foreach ($nominal_harian_pemasukan as $nominal_pemasukan) : ?>
+                                <?= $nominal_pemasukan ?>,
+                                <?php endforeach; ?>
                             ]
                         },
                         {
@@ -548,10 +554,10 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data: [-150000, 180000, -200000, 160000, 250000, 300000, 280000, 210000, 220000, 190000,
-                                210000, 240000, -150000, 180000, -200000, 160000, 250000, 300000, 280000,
-                                210000,
-                                220000, 190000, 210000, 240000, 280000, 210000, 220000, 190000
+                            data: [
+                                <?php foreach ($nominal_harian_pengeluaran as $nominal_pengeluaran) : ?>
+                                <?= $nominal_pengeluaran ?>,
+                                <?php endforeach; ?>
                             ]
                         }
                     ]
@@ -616,4 +622,3 @@
         @endif
     </script>
 @endpush
-
