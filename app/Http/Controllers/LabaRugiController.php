@@ -27,16 +27,14 @@ class LabaRugiController extends Controller
         // $bulanAwal = date('m', strtotime('-30 days'));
         // $bulanAkhir = date('m', strtotime('now'));
         // dd($bulanAwal . '|||' . $bulanAkhir);
-        $pemasukan = '';
-        $pengeluaran = '';
-        $keuntungan = '';
+
 
         $bulan = '';
         $tahun = '';
         $usaha = '';
 
 
-        return view('contents.laba_rugi', compact('active_page', 'usahaOption',  'pemasukan', 'pengeluaran', 'keuntungan', 'tahun', 'tahun_get', 'bulan', 'usaha'));
+        return view('contents.laba_rugi', compact('active_page', 'usahaOption', 'tahun', 'tahun_get', 'bulan', 'usaha'));
     }
 
     public function filter_laba_rugi(Request $request)
@@ -78,57 +76,81 @@ class LabaRugiController extends Controller
 
 
 
-        $pengeluaran = '';
-        $keuntungan = '';
-        $pemasukan = '';
-
-
         $nominal_harian_pemasukan = [];
         $nominal_harian_pengeluaran = [];
         $nominal_harian_keuntungan = [];
 
-        for ($tgl = 1; $tgl <= 31; $tgl++) {
-            $nominal_pemasukan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
-                ->where('laporan.status_cek', 'Sudah Dicek')
-                ->where('klasifikasi_laporan', 'Pemasukan')
-                ->whereMonth('tanggal_laporan', $bulan)
-                ->whereYear('tanggal_laporan', $tahun)
-                ->whereDay('tanggal_laporan', str_pad($tgl, 2, '0', STR_PAD_LEFT))
-                ->sum('nominal');
+        if ($bulan && $tahun) {
+            for ($tgl = 1; $tgl <= 31; $tgl++) {
+                $nominal_pemasukan_harian = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', 'Pemasukan')
+                    ->whereMonth('tanggal_laporan', $bulan)
+                    ->whereYear('tanggal_laporan', $tahun)
+                    ->whereDay('tanggal_laporan', str_pad($tgl, 2, '0', STR_PAD_LEFT))
+                    ->sum('nominal');
 
-            $nominal_pengeluaran = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
-                ->where('laporan.status_cek', 'Sudah Dicek')
-                ->where('klasifikasi_laporan','!=', 'Pemasukan')
-                ->whereMonth('tanggal_laporan', $bulan)
-                ->whereYear('tanggal_laporan', $tahun)
-                ->whereDay('tanggal_laporan', str_pad($tgl, 2, '0', STR_PAD_LEFT))
-                ->sum('nominal');
+                $nominal_pengeluaran_harian = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', '!=', 'Pemasukan')
+                    ->whereMonth('tanggal_laporan', $bulan)
+                    ->whereYear('tanggal_laporan', $tahun)
+                    ->whereDay('tanggal_laporan', str_pad($tgl, 2, '0', STR_PAD_LEFT))
+                    ->sum('nominal');
 
-            // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
-            $keuntungan = $nominal_pemasukan - $nominal_pengeluaran;
+                // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
+                $keuntungan_harian = $nominal_pemasukan_harian - $nominal_pengeluaran_harian;
 
-            $nominal_harian_pemasukan[] = $nominal_pemasukan;
-            $nominal_harian_pengeluaran[] = $nominal_pengeluaran;
-            $nominal_harian_keuntungan[] = $keuntungan;
+                $nominal_harian_pemasukan[] = $nominal_pemasukan_harian;
+                $nominal_harian_pengeluaran[] = $nominal_pengeluaran_harian;
+                $nominal_harian_keuntungan[] = $keuntungan_harian;
+            }
         }
 
 
-        // dd($nominal_harian[2]);
+        $nominal_bulan_pemasukan = [];
+        $nominal_bulan_pengeluaran = [];
+        $nominal_bulan_keuntungan = [];
 
+        if ($bulan == null && $tahun) {
+    
+            for ($bulans = 1; $bulans <= 12; $bulans++) {
+                $nominal_pemasukan_bulanan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', 'Pemasukan')
+                    ->whereMonth('tanggal_laporan', str_pad($bulans, 2, '0', STR_PAD_LEFT))
+                    ->whereYear('tanggal_laporan', $tahun)
+                    ->sum('nominal');
+
+                $nominal_pengeluaran_bulanan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', '!=', 'Pemasukan')
+                    ->whereMonth('tanggal_laporan', str_pad($bulans, 2, '0', STR_PAD_LEFT))
+                    ->whereYear('tanggal_laporan', $tahun)
+                    ->sum('nominal');
+
+                // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
+                $keuntungan_bulanan = $nominal_pemasukan_bulanan - $nominal_pengeluaran_bulanan;
+
+                $nominal_bulan_pemasukan[] = $nominal_pemasukan_bulanan;
+                $nominal_bulan_pengeluaran[] = $nominal_pengeluaran_bulanan;
+                $nominal_bulan_keuntungan[] = $keuntungan_bulanan;
+            }
+        }
 
         return view('contents.laba_rugi', compact(
             'active_page',
             'usahaOption',
-            'pemasukan',
-            'pengeluaran',
-            'keuntungan',
             'tahun',
             'tahun_get',
             'bulan',
             'usaha',
             'nominal_harian_pemasukan',
             'nominal_harian_pengeluaran',
-            'nominal_harian_keuntungan'
+            'nominal_harian_keuntungan',
+            'nominal_bulan_pemasukan',
+            'nominal_bulan_pengeluaran',
+            'nominal_bulan_keuntungan',
 
         ));
     }
