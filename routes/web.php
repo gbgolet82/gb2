@@ -8,6 +8,7 @@ use App\Http\Controllers\DataUsahaController;
 use App\Http\Controllers\DataKaryawanController;
 use App\Http\Controllers\LaporanPemasukanController;
 use App\Http\Controllers\KlasifikasiLaporanController;
+use App\Http\Controllers\LabaRugiController;
 use App\Http\Controllers\LaporanPengeluaranController;
 use App\Http\Controllers\PdfPemasukanController;
 use App\Http\Controllers\PdfPengeluaranController;
@@ -94,6 +95,8 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
 
 Route::group(['middleware' => 'role:owner'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/laba_rugi', [LabaRugiController::class, 'laba_rugi'])->name('laba_rugi');
+
     Route::get('/klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('akun');
     Route::get('/tambah-klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('tambah.klasifikasi-akun');
     Route::post('/tambah-akun', [DataUsahaController::class, 'simpanAkun'])->name('tambah.akun');
@@ -111,3 +114,6 @@ Route::group(['middleware' => 'role:owner'], function () {
     Route::post('/detail-akun/{id_klasifikasi}', [KlasifikasiLaporanController::class, 'detailKlasifikasi'])->name('detail.klasifikasi');
     Route::post('/tambah-akun', [KlasifikasiLaporanController::class, 'simpanAkun'])->name('tambah.akun');
 });
+
+
+Route::get('/filter_laba_rugi', [LabaRugiController::class, 'filter_laba_rugi'])->name('filter_laba_rugi');
