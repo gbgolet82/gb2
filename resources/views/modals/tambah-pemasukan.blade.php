@@ -11,6 +11,13 @@
         color: #fff;
     }
 </style>
+
+@php
+    $selectedRole = session('selectedRole');
+    $karyawanRoles = session('karyawanRoles');
+    $session = session('nama_usaha');
+@endphp
+
 <form action="{{ route('tambah.pemasukan') }}" method="post" enctype="multipart/form-data">
     {{ csrf_field() }}
     <div class="modal-body">
@@ -32,11 +39,23 @@
                                 <span class="text-bold">{{ $kodeLaporan }}</span>
                                 <input type="hidden" id="kode_laporan" name="kode_laporan" value="{{ $kodeLaporan }}">
                             </div>
-                            <div class="col-4">
-                                <span>Unit Usaha</span><br>
-                                <span class="text-bold">{{ session('nama_usaha') }}</span>
-                                <input type="hidden" name="id_usaha" value="{{ session('nama_usaha') }}">
-                            </div>
+                            @if (
+                                (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                                    $session != 'SEMUA')
+                                <div class="col-4">
+                                    <span>Unit Usaha</span><br>
+                                    <span class="text-bold">{{ session('nama_usaha') }}</span>
+                                    <input type="hidden" name="id_usaha" value="{{ session('nama_usaha') }}">
+                                </div>
+                            @else
+                                <div class="col-4">
+                                    <span>Unit Usaha</span><br>
+                                    <span class="text-bold"><a href="" id="toggleForm"
+                                            style="color: #212529">Belum pilih&nbsp;&nbsp;<i class="fa fa-edit"></i>
+                                        </a></span>
+                                </div>
+                            @endif
+
                             <div class="col-4">
                                 <span>Kasir</span><br>
                                 <span class="text-bold">{{ session('nama') }}</span>
@@ -48,19 +67,49 @@
                     </div>
                 </div>
 
-                <div class="form-row mt-4">
-                    <div class="form-group col-md-12">
-                        <label for="cariAkun">AKUN &nbsp;</label>
-                        <select class="custom-select" name="id_akun" id="inputGroupAkun">
-                            <option disabled selected hidden>Pilih Akun</option>
-                            @foreach ($akunOptions as $dataAkun)
-                                <option value="{{ $dataAkun->id_akun }}"
-                                    @if ($dataAkun->akun === 'Semua') selected @endif>
-                                    {{ $dataAkun->akun }}</option>
-                            @endforeach
-                        </select>
+                <div id="formContainer" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="inputUsaha">USAHA &nbsp;</label>
+                            <select class="custom-select" name="id_usaha" id="Input_Usaha">
+                                <option disabled selected hidden>Pilih Usaha</option>
+                                @foreach ($usahaOption as $dataUsaha)
+                                    <option value="{{ $dataUsaha->id_usaha }}"
+                                        @if ($dataUsaha->nama_usaha === 'Semua') selected @endif>
+                                        {{ $dataUsaha->nama_usaha }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
                 </div>
+
+                @if (
+                    (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                        $session != 'SEMUA')
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="cariAkun">AKUN &nbsp;</label>
+                            <select class="custom-select" name="id_akun" id="inputGroupAkun">
+                                <option disabled selected hidden>Pilih Akun</option>
+                                @foreach ($akunOptions as $dataAkun)
+                                    <option value="{{ $dataAkun->id_akun }}"
+                                        @if ($dataAkun->akun === 'Semua') selected @endif>
+                                        {{ $dataAkun->akun }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                @else
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="namaAkun">AKUN &nbsp;</label>
+                            <select class="custom-select" name="id_akun" id="inputGroupAkun">
+                                <option disabled selected hidden>Pilih Akun</option>
+                            </select>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="form-row">
                     <div class="form-group col-md-12">
                         <label for="cariSubAkun1">SUB AKUN 1 &nbsp;</label>
@@ -93,8 +142,7 @@
                                 <span class="input-group-text">Rp</span>
                             </div>
                             <input type="text" class="form-control @error('nominal') is-invalid @enderror"
-                                id="besarNominal" placeholder="Masukan nominal" name="nominal" value=""
-                                oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                                id="besarNominal" placeholder="Masukan nominal" name="nominal" value="">
                             @error('nominal')
                                 <div class="invalid-feedback" role="alert">
                                     {{ $message }}
@@ -135,6 +183,22 @@
 
 @push('script')
     <script>
+        $(document).ready(function() {
+            $("#toggleForm").click(function(e) {
+                e.preventDefault(); // Prevent the default link behavior (navigating to a new page)
+
+                // Toggle the visibility of the form container
+                $("#formContainer").toggle();
+            });
+        });
+
+        $(document).ready(function() {
+            $('#Input_Usaha').change(function() {
+                var selectedOption = $(this).children("option:selected").text();
+                $('#toggleForm').text(selectedOption);
+            });
+        });
+
         function updateLabel() {
             const input = document.getElementById("customFileInput");
             const label = document.querySelector("[for='customFileInput']");
@@ -275,6 +339,141 @@
                 });
             });
         });
+
+        @if (
+            (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                $session == 'SEMUA')
+            $(document).ready(function() {
+                $('#Input_Usaha').change(function() {
+                    var selectedAkunId = $(this).val();
+                    $('#inputGroupAkun').change(function() {
+                        if ($(this).val() === 'Pilih Akun' || $(this).val() === '?') {
+                            $(this).val(null);
+                        }
+                    });
+
+                    // console.log(selectedAkunId);
+
+                    // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                    $.ajax({
+                        url: '/get-akunn-select/' + selectedAkunId,
+                        type: 'GET',
+                        success: function(data) {
+                            // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                            $('#inputGroupAkun').empty();
+                            $('#inputGroupAkun').append($('<option>', {
+                                value: null,
+                                text: 'Pilih Akun',
+                                // disabled: 'disabled'
+                            }));
+                            $.each(data, function(key, value) {
+                                // console.log(key);
+                                $('#inputGroupAkun').append($('<option>', {
+                                    value: key,
+                                    text: value
+                                }));
+                            });
+                        }
+                    });
+                });
+
+                $('#inputGroupAkun').change(function() {
+                    var selectedAkunId = $(this).val();
+                    $('#inputGroupSubAkun1').change(function() {
+                        if ($(this).val() === 'Pilih Sub Akun 1' || $(this).val() === '?') {
+                            $(this).val(null);
+                        }
+                    });
+
+                    // console.log(selectedAkunId);
+
+                    // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                    $.ajax({
+                        url: '/get-sub-akun-1-select/' + selectedAkunId,
+                        type: 'GET',
+                        success: function(data) {
+                            // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                            $('#inputGroupSubAkun1').empty();
+                            $('#inputGroupSubAkun1').append($('<option>', {
+                                value: null,
+                                text: 'Pilih Sub Akun 1',
+                                // disabled: 'disabled'
+                            }));
+                            $.each(data, function(key, value) {
+                                // console.log(key);
+                                $('#inputGroupSubAkun1').append($('<option>', {
+                                    value: key,
+                                    text: value
+                                }));
+                            });
+                        }
+                    });
+                });
+
+                $('#inputGroupSubAkun1').change(function() {
+                    var selectedAkunId = $('#inputGroupSubAkun1')
+                        .val(); // Menggunakan ID dari #inputGroupAkun
+                    $('#inputGroupSubAkun2').change(function() {
+                        if ($(this).val() === 'Pilih Sub Akun 2' || $(this).val() === '?') {
+                            $(this).val(null);
+                        }
+                    });
+
+                    // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 2 berdasarkan id_akun yang dipilih.
+                    $.ajax({
+                        url: '/get-sub-akun-2-select/' +
+                            selectedAkunId, // Menggunakan ID dari #inputGroupAkun
+                        type: 'GET',
+                        success: function(data) {
+                            // Perbarui opsi sub akun 2 dengan data yang diterima dari server.
+                            $('#inputGroupSubAkun2').empty();
+                            $('#inputGroupSubAkun2').append($('<option>', {
+                                value: null,
+                                text: 'Pilih Sub Akun 2'
+                            }));
+                            $.each(data, function(key, value) {
+                                $('#inputGroupSubAkun2').append($('<option>', {
+                                    value: key,
+                                    text: value
+                                }));
+                            });
+                        }
+                    });
+                });
+
+
+                $('#inputGroupSubAkun2').change(function() {
+                    var selectedAkunId = $('#inputGroupSubAkun2').val();
+                    $('#inputGroupSubAkun3').change(function() {
+                        if ($(this).val() === 'Pilih Sub Akun 3' || $(this).val() === '?') {
+                            $(this).val(null);
+                        }
+                    });
+
+                    // Lakukan permintaan AJAX ke endpoint yang mengembalikan opsi sub akun 1 berdasarkan id_akun yang dipilih.
+                    $.ajax({
+                        url: '/get-sub-akun-3-select/' + selectedAkunId,
+                        type: 'GET',
+                        success: function(data) {
+                            // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
+                            $('#inputGroupSubAkun3').empty();
+                            $('#inputGroupSubAkun3').append($('<option>', {
+                                value: null,
+                                text: 'Pilih Sub Akun 3',
+                                // disabled: 'disabled'
+                            }));
+                            $.each(data, function(key, value) {
+                                // console.log(key);
+                                $('#inputGroupSubAkun3').append($('<option>', {
+                                    value: key,
+                                    text: value
+                                }));
+                            });
+                        }
+                    });
+                });
+            });
+        @endif
     </script>
     <script>
         // Function to validate the form fields
@@ -309,5 +508,4 @@
         // Initially, disable the "Simpan" button when the page loads
         document.getElementById('simpanPemasukan').disabled = true;
     </script>
-
 @endpush

@@ -5,21 +5,122 @@ namespace App\Http\Controllers;
 use App\Models\Akun;
 use App\Models\KlasifikasiLaporan;
 use App\Models\Laporan;
+use App\Models\SubAkun1;
 use App\Models\Usaha;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\ServiceProvider;
+use PDF;
 
 
 class LaporanPemasukanController extends Controller
 {
+    public function cetakLaporan(Request $request)
+    {
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        // Ambil nilai $pemasukanBelumActive dari sesi
+        $pemasukanBelumActive = session('pemasukanBelumActive');
+        
+        // dd($filterDaterange);
+        if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir')) {
+                    $filterDaterange = $request->input('filter_daterange');
+        } else {
+            $filterDaterange = Carbon::now()->toDateString();
+        }
+        // dd($request->all());
+        // $dateArray = explode(" - ", $filterDaterange);
+        // $startDate = $dateArray[0];
+        // $endDate = $dateArray[1];
+        // $dateAwal = \Carbon\Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
+        // $dateAkhir = \Carbon\Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
+
+        $selectedUsaha = $request->input('usaha');
+        $selectedAkun = $request->input('akun');
+        $selectedSubAkun = $request->input('sub_akun_1');
+        // dd($selectedUsaha);
+        
+        $usaha = Usaha::where('nama_usaha', $selectedUsaha)->value('id_usaha');
+        $akun = Akun::where('akun', $selectedAkun)->where('id_usaha', $usaha)
+        ->value('id_akun');
+        $sub = DB::table('sub_akun_1')->where('id_akun', $akun)->where('sub_akun_1', $selectedSubAkun)->value('id_sub_akun_1');
+        // dd($sub);
+    
+    // Adjust the 'join' condition and 'where' clause as per your table schema and requirements
+    
+
+        $query = Laporan::select(
+            'klasifikasi_laporan.klasifikasi_laporan as klasifikasi',
+            'usaha.nama_usaha as usaha',
+            'akun.akun as akun',
+            'sub_akun_1.sub_akun_1 as sub_akun_1',
+            'sub_akun_2.sub_akun_2 as sub_akun_2',
+            'sub_akun_3.sub_akun_3 as sub_akun_3',
+            'laporan.kode_laporan as kode_laporan',
+            'laporan.tanggal_laporan as tanggal_laporan',
+            'laporan.nominal as nominal',
+            'laporan.gambar_bukti as gambar_bukti',
+            'laporan.status_cek as status_cek',
+            'laporan.id_laporan as id_laporan',
+            'laporan.catatan as catatan',
+            'laporan.tanggal_cek as tanggal_cek',
+            'kasir.nama as nama_kasir', 'manager.nama as nama_manager',
+        )
+        ->join('akun', 'akun.id_akun', '=', 'laporan.id_akun')
+        ->join('karyawan as kasir', 'laporan.id_kasir', '=', 'kasir.id_karyawan')
+        ->leftjoin('karyawan as manager', 'laporan.id_manager', '=', 'manager.id_karyawan')
+        ->join('klasifikasi_laporan', 'akun.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+        ->join('usaha', 'laporan.id_usaha', '=', 'usaha.id_usaha')
+        ->leftjoin('sub_akun_1', 'laporan.id_sub_akun_1', '=', 'sub_akun_1.id_sub_akun_1')
+        ->leftjoin('sub_akun_2', 'laporan.id_sub_akun_2', '=', 'sub_akun_2.id_sub_akun_2')
+        ->leftjoin('sub_akun_3', 'laporan.id_sub_akun_3', '=', 'sub_akun_3.id_sub_akun_3')
+        ->where('klasifikasi_laporan', 'Pemasukan')
+        ->orderBy('laporan.tanggal_laporan', 'desc');
+
+        if ($pemasukanBelumActive == true) {
+            $query->where('laporan.status_cek', 'Belum Dicek');
+        } else {
+            $query->where('laporan.status_cek', 'Sudah Dicek');
+        }
+
+        if ($selectedUsaha != 'Semua') {
+            $query->where('laporan.id_usaha', $usaha);
+        }
+
+        if ($selectedAkun != 'Semua') {
+            $query->where('laporan.id_akun', $akun);
+        }
+
+        if ($selectedSubAkun != 'Semua') {
+            $query->where('laporan.id_sub_akun_1', $sub);
+        }
+        
+        $data = $query->get();
+        // dd($data);
+        $count = count($data);
+        $jumlah = $data->sum('nominal');
+        // dd($jumlah);
+
+        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterDaterange', 'pemasukanBelumActive', 'count', 'jumlah'));
+        $pdf->setPaper('A4', 'landscape');
+        return $pdf->stream('Print Pemasukan.pdf');
+        // Generate the PDF
+        // return $pdf->download('Print Pemasukan.pdf');
+    }
+
     public function index(Request $request)
     {
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
         // buat ambil rute yang aktif
         $pemasukanBelumActive = $request->url() == route('pemasukan_blm');
-        $pemasukanSudahAktif = $request->url() == route('pemasukan_sdh');   
+        // Simpan nilai $pemasukanBelumActive dalam sesi
+        session(['pemasukanBelumActive' => $pemasukanBelumActive]);
+   
         // ambil id klasifikasi
         if ($pemasukanBelumActive) {
             $idKlasifikasiPemasukan = KlasifikasiLaporan::where('klasifikasi_laporan', 'Pemasukan')
@@ -90,23 +191,23 @@ class LaporanPemasukanController extends Controller
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->orderBy('laporan.tanggal_laporan', 'desc');
 
-        if ($session != 'SEMUA') {
+        if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+        $session != 'SEMUA') {
             $data->where('usaha.id_usaha', session('id_usaha'));
         }
         
         $data = $data->get();
-        $status_cek = 'Belum Dicek';
         $active_page = "PEMASUKAN";
-        return view('contents.pemasukan', compact('status_cek','active_page', 'data', 'akunOptions', 'kodeLaporan', 'idKlasifikasiPemasukan', 'pemasukanBelumActive', 'pemasukanSudahAktif', 'usahaOption'));
+        return view('contents.pemasukan', compact('active_page', 'data', 'akunOptions', 'kodeLaporan', 'idKlasifikasiPemasukan', 'pemasukanBelumActive', 'usahaOption'));
     }
 
     public function pemasukan(Request $request)
     {
-        // buat ambil rute yang aktif
-        $pemasukanSudahAktif = $request->url() == route('pemasukan_sdh');    
-        $pemasukanBelumActive = $request->url() == route('pemasukan_blm');  
-        // dd($isPemasukanActive);
+        $idKaryawan = session('id_karyawan');
 
+        $pemasukanBelumActive = $request->url() == route('pemasukan_blm');
+        // Simpan nilai $pemasukanBelumActive dalam sesi
+        session(['pemasukanBelumActive' => $pemasukanBelumActive]);
         // ambil opsi akun
         $akunOptions = Akun::join('usaha', 'usaha.id_usaha', '=', 'akun.id_usaha')
         ->join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'akun.id_klasifikasi')
@@ -121,8 +222,9 @@ class LaporanPemasukanController extends Controller
         ->orderBy('nama_usaha', 'asc')
         ->get();
 
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
         $session = session('nama_usaha');
-        $idKaryawan = session('id_karyawan');
 
         $data = Laporan::select(
             'klasifikasi_laporan.klasifikasi_laporan as klasifikasi',
@@ -139,37 +241,42 @@ class LaporanPemasukanController extends Controller
             'laporan.id_laporan as id_laporan',
             'laporan.catatan as catatan',
             'laporan.tanggal_cek as tanggal_cek',
-            'laporan.status_cek as status_cek',
             'kasir.nama as nama_kasir', 'manager.nama as nama_manager',
+            
+            // DB::raw('(SELECT karyawan.nama FROM karyawan WHERE karyawan.kasir = "1" AND karyawan.id_usaha = usaha.id_usaha) AS nama_kasir'),
+            // DB::raw('(SELECT karyawan.nama FROM karyawan WHERE karyawan.manajer = "1" AND karyawan.id_usaha = usaha.id_usaha LIMIT 1) AS nama_manajer')
         )
         ->join('akun', 'akun.id_akun', '=', 'laporan.id_akun')
         ->join('karyawan as kasir', 'laporan.id_kasir', '=', 'kasir.id_karyawan')
         ->leftjoin('karyawan as manager', 'laporan.id_manager', '=', 'manager.id_karyawan')
-        ->join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+        ->join('klasifikasi_laporan', 'akun.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
         ->join('usaha', 'laporan.id_usaha', '=', 'usaha.id_usaha')
-        ->join('sub_akun_1', 'laporan.id_sub_akun_1', '=', 'sub_akun_1.id_sub_akun_1')
+        ->leftjoin('sub_akun_1', 'laporan.id_sub_akun_1', '=', 'sub_akun_1.id_sub_akun_1')
         ->leftjoin('sub_akun_2', 'laporan.id_sub_akun_2', '=', 'sub_akun_2.id_sub_akun_2')
         ->leftjoin('sub_akun_3', 'laporan.id_sub_akun_3', '=', 'sub_akun_3.id_sub_akun_3')
         ->where('laporan.status_cek', 'Sudah Dicek')
+        ->where('klasifikasi_laporan', 'Pemasukan')
         ->orderBy('laporan.tanggal_laporan', 'desc');
 
-        if ($session != 'SEMUA') {
+        if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+        $session != 'SEMUA') {
             $data->where('usaha.id_usaha', session('id_usaha'));
         }
         
         $data = $data->get();
-        $status_cek = 'Sudah Dicek';
         $active_page = "PEMASUKAN";
-        return view('contents.pemasukan', compact('status_cek','active_page', 'data', 'pemasukanSudahAktif', 'akunOptions', 'pemasukanBelumActive', 'usahaOption'));
+        return view('contents.pemasukan', compact('active_page', 'data', 'akunOptions', 'pemasukanBelumActive', 'usahaOption'));
     }
 
 
     public function simpanPemasukan(Request $request) {
-        // dd('abab');
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        $session = session('nama_usaha');
+
         // Validation rules
         $rules = [
             'id_akun' => 'required',
-            'nominal' => 'required|numeric',
             'gambar_bukti' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the file types and size as needed
             
         ];
@@ -177,8 +284,6 @@ class LaporanPemasukanController extends Controller
         // Custom error messages
         $customMessages = [
             'id_akun.required' => 'Akun harus diisi.',
-            'nominal.required' => 'Nominal harus diisi.',
-            'nominal.numeric' => 'Nominal harus berupa angka.',
             'gambar_bukti.required' => 'Gambar Bukti harus diisi.',
             'gambar_bukti.image' => 'Gambar Bukti harus berupa gambar.',
             'gambar_bukti.mimes' => 'Gambar Bukti harus berupa JPEG, PNG, JPG, atau GIF.',
@@ -209,7 +314,13 @@ class LaporanPemasukanController extends Controller
             $pemasukan->id_kasir = session('id_karyawan');
             // sementara (belum tau cara ambil id klasifikasi)
             $pemasukan->id_klasifikasi = $idKlasifikasiPemasukan;
-            $pemasukan->id_usaha = session('id_usaha');
+
+            if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+            $session != 'SEMUA') {
+                $pemasukan->id_usaha = session('id_usaha');
+            } else {
+                $pemasukan->id_usaha = $request->input('id_usaha');
+            }
             $pemasukan->id_akun = $validatedData['id_akun'];
             $idSubAkun1 = $request->input('id_sub_akun_1'); // nilainya bisa berupa null jika dropdown tidak dipilih
                 if ($idSubAkun1 === 'Pilih Sub Akun 1' || $idSubAkun1 === '?') {
@@ -228,7 +339,7 @@ class LaporanPemasukanController extends Controller
             $pemasukan->id_sub_akun_1 = $idSubAkun1;
             $pemasukan->id_sub_akun_2 = $idSubAkun2;
             $pemasukan->id_sub_akun_3 = $idSubAkun3;
-            $pemasukan->nominal = $validatedData['nominal'] = str_replace(".", "", $validatedData['nominal']);
+            $pemasukan->nominal = str_replace(".", "", $request->input('nominal'));
             $pemasukan->gambar_bukti = $filename;
             $pemasukan->status_cek = 'Belum Dicek';
 
@@ -285,6 +396,18 @@ class LaporanPemasukanController extends Controller
         return response()->json($ambilSubAkun1);
     }
 
+    public function ambilAkunn($id_usaha)
+    {
+        // Cari ID akun berdasarkan nama akun
+        $id_usaha = Akun::where('id_usaha', $id_usaha)->value('id_usaha');
+        $id_klasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', 'Pemasukan')->value('id_klasifikasi');
+
+        // Ambil data sub_akun_1 berdasarkan id_usaha yang sesuai
+        $ambilAkunn = DB::table('akun')->where('id_usaha', $id_usaha)->where('id_klasifikasi', $id_klasifikasi)->pluck('akun', 'id_akun');
+
+        return response()->json($ambilAkunn);
+    }
+
     public function ambilSubAkun2($id_sub_akun_1)
     {
         $subAkun2Options = DB::table('sub_akun_2')
@@ -307,14 +430,9 @@ class LaporanPemasukanController extends Controller
 
     public function getJumlahBelumDicek()
     {
-        $session = session('nama_usaha');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->where('status_cek', 'Belum dicek');
-
-        if ($session != 'SEMUA') {
-            $query->where('laporan.id_usaha', session('id_usaha'));
-        }
 
         $jumlahBelumDicek = $query->count();
 
@@ -324,14 +442,9 @@ class LaporanPemasukanController extends Controller
 
     public function getJumlahSudahDicek()
     {
-        $session = session('nama_usaha');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->where('status_cek', 'Sudah dicek');
-
-        if ($session != 'SEMUA') {
-            $query->where('laporan.id_usaha', session('id_usaha'));
-        }
 
         $jumlahSudahDicek = $query->count();
 
@@ -350,7 +463,8 @@ class LaporanPemasukanController extends Controller
             $laporan->catatan = $catatan;
             $laporan->status_cek = 'Sudah Dicek';
             $laporan->id_manager = $id_karyawan;
-            $laporan->tanggal_cek = Carbon::now();
+            $tanggalLaporan = Carbon::parse($request->input('tanggal_cek'));
+            $laporan->tanggal_cek = $tanggalLaporan;
             $laporan->save();
             
             return redirect()->route('pemasukan_blm')->with('success', 'Data Laporan Berhasil Dicek'); // Gantilah dengan route yang sesuai

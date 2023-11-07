@@ -94,9 +94,15 @@
                                     </strong>
                                 </div>
 
+                                @php
+                                    $session = session('nama_usaha');
+                                    // dd($session);
+                                @endphp
+
                                 <div class="col-10 mx-auto">
                                     <div class="card col-12">
                                         <div class="card-body p-3">
+
                                             <div class="row">
                                                 {{-- filter tanggal owner --}}
                                                 @if (
@@ -110,7 +116,53 @@
                                                 @endif
 
                                                 {{-- filter owner --}}
-                                                @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                                                @if (
+                                                    (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                                                        $session != 'SEMUA')
+                                                    {{-- filter selain owner --}}
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="usaha"
+                                                                    style="width: 100px; text-align: center; display: block;">Usaha</span>
+                                                            </div>
+                                                            <select class="custom-select" id="usaha" name="usaha">
+                                                                <option value="{{ session('nama_usaha') }}" selected>
+                                                                    {{ session('nama_usaha') }}</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="akun"
+                                                                    style="width: 100px; text-align: center; display: block;">Akun</span>
+                                                            </div>
+                                                            <select class="custom-select" id="inputAkun" name="akun">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                                @foreach ($akunOptions as $dataAkun)
+                                                                    <option value="{{ $dataAkun->akun }}"
+                                                                        @if ($dataAkun->akun === 'Semua') selected @endif>
+                                                                        {{ $dataAkun->akun }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 col-md-3 mb-2">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text" for="sub_akun_1"
+                                                                    style="width: 100px; text-align: center; display: block;">Sub
+                                                                    Akun
+                                                                    1</span>
+                                                            </div>
+                                                            <select class="custom-select" id="inputSub" name="sub_akun_1">
+                                                                <option value="Semua" selected>Semua Data</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                @else
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -151,49 +203,6 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                @else
-                                                    {{-- filter selain owner --}}
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="usaha"
-                                                                    style="width: 100px; text-align: center; display: block;">Usaha</span>
-                                                            </div>
-                                                            <select class="custom-select" id="usaha" name="usaha">
-                                                                <option value="{{ session('id_usaha') }}" selected>
-                                                                    {{ session('nama_usaha') }}</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="akun"
-                                                                    style="width: 100px; text-align: center; display: block;">Akun</span>
-                                                            </div>
-                                                            <select class="custom-select" id="inputAkun" name="akun">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                                @foreach ($akunOptions as $dataAkun)
-                                                                    <option value="{{ $dataAkun->akun }}"
-                                                                        @if ($dataAkun->akun === 'Semua') selected @endif>
-                                                                        {{ $dataAkun->akun }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-3 mb-2">
-                                                        <div class="input-group">
-                                                            <div class="input-group-prepend">
-                                                                <span class="input-group-text" for="sub_akun_1"
-                                                                    style="width: 100px; text-align: center; display: block;">Sub
-                                                                    Akun
-                                                                    1</span>
-                                                            </div>
-                                                            <select class="custom-select" id="inputSub" name="sub_akun_1">
-                                                                <option value="Semua" selected>Semua Data</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
                                                 @endif
 
                                                 {{-- muncul ketika pemasukan belum dicek --}}
@@ -228,12 +237,38 @@
                                                 <div class="col-12 col-md-3 ml-auto">
                                                     <div class="row">
                                                         <div class="col-6">
-                                                            <button class="btn btn-outline-danger"
-                                                                style="border-radius: 10px; width: 100%;" type="button"
-                                                                data-toggle="modal" data-target="#eksporData"
-                                                                aria-expanded="false">
-                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                            </button>
+                                                            <form id="cetakForm" action="{{ route('cetak.laporan') }}"
+                                                                target="_blank" method="POST">
+                                                                @csrf
+                                                                @if (
+                                                                    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                                                                        (isset($selectedRole) && $selectedRole != 'kasir'))
+                                                                    <input type="hidden" id="filter_daterange_hidden"
+                                                                        name="filter_daterange">
+                                                                @endif
+                                                                <input type="hidden" id="usaha_hidden" name="usaha">
+                                                                <input type="hidden" id="akun_hidden" name="akun">
+                                                                <input type="hidden" id="sub_akun_1_hidden"
+                                                                    name="sub_akun_1">
+                                                                @if (
+                                                                    (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                                                                        $session != 'SEMUA')
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="submit" aria-expanded="false"
+                                                                        onclick="simpanForm()">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                @else
+                                                                    <button class="btn btn-outline-danger"
+                                                                        style="border-radius: 10px; width: 100%;"
+                                                                        type="submit" aria-expanded="false"
+                                                                        onclick="submitForm()">
+                                                                        <i class="fas fa-file-pdf"></i> Pdf
+                                                                    </button>
+                                                                @endif
+                                                            </form>
+
                                                         </div>
                                                         <div class="col-6">
                                                             <button class="btn btn-outline-success"
@@ -411,6 +446,50 @@
 @endsection
 
 @push('script')
+    <script>
+        function submitForm() {
+            @php
+                $selectedRole = session('selectedRole');
+                $karyawanRoles = session('karyawanRoles');
+            @endphp
+
+            @if (
+                ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                    (isset($selectedRole) && $selectedRole != 'kasir'))
+                var filterDaterange = document.getElementById('reportrange').value;
+                document.getElementById('filter_daterange_hidden').value = filterDaterange;
+            @endif
+            var selectedUsaha = document.getElementById('namaUsaha').value;
+            var selectedAkun = document.getElementById('namaAkun').value;
+            var selectedSubAkun = document.getElementById('namaSub').value;
+
+            // Assigning the values to hidden input fields within the form
+
+            document.getElementById('usaha_hidden').value = selectedUsaha;
+            document.getElementById('akun_hidden').value = selectedAkun;
+            document.getElementById('sub_akun_1_hidden').value = selectedSubAkun;
+
+            // Submit the form
+            document.getElementById('cetakForm').submit();
+
+        }
+
+        function simpanForm() {
+            var selectedUsaha = document.getElementById('usaha').value;
+            var selectedAkun = document.getElementById('inputAkun').value;
+            var selectedSubAkun = document.getElementById('inputSub').value;
+
+            // Assigning the values to hidden input fields within the form
+            document.getElementById('usaha_hidden').value = selectedUsaha;
+            document.getElementById('akun_hidden').value = selectedAkun;
+            document.getElementById('sub_akun_1_hidden').value = selectedSubAkun;
+
+            // Submit the form
+            document.getElementById('cetakForm').submit();
+
+        }
+    </script>
+
     @php
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
@@ -544,25 +623,20 @@
                             datasets[item.nama_usaha][day - 1] = item.total_nominal;
                         });
 
-                        // Check and connect missing data points with previous available data
-                        Object.keys(datasets).forEach(function(usaha, index) {
-                            for (var i = 1; i < daysInMonth; i++) {
-                                if (datasets[usaha][i] === null) {
-                                    var j = i - 1;
-                                    while (j >= 0 && datasets[usaha][j] === null) {
-                                        j--;
-                                    }
-                                    if (j >= 0 && datasets[usaha][j] !== null) {
-                                        datasets[usaha][i] = datasets[usaha][j];
-                                    } else {
-                                        datasets[usaha][i] =
-                                        0; // If no previous data available, set value to 0
-                                    }
+                        Object.keys(datasets).forEach(function(usaha) {
+                            var previousData = null; // Menyimpan data sebelumnya
+
+                            datasets[usaha].forEach(function(value, i) {
+                                if (value !== null) {
+                                    // Jika ada data pada hari ini, set previousData menjadi data tersebut
+                                    previousData = value;
+                                } else {
+                                    // Jika data pada hari ini adalah null, ganti dengan previousData (nilai sebelumnya yang tidak null)
+                                    datasets[usaha][i] = previousData;
                                 }
-                            }
+                            });
                         });
 
-                        // Rest of your code for chart creation remains unchanged...
 
 
                         // Generate labels based on the number of days in the month
