@@ -142,8 +142,7 @@
                                 <span class="input-group-text">Rp</span>
                             </div>
                             <input type="text" class="form-control @error('nominal') is-invalid @enderror"
-                                id="besarNominal" placeholder="Masukan nominal" name="nominal" value=""
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                                id="besarNominal" placeholder="Masukan nominal" name="nominal" value="">
                             @error('nominal')
                                 <div class="invalid-feedback" role="alert">
                                     {{ $message }}

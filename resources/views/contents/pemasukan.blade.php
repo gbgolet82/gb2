@@ -102,6 +102,7 @@
                                 <div class="col-10 mx-auto">
                                     <div class="card col-12">
                                         <div class="card-body p-3">
+
                                             <div class="row">
                                                 {{-- filter tanggal owner --}}
                                                 @if (
@@ -115,7 +116,9 @@
                                                 @endif
 
                                                 {{-- filter owner --}}
-                                                @if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') && $session != 'SEMUA')
+                                                @if (
+                                                    (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                                                        $session != 'SEMUA')
                                                     {{-- filter selain owner --}}
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
@@ -129,7 +132,7 @@
                                                             </select>
                                                         </div>
                                                     </div>
-                                                   
+
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
                                                             <div class="input-group-prepend">
@@ -234,12 +237,24 @@
                                                 <div class="col-12 col-md-3 ml-auto">
                                                     <div class="row">
                                                         <div class="col-6">
-                                                            <button class="btn btn-outline-danger"
-                                                                style="border-radius: 10px; width: 100%;" type="button"
-                                                                data-toggle="modal" data-target="#eksporData"
-                                                                aria-expanded="false">
-                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                            </button>
+                                                            <form id="cetakForm" action="{{ route('cetak.laporan') }}"
+                                                                method="POST">
+                                                                @csrf
+                                                                <input type="hidden" id="filter_daterange_hidden"
+                                                                    name="filter_daterange">
+                                                                <input type="hidden" id="usaha_hidden" name="usaha">
+                                                                <input type="hidden" id="akun_hidden" name="akun">
+                                                                <input type="hidden" id="sub_akun_1_hidden"
+                                                                    name="sub_akun_1">
+
+                                                                <button class="btn btn-outline-danger"
+                                                                    style="border-radius: 10px; width: 100%;"
+                                                                    type="submit" aria-expanded="false"
+                                                                    onclick="submitForm()">
+                                                                    <i class="fas fa-file-pdf"></i> Pdf
+                                                                </button>
+                                                            </form>
+
                                                         </div>
                                                         <div class="col-6">
                                                             <button class="btn btn-outline-success"
@@ -417,6 +432,41 @@
 @endsection
 
 @push('script')
+    <script>
+        function submitForm() {
+            @if (
+                (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+                    $session != 'SEMUA')
+                // Collecting the selected values
+                var selectedUsaha = document.getElementById('usaha').value;
+                var selectedAkun = document.getElementById('inputAkun').value;
+                var selectedSubAkun = document.getElementById('inputSub').value;
+            @else
+                @if (
+                    ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                        (isset($selectedRole) && $selectedRole != 'kasir'))
+                    var filterDaterange = document.getElementById('reportrange').value;
+                @endif
+                var selectedUsaha = document.getElementById('namaUsaha').value;
+                var selectedAkun = document.getElementById('namaAkun').value;
+                var selectedSubAkun = document.getElementById('namaSub').value;
+            @endif
+
+            // Assigning the values to hidden input fields within the form
+            @if (
+                ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                    (isset($selectedRole) && $selectedRole != 'kasir'))
+                document.getElementById('filter_daterange_hidden').value = filterDaterange;
+            @endif
+            document.getElementById('usaha_hidden').value = selectedUsaha;
+            document.getElementById('akun_hidden').value = selectedAkun;
+            document.getElementById('sub_akun_1_hidden').value = selectedSubAkun;
+
+            // Submit the form
+            document.getElementById('cetakForm').submit();
+        }
+    </script>
+
     @php
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
@@ -532,7 +582,58 @@
 
                         var daysInMonth; // Declare daysInMonth outside the loop
 
-                        
+                        // Proses data dari respons server
+                        // Proses data dari respons server
+                        // Modify the loop that processes the data to handle missing data
+                        data.forEach(function(item, index) {
+                            var month = item.bulan; // Assuming 'bulan' represents the month
+
+                            // Determine the number of days in the given month
+                            var year = new Date().getFullYear(); // Get the current year
+                            daysInMonth = new Date(year, month, 0).getDate();
+
+                            var day = item.day;
+
+                            if (!datasets[item.nama_usaha]) {
+                                datasets[item.nama_usaha] = Array(daysInMonth).fill(null);
+                            }
+                            datasets[item.nama_usaha][day - 1] = item.total_nominal;
+                        });
+
+                        Object.keys(datasets).forEach(function(usaha) {
+                            var previousData = null; // Menyimpan data sebelumnya
+
+                            datasets[usaha].forEach(function(value, i) {
+                                if (value !== null) {
+                                    // Jika ada data pada hari ini, set previousData menjadi data tersebut
+                                    previousData = value;
+                                } else {
+                                    // Jika data pada hari ini adalah null, ganti dengan previousData (nilai sebelumnya yang tidak null)
+                                    datasets[usaha][i] = previousData;
+                                }
+                            });
+                        });
+
+
+
+                        // Generate labels based on the number of days in the month
+                        var labels = Array.from({
+                            length: daysInMonth
+                        }, (_, i) => (i + 1).toString());
+
+                        var chartData = {
+                            labels: labels,
+                            datasets: Object.keys(datasets).map(function(usaha, index) {
+                                return {
+                                    label: usaha,
+                                    data: datasets[usaha],
+                                    borderColor: colors[index % colors
+                                        .length], // Gunakan warna berdasarkan indeks
+                                    borderWidth: 2,
+                                    fill: false
+                                };
+                            })
+                        };
 
                         var ctx = document.getElementById('lineChart').getContext('2d');
                         // Hancurkan grafik sebelumnya jika ada
