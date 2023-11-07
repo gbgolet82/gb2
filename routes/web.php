@@ -110,3 +110,6 @@ Route::group(['middleware' => 'role:owner'], function () {
     Route::post('/detail-akun/{id_klasifikasi}', [KlasifikasiLaporanController::class, 'detailKlasifikasi'])->name('detail.klasifikasi');
     Route::post('/tambah-akun', [KlasifikasiLaporanController::class, 'simpanAkun'])->name('tambah.akun');
 });
+
+
+Route::get('/filter_laba_rugi', [LabaRugiController::class, 'filter_laba_rugi'])->name('filter_laba_rugi');
