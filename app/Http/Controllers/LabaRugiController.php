@@ -20,53 +20,56 @@ class LabaRugiController extends Controller
         $tahun_get = Laporan::distinct()
             ->selectRaw('YEAR(tanggal_laporan) as tahun')
             ->get();
-            // dd($tahun);
-
-        // $tanggalAwal = date('Y-m-d', strtotime(str_replace('/', '-', '-30 days')));
-        // $tanggalAkhir = date('Y-m-d', strtotime(str_replace('/', '-', 'now')));
-        // $bulanAwal = date('m', strtotime('-30 days'));
-        // $bulanAkhir = date('m', strtotime('now'));
-        // dd($bulanAwal . '|||' . $bulanAkhir);
-
 
         $bulan = '';
         $tahun = '';
         $usaha = '';
 
-        if ($bulan == null && $tahun == null || $bulan && $tahun == null) {
+        
+        if (($bulan == null && $tahun == null) || ($bulan && $tahun == null)) {
+            $nominal_tahun_pemasukan = [];
+            $nominal_tahun_pengeluaran = [];
+            $nominal_tahun_keuntungan = [];
 
-            $nominal_pemasukan_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
-                ->where('laporan.status_cek', 'Sudah Dicek')
-                ->where('klasifikasi_laporan', 'Pemasukan')
-                // ->whereYear('tanggal_laporan', $tahun)
-                ->when($usaha, function ($query) use ($usaha) {
-                    return $query->where('id_usaha', $usaha);
-                })
-                ->sum('nominal');
+          
+            foreach ($tahun_get as $tahuns) {
+                $nominal_pemasukan_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', 'Pemasukan')
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
+                    ->whereYear('tanggal_laporan', $tahuns->tahun)
+                    ->sum('nominal');
 
-            $nominal_pengeluaran_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
-                ->where('laporan.status_cek', 'Sudah Dicek')
-                ->where('klasifikasi_laporan', '!=', 'Pemasukan')
-                // ->whereYear('tanggal_laporan', $tahun)
-                ->when($usaha, function ($query) use ($usaha) {
-                    return $query->where('id_usaha', $usaha);
-                })
-                ->sum('nominal');
+                $nominal_pengeluaran_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', '!=', 'Pemasukan')
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
+                    ->whereYear('tanggal_laporan', $tahuns->tahun)
+                    ->sum('nominal');
 
-            // dd($nominal_pemasukan_tahunan);
+                // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
+                $keuntungan_tahunan = $nominal_pemasukan_tahunan - $nominal_pengeluaran_tahunan;
 
-            // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
-            $keuntungan_tahunan = $nominal_pemasukan_tahunan - $nominal_pengeluaran_tahunan;
+                $nominal_tahun_pemasukan[] = $nominal_pemasukan_tahunan;
+                $nominal_tahun_pengeluaran[] = $nominal_pengeluaran_tahunan;
+                $nominal_tahun_keuntungan[] = $keuntungan_tahunan;
+            }
 
-            $nominal_tahun_pemasukan = $nominal_pemasukan_tahunan;
-            $nominal_tahun_pengeluaran = $nominal_pengeluaran_tahunan;
-            $nominal_tahun_keuntungan = $keuntungan_tahunan;
-
-            $nominal_pemasukan_harian_max = '';
-            $nominal_keuntungan_harian_max = '';
-            $nominal_pemasukan_harian_min = '';
-            $nominal_keuntungan_harian_min = '';
         }
+
+        // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
+
+
+
+        $nominal_pemasukan_harian_max = '';
+        $nominal_keuntungan_harian_max = '';
+        $nominal_pemasukan_harian_min = '';
+        $nominal_keuntungan_harian_min = '';
+
 
 
         return view('contents.laba_rugi', compact(
@@ -93,26 +96,10 @@ class LabaRugiController extends Controller
         $tahun = $request->tahun;
         $usaha = $request->usaha;
         // dd($bulan);
-        
+
 
         // Mengambil tanggal dari input request
         $tanggal = $request->filter_daterange;
-
-        // Memisahkan tanggal menggunakan fungsi explode
-        // $tanggalArray = explode(' - ', $tanggal);
-
-        // Mengubah format tanggal menjadi "2023-11-05" untuk tanggal awal dan akhir
-        // $tanggalAwal = date('Y-m-d', strtotime(str_replace('/', '-', $tanggalArray[0])));
-        // $tanggalAkhir = date('Y-m-d', strtotime(str_replace('/', '-', $tanggalArray[1])));
-        // $bulanAwal = date('m', strtotime($tanggalAwal));
-        // $bulanAkhir = date('m', strtotime($tanggalAkhir));
-
-
-        // dd($bulanAwal . '||' . $bulanAkhir);
-
-        // dd($tanggalAwal . '|||'. $tanggalAkhir . '|||'. $request->usaha);
-
-
 
 
         $active_page = 'Laba Rugi';
@@ -180,6 +167,9 @@ class LabaRugiController extends Controller
         $tahun = $request->tahun;
         $usaha = $request->usaha;
 
+        $nominal_bulan_pemasukan = [];
+        $nominal_bulan_pengeluaran = [];
+        $nominal_bulan_keuntungan = [];
         if ($bulan == null && $tahun) {
 
             for ($bulans = 1; $bulans <= 12; $bulans++) {
@@ -217,9 +207,9 @@ class LabaRugiController extends Controller
         $nominal_tahun_pengeluaran = [];
         $nominal_tahun_keuntungan = [];
 
-        if (($tahun == null && $tahun == null) || ($tahun == null && $tahun != null)) {
+        if ($bulan == null && $tahun == null || $bulan && $tahun == null) {
 
-           foreach ($tahun_get as $tahuns) {
+            foreach ($tahun_get as $tahuns) {
                 $nominal_pemasukan_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
                     ->where('laporan.status_cek', 'Sudah Dicek')
                     ->where('klasifikasi_laporan', 'Pemasukan')
