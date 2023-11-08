@@ -13,6 +13,7 @@ use App\Http\Controllers\LaporanPengeluaranController;
 use App\Http\Controllers\PdfPemasukanController;
 use App\Http\Controllers\PdfPengeluaranController;
 use App\Http\Controllers\PrintLaporanPemasukan;
+use App\Http\Controllers\PrintLaporanPengeluaran;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,8 +80,11 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
 
     Route::get('/print_laporan_pemasukan/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan'])->name('print_laporan_pemasukan');
     Route::get('/print_laporan_pemasukan_a4/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan_a4'])->name('print_laporan_pemasukan_a4');
-    Route::post('/cetak-laporan', [LaporanPemasukanController::class, 'cetakLaporan'])->name('cetak.laporan');
 
+    Route::get('/print_laporan_pengeluaran/{id}', [PrintLaporanPengeluaran::class, 'print_laporan_pengeluaran'])->name('print_laporan_pengeluaran');
+    Route::get('/print_laporan_pengeluaran_a4/{id}', [PrintLaporanPengeluaran::class, 'print_laporan_pengeluaran_a4'])->name('print_laporan_pengeluaran_a4');
+
+    Route::post('/cetak-laporan', [LaporanPemasukanController::class, 'cetakLaporan'])->name('cetak.laporan');
 });
 
 Route::group(['middleware' => 'role:owner'], function () {

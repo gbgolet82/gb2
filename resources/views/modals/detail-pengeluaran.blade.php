@@ -127,7 +127,7 @@
         </div>
 
 
-        <div class="d-flex bd-highlight justify-content-end mt-3">
+        {{-- <div class="d-flex bd-highlight justify-content-end mt-3">
             <div class="bd-highlight">
                 <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal" id="resetData"><i
                         class="fa fa-ban"></i> Batal</button>
@@ -145,6 +145,48 @@
                 </button>
 
             </div>
+        </div> --}}
+
+
+        <div class="d-flex bd-highlight justify-content-end mt-3">
+            <div class="bd-highlight">
+                <div class="d-flex flex-wrap"> <!-- Added a flex-wrap container -->
+                    <button type="button" class="btn btn-secondary mb-2 mr-2" data-dismiss="modal" id="resetData">
+                        <i class="fa fa-ban"></i> Batal
+                    </button>
+
+                    @php
+                        $acc = ($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) || $selectedRole == 'manajer';
+                    @endphp
+
+                    @if ($acc)
+                        <button type="{{ $pengeluaran->status_cek === 'Sudah Dicek' ? 'button' : 'submit' }}"
+                            class="btn btn-success text-white toastrDefaultSuccess {{ $pengeluaran->status_cek === 'Sudah Dicek' ? 'disabled' : '' }}"
+                            id="simpanAcc">
+                            <i class="fas fa-check-circle"></i> ACC
+                        </button>
+                    @else
+                        <div class="dropdown">
+                            <button class="btn btn-success text-white toastrDefaultSuccess dropdown-toggle"
+                                type="button" id="printDropdown" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="printDropdown">
+                                <a href="/print_laporan_pengeluaran/{{ $pengeluaran->id_laporan }}" target="_blank"
+                                    class="dropdown-item">
+                                    <i class="fas fa-print"></i> Print Struck
+                                </a>
+                                <a class="dropdown-item"
+                                    href="/print_laporan_pengeluaran_a4/{{ $pengeluaran->id_laporan }}" target="_blank">
+                                    <i class="fas fa-print"></i> Print A4
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
+
     </div>
 </form>

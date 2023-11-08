@@ -347,6 +347,7 @@
                                                     data-target="#lihatPemasukan{{ $pemasukan->id_laporan }}">
                                                     {{ $pemasukan->kode_laporan }}
                                                 </a>
+                                                <br>
                                                 <span class="text-white badge badge-{{ $warna }}"
                                                     style="font-size: 12px; border-radius: 10px;">{{ $pemasukan->status_cek }}</span>
 

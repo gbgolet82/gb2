@@ -33,8 +33,57 @@ class LabaRugiController extends Controller
         $tahun = '';
         $usaha = '';
 
+        if ($bulan == null && $tahun == null || $bulan && $tahun == null) {
 
-        return view('contents.laba_rugi', compact('active_page', 'usahaOption', 'tahun', 'tahun_get', 'bulan', 'usaha'));
+            $nominal_pemasukan_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                ->where('laporan.status_cek', 'Sudah Dicek')
+                ->where('klasifikasi_laporan', 'Pemasukan')
+                // ->whereYear('tanggal_laporan', $tahun)
+                ->when($usaha, function ($query) use ($usaha) {
+                    return $query->where('id_usaha', $usaha);
+                })
+                ->sum('nominal');
+
+            $nominal_pengeluaran_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                ->where('laporan.status_cek', 'Sudah Dicek')
+                ->where('klasifikasi_laporan', '!=', 'Pemasukan')
+                // ->whereYear('tanggal_laporan', $tahun)
+                ->when($usaha, function ($query) use ($usaha) {
+                    return $query->where('id_usaha', $usaha);
+                })
+                ->sum('nominal');
+
+            // dd($nominal_pemasukan_tahunan);
+
+            // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
+            $keuntungan_tahunan = $nominal_pemasukan_tahunan - $nominal_pengeluaran_tahunan;
+
+            $nominal_tahun_pemasukan = $nominal_pemasukan_tahunan;
+            $nominal_tahun_pengeluaran = $nominal_pengeluaran_tahunan;
+            $nominal_tahun_keuntungan = $keuntungan_tahunan;
+
+            $nominal_pemasukan_harian_max = '';
+            $nominal_keuntungan_harian_max = '';
+            $nominal_pemasukan_harian_min = '';
+            $nominal_keuntungan_harian_min = '';
+        }
+
+
+        return view('contents.laba_rugi', compact(
+            'active_page',
+            'usahaOption',
+            'tahun',
+            'tahun_get',
+            'bulan',
+            'usaha',
+            'nominal_tahun_pemasukan',
+            'nominal_tahun_pengeluaran',
+            'nominal_tahun_keuntungan',
+            'nominal_pemasukan_harian_max',
+            'nominal_keuntungan_harian_max',
+            'nominal_pemasukan_harian_min',
+            'nominal_keuntungan_harian_min',
+        ));
     }
 
     public function filter_laba_rugi(Request $request)
@@ -79,6 +128,11 @@ class LabaRugiController extends Controller
         $nominal_harian_pemasukan = [];
         $nominal_harian_pengeluaran = [];
         $nominal_harian_keuntungan = [];
+        $nominal_pemasukan_harian_max = '';
+        $nominal_keuntungan_harian_max = '';
+        $nominal_pemasukan_harian_min = '';
+        $nominal_keuntungan_harian_min = '';
+
 
         if ($bulan && $tahun) {
             for ($tgl = 1; $tgl <= 31; $tgl++) {
@@ -88,6 +142,9 @@ class LabaRugiController extends Controller
                     ->whereMonth('tanggal_laporan', $bulan)
                     ->whereYear('tanggal_laporan', $tahun)
                     ->whereDay('tanggal_laporan', str_pad($tgl, 2, '0', STR_PAD_LEFT))
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
                     ->sum('nominal');
 
                 $nominal_pengeluaran_harian = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
@@ -96,14 +153,23 @@ class LabaRugiController extends Controller
                     ->whereMonth('tanggal_laporan', $bulan)
                     ->whereYear('tanggal_laporan', $tahun)
                     ->whereDay('tanggal_laporan', str_pad($tgl, 2, '0', STR_PAD_LEFT))
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
                     ->sum('nominal');
 
+                // dd($nominal_pemasukan_harian_max);
                 // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
                 $keuntungan_harian = $nominal_pemasukan_harian - $nominal_pengeluaran_harian;
 
                 $nominal_harian_pemasukan[] = $nominal_pemasukan_harian;
                 $nominal_harian_pengeluaran[] = $nominal_pengeluaran_harian;
                 $nominal_harian_keuntungan[] = $keuntungan_harian;
+
+                $nominal_keuntungan_harian_max = max($nominal_harian_keuntungan);
+                $nominal_keuntungan_harian_min = min($nominal_harian_keuntungan);
+                $nominal_pemasukan_harian_max = max($nominal_harian_pemasukan);
+                $nominal_pemasukan_harian_min = min($nominal_harian_pemasukan);
             }
         }
 
@@ -113,13 +179,16 @@ class LabaRugiController extends Controller
         $nominal_bulan_keuntungan = [];
 
         if ($bulan == null && $tahun) {
-    
+
             for ($bulans = 1; $bulans <= 12; $bulans++) {
                 $nominal_pemasukan_bulanan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
                     ->where('laporan.status_cek', 'Sudah Dicek')
                     ->where('klasifikasi_laporan', 'Pemasukan')
                     ->whereMonth('tanggal_laporan', str_pad($bulans, 2, '0', STR_PAD_LEFT))
                     ->whereYear('tanggal_laporan', $tahun)
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
                     ->sum('nominal');
 
                 $nominal_pengeluaran_bulanan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
@@ -127,6 +196,9 @@ class LabaRugiController extends Controller
                     ->where('klasifikasi_laporan', '!=', 'Pemasukan')
                     ->whereMonth('tanggal_laporan', str_pad($bulans, 2, '0', STR_PAD_LEFT))
                     ->whereYear('tanggal_laporan', $tahun)
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
                     ->sum('nominal');
 
                 // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
@@ -137,6 +209,49 @@ class LabaRugiController extends Controller
                 $nominal_bulan_keuntungan[] = $keuntungan_bulanan;
             }
         }
+
+
+        $nominal_tahun_pemasukan = [];
+        $nominal_tahun_pengeluaran = [];
+        $nominal_tahun_keuntungan = [];
+
+        if (($tahun == null && $tahun == null) || ($tahun == null && $tahun != null)) {
+
+           foreach ($tahun_get as $tahuns) {
+                $nominal_pemasukan_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', 'Pemasukan')
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
+                    ->whereYear('tanggal_laporan', $tahuns->tahun)
+                    ->sum('nominal');
+
+                $nominal_pengeluaran_tahunan = Laporan::join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
+                    ->where('laporan.status_cek', 'Sudah Dicek')
+                    ->where('klasifikasi_laporan', '!=', 'Pemasukan')
+                    ->when($usaha, function ($query) use ($usaha) {
+                        return $query->where('id_usaha', $usaha);
+                    })
+                    ->whereYear('tanggal_laporan', $tahuns->tahun)
+                    ->sum('nominal');
+
+                // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
+                $keuntungan_tahunan = $nominal_pemasukan_tahunan - $nominal_pengeluaran_tahunan;
+
+                $nominal_tahun_pemasukan[] = $nominal_pemasukan_tahunan;
+                $nominal_tahun_pengeluaran[] = $nominal_pengeluaran_tahunan;
+                $nominal_tahun_keuntungan[] = $keuntungan_tahunan;
+            }
+
+            // dd($nominal_tahun_keuntungan);
+        }
+        // dd($keuntungan_tahunan );
+
+        // dd($nominal_pemasukan_tahunan);
+
+
+
 
         return view('contents.laba_rugi', compact(
             'active_page',
@@ -151,6 +266,13 @@ class LabaRugiController extends Controller
             'nominal_bulan_pemasukan',
             'nominal_bulan_pengeluaran',
             'nominal_bulan_keuntungan',
+            'nominal_tahun_pemasukan',
+            'nominal_tahun_pengeluaran',
+            'nominal_tahun_keuntungan',
+            'nominal_pemasukan_harian_max',
+            'nominal_keuntungan_harian_max',
+            'nominal_pemasukan_harian_min',
+            'nominal_keuntungan_harian_min',
 
         ));
     }

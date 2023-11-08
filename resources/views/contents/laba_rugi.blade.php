@@ -271,8 +271,8 @@
                                                                     {{ request('usaha') == '' ? 'selected' : '' }}>Semua
                                                                     Data</option>
                                                                 @foreach ($usahaOption as $dataUsaha)
-                                                                    <option value="{{ $dataUsaha->nama_usaha }}"
-                                                                        {{ request('usaha') == $dataUsaha->nama_usaha ? 'selected' : '' }}>
+                                                                    <option value="{{ $dataUsaha->id_usaha }}"
+                                                                        {{ request('usaha') == $dataUsaha->id_usaha ? 'selected' : '' }}>
                                                                         {{ $dataUsaha->nama_usaha }}
                                                                     </option>
                                                                 @endforeach
@@ -282,7 +282,7 @@
 
                                                     <div class="col-12 col-md-3 mb-2">
                                                         <div class="input-group">
-                                                            <button class="btn btn-outline-danger"
+                                                            <button class="btn btn-outline-danger" id="printButton"
                                                                 style="border-radius: 10px; width: 100%;" type="button"
                                                                 data-toggle="modal" data-target="#eksporData"
                                                                 aria-expanded="false">
@@ -293,7 +293,8 @@
                                                     <br> <br>
                                                     <div class="col-12 col-md-12 mb-2 mb-md-0 align-self-center">
                                                         <span style="font-size: 16px;"><i class="fas fa-info-circle"></i>
-                                                            Pilih filter untuk menampilkan data</span>
+                                                            Pilih filter untuk menampilkan data. (hanya menampilkan laporan
+                                                            yang sudah dicek)</span>
                                                     </div>
 
 
@@ -315,10 +316,18 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h5 font-weight-bold mb-3">Keuntungan Tertinggi
+                                                        <div class="h6 mb-3">Keuntungan Tertinggi
                                                         </div>
-                                                        <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">
-                                                            November 2023</div>
+                                                        @if ($bulan && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                {{ $nominal_keuntungan_harian_max }}</div>
+                                                        @elseif($bulan == null && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Bulan</div>
+                                                        @else
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Tahun</div>
+                                                        @endif
                                                     </div>
                                                     <div class="col-auto">
 
@@ -332,10 +341,18 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h5 font-weight-bold mb-3">Keuntungan Terendah
+                                                        <div class="h6 mb-3">Keuntungan Terendah
                                                         </div>
-                                                        <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">
-                                                            November 2023</div>
+                                                        @if ($bulan && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                {{ $nominal_keuntungan_harian_min }}</div>
+                                                        @elseif($bulan == null && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Bulan</div>
+                                                        @else
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Tahun</div>
+                                                        @endif
                                                     </div>
                                                     <div class="col-auto">
 
@@ -349,11 +366,19 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h5 font-weight-bold mb-3"> Pemasukan Tertinggi
+                                                        <div class="h6 mb-3"> Pemasukan Tertinggi
 
                                                         </div>
-                                                        <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">
-                                                            November 2023</div>
+                                                        @if ($bulan && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                {{ $nominal_pemasukan_harian_max }}</div>
+                                                        @elseif($bulan == null && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Bulan</div>
+                                                        @else
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Tahun</div>
+                                                        @endif
                                                     </div>
                                                     <div class="col-auto">
 
@@ -367,11 +392,19 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h5 font-weight-bold mb-3">Pemasukan Terendah
+                                                        <div class="h6 mb-3">Pemasukan Terendah
 
                                                         </div>
-                                                        <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">
-                                                            November 2023</div>
+                                                        @if ($bulan && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                {{ $nominal_pemasukan_harian_min }}</div>
+                                                        @elseif($bulan == null && $tahun)
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Bulan</div>
+                                                        @else
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                Tampil Tahun</div>
+                                                        @endif
                                                     </div>
                                                     <div class="col-auto">
 
@@ -398,6 +431,17 @@
 @endsection
 
 @push('script')
+    <script>
+        // Fungsi untuk menjalankan pencetakan otomatis
+        function autoPrint() {
+            // Mencetak halaman saat tombol ditekan
+            window.print();
+        }
+
+        // Menambahkan event listener ke tombol
+        const printButton = document.getElementById("printButton");
+        printButton.addEventListener("click", autoPrint);
+    </script>
     <script>
         @if ($bulan == null && $tahun)
 
@@ -567,18 +611,18 @@
         @else
 
             var ctx = document.getElementById('myChart');
-            var tahunData = <?= json_encode($tahun_get->pluck('tahun')->toArray()) ?>; // Mengambil tahun dari hasil query
-            // Anda dapat menyesuaikan tahun yang diambil sesuai dengan hasil query
+            var tahunData = <?= json_encode($tahun_get->pluck('tahun')->toArray()) ?>;
+
+            // Mengurutkan tahunData secara ascending
+            tahunData.sort(function(a, b) {
+                return a - b;
+            });
 
             // Data dummy untuk keuntungan, pemasukan, dan pengeluaran (sesuai jumlah tahun)
             var dataKeuntungan = [];
             var dataPemasukan = [];
             var dataPengeluaran = [];
-            for (var i = 0; i < tahunData.length; i++) {
-                dataKeuntungan.push(Math.random() * 100000);
-                dataPemasukan.push(Math.random() * 100000);
-                dataPengeluaran.push(Math.random() * 100000);
-            }
+         
 
             // Data untuk grafik
             var config = {
@@ -593,7 +637,11 @@
                             borderWidth: 3,
                             fill: false,
                             xAxisID: "axis-bar",
-                            data: dataKeuntungan
+                            data: [
+                                <?php foreach ($nominal_tahun_keuntungan as $keuntungan_tahunan) : ?>
+                                <?= $keuntungan_tahunan ?>,
+                                <?php endforeach; ?>
+                            ]
                         },
                         {
                             label: "Pemasukan",
@@ -603,7 +651,11 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data: dataPemasukan
+                            data: [
+                                <?php foreach ($nominal_tahun_pemasukan as $nominal_pemasukan_th) : ?>
+                                <?= $nominal_pemasukan_th ?>,
+                                <?php endforeach; ?>
+                            ]
                         },
                         {
                             label: "Pengeluaran",
@@ -613,7 +665,11 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data: dataPengeluaran
+                            data:[
+                                <?php foreach ($nominal_tahun_pengeluaran as $nominal_pengeluaran_th) : ?>
+                                <?= $nominal_pengeluaran_th ?>,
+                                <?php endforeach; ?>
+                            ]
                         }
                     ]
                 }

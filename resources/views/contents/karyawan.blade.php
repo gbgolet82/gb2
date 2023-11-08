@@ -26,77 +26,7 @@
     <!-- /.content-header -->
 
     <!-- card -->
-    <section class="content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xl-3 col-md-6 mb-2">
-                    <div class="card ijo-kiri">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="h5 font-weight-bold mb-3">Jumlah <br>Karyawan
-                                    </div>
-                                    <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">11 Orang</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-users fa-3x text-gray"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-2">
-                    <div class="card ijo-kiri">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="h5 font-weight-bold mb-3">Jumlah <br>Manajer
-                                    </div>
-                                    <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">11 Orang</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-users fa-3x text-gray"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-2">
-                    <div class="card ijo-kiri">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="h5 font-weight-bold mb-3"> Jumlah <br>Kasir
-                                    </div>
-                                    <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">11 Orang</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-users fa-3x text-gray"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mb-2">
-                    <div class="card ijo-kiri">
-                        <div class="card-body">
-                            <div class="row no-gutters align-items-center">
-                                <div class="col mr-2">
-                                    <div class="h5 font-weight-bold mb-3">Manajer & <br>Kasir
-                                    </div>
-                                    <div class="h5 mb-0 font-weight-bold mb-1" style="color: #28a745">11 Orang</div>
-                                </div>
-                                <div class="col-auto">
-                                    <i class="fas fa-users fa-3x text-gray"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+  
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
@@ -110,6 +40,7 @@
                                         <h4 style="color:#28a745;">DATA KARYAWAN</h4>
                                     </strong>
                                 </div>
+                                
                                 <div class="col-9">
                                     <div class="card">
                                         <div class="card-body">
@@ -172,6 +103,73 @@
                                                 </div>
                                             </div>
 
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xl-3 col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="h6 mb-3">Jumlah Karyawan
+                                                    </div>
+                                                    <div class="h6 mb-0 mb-1" style="color: #28a745">-</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="h6 mb-3">Jumlah Manajer
+                                                    </div>
+                                                    <div class="h6 mb-0 mb-1" style="color: #28a745">-</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="h6 mb-3"> Jumlah Kasir
+                                                    </div>
+                                                    <div class="h6 mb-0 mb-1" style="color: #28a745">-</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col mr-2">
+                                                    <div class="h6 mb-3">Manajer & Kasir
+                                                    </div>
+                                                    <div class="h6 mb-0 mb-1" style="color: #28a745">-</div>
+                                                </div>
+                                                <div class="col-auto">
+                                                   
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -145,7 +145,7 @@
                     @endphp
 
                     @if ($acc)
-                        <button type="submit"
+                        <button type="{{ $pemasukan->status_cek === 'Sudah Dicek' ? 'button' : 'submit' }}"
                             class="btn btn-success text-white toastrDefaultSuccess {{ $pemasukan->status_cek === 'Sudah Dicek' ? 'disabled' : '' }}"
                             id="simpanAcc">
                             <i class="fas fa-check-circle"></i> ACC

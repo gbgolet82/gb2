@@ -79,7 +79,7 @@ class LoginController extends Controller
 
         if ($karyawanRoles->count() == 1) {
             if ($karyawanRoles->contains('owner')) {
-                return redirect()->route('dashboard');
+                return redirect()->route('laba_rugi');
             } else {
                 return redirect()->route('pemasukan_blm');
             }

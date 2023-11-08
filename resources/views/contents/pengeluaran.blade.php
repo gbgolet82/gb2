@@ -337,6 +337,7 @@
                                                     data-target="#lihatPengeluaran{{ $pengeluaran->id_laporan }}">
                                                     {{ $pengeluaran->kode_laporan }}
                                                 </a>
+                                                <br>
                                                 <span class="text-white badge badge-{{ $warna }}"
                                                     style="font-size: 12px; border-radius: 10px;">{{ $pengeluaran->status_cek }}</span>
 

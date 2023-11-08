@@ -106,19 +106,18 @@
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                 data-accordion="false">
                 @if ($owner)
-                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                    {{-- <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
                         <li class="nav-item @yield('dashboard')">
                             <a href="{{ route('dashboard') }}"
                                 class="nav-link @if (Request::url() == route('dashboard')) active @endif">
-                                {{-- <i class="nav-icon fas fa-users"></i> --}}
                                 <i class="bi bi-house-door-fill custom-icon"></i>
                                 <p>
                                     Dashboard
                                 </p>
                             </a>
                         </li>
-                    </ul>
+                    </ul> --}}
                     <li class="nav-header font-weight-bolder">Data Master</li>
                     <li class="nav-item @yield('usaha')">
                         <a href="{{ route('usaha') }}" class="nav-link @if (Request::url() == route('usaha')) active @endif">
