@@ -107,4 +107,3 @@ Route::group(['middleware' => 'role:owner'], function () {
 
 
 Route::get('/filter_laba_rugi', [LabaRugiController::class, 'filter_laba_rugi'])->name('filter_laba_rugi');
-Route::get('/filter_pemasukan', [LaporanPemasukanController::class, 'index'])->name('filter_pemasukan');
