@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataUsahaController;
 use App\Http\Controllers\DataKaryawanController;
+use App\Http\Controllers\ExcelPemasukanBelumDicekController;
 use App\Http\Controllers\LaporanPemasukanController;
 use App\Http\Controllers\KlasifikasiLaporanController;
 use App\Http\Controllers\LabaRugiController;

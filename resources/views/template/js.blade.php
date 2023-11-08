@@ -62,7 +62,7 @@
             url: '/pemasukan-sudah-cek',
             method: 'GET',
             success: function(response) {
-                console.log(response);
+                // console.log(response);
                 $('#jumlah-sudah-dicek').text(response.jumlah);
             },
             error: function(error) {
@@ -154,7 +154,6 @@
 {{-- export data akun ke excel --}}
 <script src="https://cdn.rawgit.com/rainabba/jquery-table2excel/1.1.0/dist/jquery.table2excel.min.js"></script>
 
-
 <script>
     $(document).ready(function() {
         // $('.select2').select2();
@@ -222,7 +221,15 @@
 
 <script>
     $(document).ready(function() {
-        let table = $('#klasifikasiAkun').DataTable();
+        let table = $('#klasifikasiAkun').DataTable({
+            "lengthMenu": [
+                [10, 50, 100, 200, -1],
+                [10, 50, 100, 200, "All"]
+            ],
+            "pageLength": -1
+        });
+
+
         let klasifikasiSelect = $('#klasifikasi');
         let usahaSelect = $('#inputGroupSelect01');
         let akunSelect = $('#inputGroupSelect02');
@@ -295,6 +302,3 @@
         });
     });
 </script>
-
-
-

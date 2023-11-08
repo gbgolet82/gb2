@@ -132,22 +132,22 @@
                                             </div>
                                             <div class="row ">
                                                 <div class="col-12 col-md-3 ml-auto">
-                                                    <div class="row">
+                                                    {{-- <div class="row">
                                                         <div class="col-6">
                                                             <button class="btn btn-outline-danger"
                                                                 style="border-radius: 10px; width: 100%;" type="button"
                                                                 id="previewPdfButton">
                                                                 <i class="fas fa-file-pdf"></i> Pdf
                                                             </button>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <button id="exportButton" class="btn btn-outline-success"
-                                                                style="border-radius: 10px; width:100%" type="button"
-                                                                data-export="klasifikasiAkun">
-                                                                <i class="fas fa-file-excel"></i> Export
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                                        </div> --}}
+                                                    {{-- <div class="col-12"> --}}
+                                                    <button id="exportButton" class="btn btn-outline-success"
+                                                        style="border-radius: 10px; width:100%" type="button"
+                                                        data-export="klasifikasiAkun">
+                                                        <i class="fas fa-file-excel"></i> Export
+                                                    </button>
+                                                    {{-- </div> --}}
+                                                    {{-- </div> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -260,6 +260,32 @@
         @endif
     </script>
 
+    <script>
+        $(document).ready(function() {
+            // Tangani klik tombol Simpan
+            $('#simpanButton').click(function() {
+                // Tampilkan modal validasi
+                $('#validasiModal').modal('show');
+            });
+
+            // Tangani klik tombol Batal pada modal validasi
+            $('#close').click(function() {
+                // Sembunyikan modal validasi
+                $('#validasiModal').modal('hide');
+                // Kembalikan modal tambahData
+                $('#tambahData').modal('show');
+            });
+
+            // Tangani klik tombol Batal pada modal validasi
+            $('#batalButton').click(function() {
+                // Sembunyikan modal validasi
+                $('#validasiModal').modal('hide');
+                // Kembalikan modal tambahData
+                $('#tambahData').modal('show');
+            });
+        });
+    </script>
+
     <style>
         .modal-trigger {
             cursor: pointer;
@@ -313,7 +339,7 @@
                 var akun = $('#inputGroupSelect02').val();
 
                 // Create a flag to determine if any filters are applied
-                var filtersApplied = (klasifikasi !== 'Semua Data' && usaha !== 'Semua Data' && akun !==
+                var filtersApplied = (klasifikasi !== 'Semua Data' || usaha !== 'Semua Data' || akun !==
                     'Semua Data');
 
                 // Create a new table for exporting
@@ -322,20 +348,21 @@
                 // Check if no filters are applied, export all data
                 if (!filtersApplied) {
                     exportTable.table2excel({
-                        name: "Klasifikasi&Akun",
-                        filename: "Klasifikasi&Akun.xlsx"
+                        name: "Akun",
+                        filename: "Akun.xlsx"
                     });
                 } else {
                     // If any filter is applied, remove rows that don't match the selected filters
                     exportTable.find('tbody tr').each(function() {
+
                         var row = $(this);
                         var klasifikasiColumn = row.find('td:eq(1)').text();
                         var usahaColumn = row.find('td:eq(2)').text();
                         var akunColumn = row.find('td:eq(3)').text();
 
                         // Check if the row matches the selected filters
-                        if ((klasifikasi === 'Semua Data' || klasifikasi === klasifikasiColumn) &&
-                            (usaha === 'Semua Data' || usaha === usahaColumn) &&
+                        if ((klasifikasi === 'Semua Data' || klasifikasi === klasifikasiColumn) ||
+                            (usaha === 'Semua Data' || usaha === usahaColumn) ||
                             (akun === 'Semua Data' || akun === akunColumn)) {
                             // If the row matches the selected filters, keep it
                             // Do nothing to this row, it will be included in the export
@@ -346,9 +373,9 @@
                     });
 
                     // Export the filtered table to Excel
-                    var filename = "Klasifikasi&Akun.xlsx";
+                    var filename = "Akun.xlsx";
                     exportTable.table2excel({
-                        name: "Klasifikasi&Akun",
+                        name: "Akun",
                         filename: filename
                     });
                 }
