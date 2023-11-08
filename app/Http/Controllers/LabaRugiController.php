@@ -20,7 +20,7 @@ class LabaRugiController extends Controller
         $tahun_get = Laporan::distinct()
             ->selectRaw('YEAR(tanggal_laporan) as tahun')
             ->get();
-        // dd($tahun);
+            // dd($tahun);
 
         // $tanggalAwal = date('Y-m-d', strtotime(str_replace('/', '-', '-30 days')));
         // $tanggalAkhir = date('Y-m-d', strtotime(str_replace('/', '-', 'now')));
@@ -92,6 +92,8 @@ class LabaRugiController extends Controller
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $usaha = $request->usaha;
+        // dd($bulan);
+        
 
         // Mengambil tanggal dari input request
         $tanggal = $request->filter_daterange;
@@ -174,9 +176,9 @@ class LabaRugiController extends Controller
         }
 
 
-        $nominal_bulan_pemasukan = [];
-        $nominal_bulan_pengeluaran = [];
-        $nominal_bulan_keuntungan = [];
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $usaha = $request->usaha;
 
         if ($bulan == null && $tahun) {
 

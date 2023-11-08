@@ -171,8 +171,6 @@
                                     <div class="card col-12">
                                         <div class="card-body p-3">
 
-
-
                                             <form action="{{ route('filter_laba_rugi') }}" method="GET">
                                                 <div class="row">
 

@@ -53,6 +53,11 @@
                                         @endif
                                     @endforeach
                                 </select>
+                                @error('usaha')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -75,6 +80,11 @@
                                         @endphp
                                     @endforeach
                                 </select>
+                                @error('akun')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                         <div class="col-md-12" id="inputAkunBaru">
@@ -84,6 +94,11 @@
                                     <input type="text" class="form-control" name="input_Akun_Baru"
                                         placeholder="Masukan Akun Baru">
                                 </div>
+                                @error('input_Akun_Baru')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -111,6 +126,11 @@
                                         @endif
                                     @endforeach
                                 </select>
+                                @error('sub_akun_1')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -122,6 +142,11 @@
                                 <input type="text" class="form-control" name="input_Sub_Akun_1_Baru"
                                     placeholder="Masukan Sub Akun 1 Baru">
                             </div>
+                            @error('input_Sub_Akun_1_Baru')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
 
@@ -146,6 +171,11 @@
                                         @endif
                                     @endforeach
                                 </select>
+                                @error('sub_akun_2')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -157,6 +187,11 @@
                                 <input type="text" class="form-control" name="input_Sub_Akun_2_Baru"
                                     placeholder="Masukan Sub Akun 2 Baru">
                             </div>
+                            @error('input_Sub_Akun_2_Baru')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
 
@@ -181,6 +216,11 @@
                                         @endif
                                     @endforeach
                                 </select>
+                                @error('sub_akun_3')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -192,6 +232,11 @@
                                 <input type="text" class="form-control" name="input_Sub_Akun_3_Baru"
                                     placeholder="Masukan Sub Akun 3 Baru">
                             </div>
+                            @error('input_Sub_Akun_3_Baru')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
 
@@ -204,7 +249,11 @@
                                         <input type="text" class="form-control" name="bukti_valid_100rb"
                                             id="buktiValid100rb" placeholder="Masukan Bukti Valid (<100rb)">
                                     </div>
-
+                                    @error('bukti_valid_100rb')
+                                        <div class="invalid-feedback">
+                                            {{ $message }}
+                                        </div>
+                                    @enderror
                         </div>
                         <div class="form-group col-md-6">
                             <label for="cariBuktiValid">BUKTI VALID (>100rb) &nbsp;</label>
@@ -214,27 +263,116 @@
                                 <input type="text" class="form-control" name="bukti_valid_lebih100rb"
                                     id="buktiValidlebih100rb" placeholder="Masukan Bukti Valid (>100rb)">
                             </div>
+                            @error('bukti_valid_lebih100rb')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
                 </div>
             </div>
             {{-- <div class="modal-footer"> --}}
-            {{-- <button type="submit" class="btn btn-primary">Save changes</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> --}}
-            <div class="d-flex bd-highlight justify-content-end mt-3">
+            {{-- <div class="d-flex bd-highlight justify-content-end mt-3">
                 <div class="bd-highlight">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetData2"><i
                             class="fa fa-ban"></i>
                         Tutup</button>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Simpan</button>
-                    {{-- <button type="submit" class="btn btn-success text-white toastrDefaultSuccess" id="simpanAkun"
-                        onclick="console.log('Tombol Simpan Diklik')"><i class="fas fa-save"></i> Simpan</button> --}}
+                    <button type="submit" class="btn bg-success"><i class="fas fa-save"></i> Simpan</button>
+                </div>
+            </div> --}}
+
+            <div class="d-flex bd-highlight justify-content-end mt-3">
+                <div class="bd-highlight">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetData2">
+                        <i class="fa fa-ban"></i> Tutup
+                    </button>
+                    <button type="button" class="btn bg-success" id="simpanButton">
+                        <i class="fas fa-save"></i> Simpan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="validasiModal" tabindex="-1" role="dialog"
+                aria-labelledby="validasiModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="validasiModalLabel">Konfirmasi Simpan</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah Anda yakin ingin menyimpan?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                Batal
+                            </button>
+                            <button type="submit" class="btn bg-success" id="konfirmasiSimpan">
+                                Ya, Simpan
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </form>
 @push('script')
+    <script>
+        document.getElementById("simpanButton").addEventListener("click", function() {
+            // Tampilkan modal validasi
+            $('#validasiModal').modal('show');
+        });
+
+        document.getElementById("konfirmasiSimpan").addEventListener("click", function() {
+            // Sembunyikan modal validasi
+            $('#validasiModal').modal('hide');
+
+            // Sembunyikan tombol Simpan dan tampilkan tombol Batal
+            document.getElementById("simpanButton").style.display = "none";
+        });
+    </script>
+
+    {{-- untuk membuat bukti valid berdasarkan akun --}}
+    <script>
+        function loadBuktiValid() {
+            var selectAkun = document.getElementById("inputGroupAkun");
+            var inputBuktiValid100rb = document.getElementById("buktiValid100rb");
+            var inputBuktiValidLebih100rb = document.getElementById("buktiValidlebih100rb");
+            var selectedAkunValue = selectAkun.value;
+
+            if (selectedAkunValue === "tambah-akun-baru") {
+                // Jika memilih "Tambah Akun Baru", izinkan pengguna memasukkan data baru
+                inputBuktiValid100rb.value = "";
+                inputBuktiValidLebih100rb.value = "";
+                inputBuktiValid100rb.removeAttribute("readonly");
+                inputBuktiValidLebih100rb.removeAttribute("readonly");
+            } else {
+                var selectedAkunData = dataAkun.find(function(akun) {
+                    return akun.akun === selectedAkunValue;
+                });
+
+                if (selectedAkunData) {
+                    inputBuktiValid100rb.value = selectedAkunData.bukti_valid_100rb;
+                    inputBuktiValidLebih100rb.value = selectedAkunData.bukti_valid_lebih100rb;
+                    inputBuktiValid100rb.setAttribute("readonly", "readonly");
+                    inputBuktiValidLebih100rb.setAttribute("readonly", "readonly");
+                } else {
+                    inputBuktiValid100rb.value = "";
+                    inputBuktiValidLebih100rb.value = "";
+                }
+            }
+        }
+
+        var selectAkun = document.getElementById("inputGroupAkun");
+        selectAkun.addEventListener("change", loadBuktiValid);
+    </script>
+
+
     <!-- JavaScript untuk Mereset Data -->
     <script>
         document.getElementById("resetData1").addEventListener("click", function() {
@@ -332,6 +470,8 @@
             var subAkun1Input = $("#inputGroupSubAkun1");
             var subAkun2Input = $("#inputGroupSubAkun2");
             var subAkun3Input = $("#inputGroupSubAkun3");
+            var buktiValid100rb = $("#buktiValid100rb");
+            var buktiValidlebih100rb = $("#buktiValidlebih100rb");
 
             // Fungsi untuk menonaktifkan elemen
             function disableInputs() {
@@ -339,6 +479,8 @@
                 subAkun1Input.prop('disabled', true);
                 subAkun2Input.prop('disabled', true);
                 subAkun3Input.prop('disabled', true);
+                buktiValid100rb.prop('disabled', true);
+                buktiValidlebih100rb.prop('disabled', true);
             }
 
             // Fungsi untuk mengaktifkan elemen
@@ -347,6 +489,8 @@
                 subAkun1Input.prop('disabled', false);
                 subAkun2Input.prop('disabled', false);
                 subAkun3Input.prop('disabled', false);
+                buktiValid100rb.prop('disabled', false);
+                buktiValidlebih100rb.prop('disabled', false);
             }
 
             // Panggil fungsi disableInputs saat halaman dimuat
@@ -640,65 +784,6 @@
                     });
                 });
             });
-
-            // selectAkun.addEventListener('change', function() {
-            //     var selectedAkun = selectAkun.value;
-
-            //     // Clear existing options for sub_akun_1, sub_akun_2, and sub_akun_3
-            //     selectSubAkun1.innerHTML = '<option selected>Pilih Sub Akun 1</option>';
-            //     selectSubAkun2.innerHTML = '<option selected>Pilih Sub Akun 2</option>';
-            //     selectSubAkun3.innerHTML = '<option selected>Pilih Sub Akun 3</option>';
-
-            //     // Filter and add options for sub_akun_1
-            //     var existingSubAkun1Values = new Set();
-            //     dataAkun.forEach(function(subakun1) {
-            //         if (subakun1.akun === selectedAkun && subakun1.sub_akun_1) {
-            //             if (!existingSubAkun1Values.has(subakun1.sub_akun_1)) {
-            //                 var option = document.createElement('option');
-            //                 option.value = subakun1.sub_akun_1;
-            //                 option.textContent = subakun1.sub_akun_1;
-            //                 selectSubAkun1.appendChild(option);
-
-            //                 existingSubAkun1Values.add(subakun1.sub_akun_1);
-            //             }
-            //         }
-            //     });
-
-            //     // Add the "Tambah Sub Akun 1 Baru" option
-            //     var optionTambahSubAkun1Baru = document.createElement('option');
-            //     optionTambahSubAkun1Baru.value = 'tambah_sub_akun_1_baru';
-            //     optionTambahSubAkun1Baru.textContent = 'Tambah Sub Akun 1 Baru';
-            //     selectSubAkun1.appendChild(optionTambahSubAkun1Baru);
-
-            //     // Hide or show the inputSubAkun1Baru based on the selected option in sub_akun_1
-            //     selectSubAkun1.addEventListener("change", function() {
-            //         if (selectSubAkun1.value === "tambah_sub_akun_1_baru") {
-            //             inputSubAkun1Baru.style.display = "block";
-            //             // Clear sub_akun_2 and sub_akun_3 options when adding a new sub_akun_1
-            //             selectSubAkun2.innerHTML = '<option selected>Pilih Sub Akun 2</option>';
-            //             selectSubAkun3.innerHTML = '<option selected>Pilih Sub Akun 3</option>';
-            //         } else {
-            //             inputSubAkun1Baru.style.display = "none";
-            //             // Filter and add options for sub_akun_2 when a sub_akun_1 is selected
-            //             var selectedSubAkun1 = selectSubAkun1.value;
-            //             var existingSubAkun2Values = new Set();
-            //             dataAkun.forEach(function(subakun2) {
-            //                 if (subakun2.akun === selectedAkun && subakun2.sub_akun_1 ===
-            //                     selectedSubAkun1 && subakun2.sub_akun_2) {
-            //                     if (!existingSubAkun2Values.has(subakun2.sub_akun_2)) {
-            //                         var option = document.createElement('option');
-            //                         option.value = subakun2.sub_akun_2;
-            //                         option.textContent = subakun2.sub_akun_2;
-            //                         selectSubAkun2.appendChild(option);
-            //                         existingSubAkun2Values.add(subakun2.sub_akun_2);
-            //                     }
-            //                 }
-            //             });
-            //         }
-            //     });
-            // });
-
         });
-        // });
     </script>
 @endpush

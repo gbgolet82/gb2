@@ -36,16 +36,16 @@
                     <div class="card card-outline card-success mb-2">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-2 mt-3">
+                                <div class="col-12 col-md-2 mt-3">
                                     <strong class="font-weight-bold text-center">
                                         <h4 style="color:#28a745;">AKUN & SUB AKUN</h4>
                                     </strong>
                                 </div>
-                                <div class="col-10">
+                                <div class="col-12 col-md-10">
                                     <div class="card">
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-12 col-md-4 mb-2">
+                                                <div class="col-12 col-md-3 mb-2">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text"
@@ -69,7 +69,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-2">
+                                                <div class="col-12 col-md-3 mb-2">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text"
@@ -94,7 +94,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div class="col-12 col-md-4 mb-2">
+                                                <div class="col-12 col-md-3 mb-2">
                                                     <div class="input-group">
                                                         <div class="input-group-prepend">
                                                             <span class="input-group-text"
@@ -118,30 +118,7 @@
                                                         </select>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row ">
-                                                <div class="col-12 col-md-3 ml-auto">
-                                                    <div class="row">
-                                                        <div class="col-6">
-                                                            <button class="btn btn-outline-danger"
-                                                                style="border-radius: 10px; width: 100%;"
-                                                                type="button" data-toggle="modal"
-                                                                data-target="#eksporData" aria-expanded="false">
-                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                            </button>
-                                                        </div>
-                                                        <div class="col-6">
-                                                            <button class="btn btn-outline-success"
-                                                                style="border-radius: 10px; width: 100%;"
-                                                                type="button" data-toggle="modal"
-                                                                data-target="#eksporData" aria-expanded="false">
-                                                                <i class="fas fa-file-excel"></i> Excel
-                                                            </button>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 col-md-3">
+                                                <div class="col-12 col-md-3 mb-2">
                                                     <div class="input-group">
                                                         <button class="btn text-white"
                                                             style="background-color: #28a745; width:100%; border-radius: 10px;"
@@ -150,6 +127,26 @@
                                                             <i class="fas fa-plus-circle left-icon-holder"></i>
                                                             Tambah
                                                         </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row ">
+                                                <div class="col-12 col-md-3 ml-auto">
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <button class="btn btn-outline-danger"
+                                                                style="border-radius: 10px; width: 100%;" type="button"
+                                                                id="previewPdfButton">
+                                                                <i class="fas fa-file-pdf"></i> Pdf
+                                                            </button>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <button id="exportButton" class="btn btn-outline-success"
+                                                                style="border-radius: 10px; width:100%" type="button"
+                                                                data-export="klasifikasiAkun">
+                                                                <i class="fas fa-file-excel"></i> Export
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -188,7 +185,8 @@
                                 </div>
                             </div>
 
-                            <table id="klasifikasiAkun" class="table table-bordered table-hover">
+                            <table id="klasifikasiAkun" class="table table-bordered display responsive table-hover"
+                                style="width: 100%">
                                 <thead>
                                     <tr>
                                         <th style="width: 5%">No</th>
@@ -207,7 +205,7 @@
                                         $noUrut = 1;
                                     @endphp
                                     @foreach ($dataAkun as $akun)
-                                        <tr class="modal-trigger" data-toggle="modal"
+                                        <tr class="modal-trigger" data-toggle="modal" id="detailID"
                                             data-target="#detailKlasifikasi{{ $akun->id_key }}">
                                             <td style="width: 3%;">{{ $noUrut++ }}</td>
                                             <td style="width: 18%;">{{ $akun->klasifikasi_laporan }}</td>
@@ -224,19 +222,20 @@
                             </table>
                             @foreach ($dataAkun as $akun)
                                 <div class="modal fade" id="detailKlasifikasi{{ $akun->id_key }}" tabindex="-1"
-                                    role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"
-                                    data-backdrop="static">
+                                    role="dialog" aria-labelledby="detailKlasifikasi{{ $akun->id_key }}"
+                                    aria-hidden="true">
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="staticBackdropLabel">
-                                                    Klasifikasi & Akun
+                                                    Akun & Sub Akun
                                                 </h5>
                                                 <button type="button" class="close" data-dismiss="modal"
                                                     aria-label="Close" id="reset">
                                                     <span aria-hidden="true">&times;</span>
                                                 </button>
                                             </div>
+
                                             @include('modals.detail-klasifikasi')
                                         </div>
                                     </div>
@@ -251,6 +250,16 @@
 @endsection
 
 @push('script')
+    <script>
+        @if (session('error'))
+            var errorModalId = "{{ session('errorModalId') }}";
+            $(document).ready(function() {
+                console.log(errorModalId);
+                $('#detailKlasifikasi' + errorModalId).modal('show');
+            });
+        @endif
+    </script>
+
     <style>
         .modal-trigger {
             cursor: pointer;
@@ -279,75 +288,20 @@
         }
     </style>
 
-    {{-- export data menggunakan times new roman tetapi gridlines nya ilang --}}
-    {{-- <script>
-        $(document).ready(function() {
-            $('#exportButton').click(function() {
-                // Get the selected filter values
-                var klasifikasi = $('#klasifikasi').val();
-                var usaha = $('#inputGroupSelect01').val();
-                var akun = $('#inputGroupSelect02').val();
+    <style>
+        @media (max-width: 767px) {
+            .modal-title {
+                font-size: 1.1rem;
+                /* Atur ukuran font menjadi lebih kecil untuk layar kecil */
+            }
 
-                // Create a flag to determine if any filters are applied
-                var filtersApplied = (klasifikasi !== 'Semua' || usaha !== 'Semua' || akun !== 'Semua');
+            .info-kanan {
+                display: none;
+                /* Sembunyikan elemen "info" pada layar kecil */
+            }
+        }
+    </style>
 
-                // Create a new table for exporting
-                var exportTable = $('#example2').clone();
-
-                // If filters are applied, remove rows that don't match the filters
-                if (filtersApplied) {
-                    exportTable.find('tbody tr').each(function() {
-                        var row = $(this);
-                        var klasifikasiColumn = row.find('td:eq(1)').text();
-                        var usahaColumn = row.find('td:eq(2)').text();
-                        var akunColumn = row.find('td:eq(3)').text();
-
-                        if ((klasifikasi !== 'Semua' && klasifikasi !== klasifikasiColumn) ||
-                            (usaha !== 'Semua' && usaha !== usahaColumn) ||
-                            (akun !== 'Semua' && akun !== akunColumn)) {
-                            row.remove();
-                        }
-                    });
-                }
-
-                // Set the font style to "Times New Roman" for the entire table
-                exportTable.css("font-family", "Times New Roman");
-
-                // Convert the HTML table to Excel and download it
-                var htmlTable = exportTable[0].outerHTML;
-                var blob = new Blob([htmlTable], {
-                    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                });
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement("a");
-                a.href = url;
-                a.download = "klasifikasi&akun.xlsx";
-                a.click();
-            });
-        });
-    </script> --}}
-
-    {{-- filter data --}}
-    {{-- <script>
-        $(document).ready(function() {
-            $('#inputGroupSelect01').change(function() {
-                var selectedOption = $(this).val(); // Mendapatkan nilai yang dipilih
-
-                if (selectedOption === "Semua Data") {
-                    // Jika "Semua Data" dipilih, tampilkan semua data yang sesuai dengan pilihan
-                    // Misalnya, Anda dapat menampilkan semua data yang tersembunyi atau menghapus filter yang ada
-                    $("#data-container .filterable-row").show();
-                } else {
-                    // Logika untuk menampilkan data sesuai dengan nilai yang dipilih
-                    // Misalnya, sembunyikan semua data terlebih dahulu
-                    $("#data-container .filterable-row").hide();
-
-                    // Kemudian tampilkan data yang sesuai dengan pilihan
-                    // Misalnya, $("#data-container .filterable-row[data-usaha='" + selectedOption + "']").show();
-                }
-            });
-        });
-    </script> --}}
 
     {{-- export data --}}
     <script>
@@ -359,40 +313,45 @@
                 var akun = $('#inputGroupSelect02').val();
 
                 // Create a flag to determine if any filters are applied
-                var filtersApplied = (klasifikasi !== 'Semua' || usaha !== 'Semua' || akun !== 'Semua');
+                var filtersApplied = (klasifikasi !== 'Semua Data' && usaha !== 'Semua Data' && akun !==
+                    'Semua Data');
 
                 // Create a new table for exporting
                 var exportTable = $('#klasifikasiAkun').clone();
 
-                // Mengatur gaya font untuk sel tertentu
-                exportTable.find('td').css({
-                    "font-family": "Arial", // Ganti dengan font yang Anda inginkan
-                    "font-size": "12px", // Ganti dengan ukuran font yang Anda inginkan
-                    "font-weight": "bold" // Ganti dengan atribut lain yang Anda inginkan
-                });
-
-                // If filters are applied, remove rows that don't match the filters
-                if (filtersApplied) {
+                // Check if no filters are applied, export all data
+                if (!filtersApplied) {
+                    exportTable.table2excel({
+                        name: "Klasifikasi&Akun",
+                        filename: "Klasifikasi&Akun.xlsx"
+                    });
+                } else {
+                    // If any filter is applied, remove rows that don't match the selected filters
                     exportTable.find('tbody tr').each(function() {
                         var row = $(this);
                         var klasifikasiColumn = row.find('td:eq(1)').text();
                         var usahaColumn = row.find('td:eq(2)').text();
                         var akunColumn = row.find('td:eq(3)').text();
 
-                        if ((klasifikasi !== 'Semua' && klasifikasi !== klasifikasiColumn) ||
-                            (usaha !== 'Semua' && usaha !== usahaColumn) ||
-                            (akun !== 'Semua' && akun !== akunColumn)) {
+                        // Check if the row matches the selected filters
+                        if ((klasifikasi === 'Semua Data' || klasifikasi === klasifikasiColumn) &&
+                            (usaha === 'Semua Data' || usaha === usahaColumn) &&
+                            (akun === 'Semua Data' || akun === akunColumn)) {
+                            // If the row matches the selected filters, keep it
+                            // Do nothing to this row, it will be included in the export
+                        } else {
+                            // If the row does not match the selected filters, remove it
                             row.remove();
                         }
                     });
-                }
 
-                // Export the table to Excel
-                var filename = "Klasifikasi&Akun.xlsx";
-                exportTable.table2excel({
-                    name: "Klasifikasi&Akun",
-                    filename: filename
-                });
+                    // Export the filtered table to Excel
+                    var filename = "Klasifikasi&Akun.xlsx";
+                    exportTable.table2excel({
+                        name: "Klasifikasi&Akun",
+                        filename: filename
+                    });
+                }
             });
         });
     </script>
@@ -416,61 +375,6 @@
         });
     </script>
 
-    {{-- <script>
-        // Fetch data from the controller
-        $.get('/get-data-for-dropdowns', function(data) {
-            var klasifikasiOptions = data.klasifikasiOptions;
-            var usahaOptions = data.usahaOptions;
-            var akunOptions = data.akunOptions;
-
-            // Populate Klasifikasi dropdown
-            var klasifikasiDropdown = $('#klasifikasi');
-            klasifikasiDropdown.empty();
-            klasifikasiDropdown.append('<option value="">Semua Data</option>');
-            klasifikasiOptions.forEach(function(option) {
-                klasifikasiDropdown.append('<option value="' + option + '">' + option + '</option>');
-            });
-
-            // Function to populate Usaha dropdown based on selected Klasifikasi
-            function populateUsahaDropdown(selectedKlasifikasi) {
-                var usahaDropdown = $('#usaha');
-                usahaDropdown.empty();
-                usahaDropdown.append('<option value="">Semua Data</option>');
-                usahaOptions[selectedKlasifikasi].forEach(function(option) {
-                    usahaDropdown.append('<option value="' + option + '">' + option + '</option>');
-                });
-
-                // Trigger change event to update Akun dropdown
-                usahaDropdown.change();
-            }
-
-            // Event listener for changes in the "Klasifikasi" dropdown
-            klasifikasiDropdown.change(function() {
-                var selectedKlasifikasi = $(this).val();
-                populateUsahaDropdown(selectedKlasifikasi);
-            });
-
-            // Function to populate Akun dropdown based on selected Usaha
-            function populateAkunDropdown(selectedUsaha) {
-                var akunDropdown = $('#akun');
-                akunDropdown.empty();
-                akunDropdown.append('<option value="">Semua Data</option>');
-                akunOptions[selectedUsaha].forEach(function(option) {
-                    akunDropdown.append('<option value="' + option + '">' + option + '</option>');
-                });
-            }
-
-            // Event listener for changes in the "Usaha" dropdown
-            $('#usaha').change(function() {
-                var selectedUsaha = $(this).val();
-                populateAkunDropdown(selectedUsaha);
-            });
-
-            // Trigger the initial population of Usaha dropdown
-            klasifikasiDropdown.change();
-        });
-    </script> --}}
-
     <script>
         // Variabel untuk menyimpan data akun dari PHP Blade
         var dataAkun = {!! json_encode($dataAkun) !!};
@@ -486,6 +390,7 @@
             dataAkun = {!! json_encode($dataAkun) !!};
 
             selectedKlasifikasi = klasifikasiDropdown.value;
+            selectedUsaha = usahaDropdown.value;
             usahaDropdown.innerHTML = '<option value="" selected>Semua Data</option>';
             akunDropdown.innerHTML = '<option value="" selected>Semua Data</option>';
 
@@ -502,13 +407,16 @@
                         akunOptions.push(item.akun);
                     }
                 } else if (item.klasifikasi_laporan === selectedKlasifikasi) {
+
                     if (!usahaOptions.includes(item.nama_usaha)) {
                         usahaOptions.push(item.nama_usaha);
                     }
+
                     if (!akunOptions.includes(item.akun)) {
                         akunOptions.push(item.akun);
                     }
                 }
+
             });
 
             usahaOptions.forEach(function(usaha) {
@@ -518,20 +426,71 @@
                 usahaDropdown.appendChild(usahaOption);
             });
 
-            akunOptions.forEach(function(akun) {
-                var akunOption = document.createElement("option");
-                akunOption.value = akun;
-                akunOption.textContent = akun;
-                akunDropdown.appendChild(akunOption);
-            });
-
             if (selectedKlasifikasi === "") {
                 // Jika "Semua Data" dipilih pada klasifikasi, reset nilai usaha dan akun
                 var KlasifikasiOption = document.createElement("option");
                 selectedUsaha = "";
                 selectedAkun = "";
             }
-
         });
+
+        // Event listener untuk dropdown usaha
+        usahaDropdown.addEventListener("change", function() {
+            selectedUsaha = usahaDropdown.value;
+
+            akunDropdown.innerHTML = '<option value="" selected>Semua Data</option>';
+
+            var akunOptions = [];
+
+            dataAkun.forEach(function(item) {
+                if (selectedKlasifikasi === "" || item.klasifikasi_laporan === selectedKlasifikasi) {
+                    if (selectedUsaha === "" || item.nama_usaha === selectedUsaha) {
+                        if (!akunOptions.includes(item.akun)) {
+                            akunOptions.push(item.akun);
+                        }
+                    }
+                }
+            });
+
+            akunOptions.forEach(function(akun) {
+                var akunOption = document.createElement("option");
+                akunOption.value = akun;
+                akunOption.textContent = akun;
+                akunDropdown.appendChild(akunOption);
+            });
+        });
+
+
+        $(document).ready(function() {
+            let id; // Variabel di luar event handler
+
+            // Ketika elemen 'tr' dengan id 'detailID' diklik
+            $('tr#detailID').on('click', function() {
+                console.log('aa');
+                // Ambil nilai dari atribut 'data-target' pada elemen 'tr'
+                var dataTargetValue = $(this).data('target');
+
+                id = dataTargetValue.replace('#detailKlasifikasi', ''); // Mengisi variabel 'id'
+                console.log(id);
+            });
+
+            $('button#batalHapusID').on('click', function() {
+                console.log(id);
+                $('#hapusModalDetail' + id).modal('hide'); // Menggunakan variabel 'id'
+            });
+        });
+    </script>
+
+    <script>
+        // Fungsi untuk menutup modal ubahModalDetail
+        function closeUbahModalDetail() {
+            $('#ubahModalDetail').modal('hide');
+        }
+
+        // Fungsi untuk menutup modal hapusModalDetail
+        // function closeHapusModalDetail() {
+        //     console.log('adsfdsf');
+        //     $('#hapusModalDetail').modal('hide');
+        // }
     </script>
 @endpush

@@ -24,7 +24,8 @@
                             <label for="cariUnitUsaha">ALAMAT USAHA &nbsp;</label>
                             <sup class="badge rounded-pill badge-danger text-white mb-2"
                                 style="background-color:rgba(230,82,82)">WAJIB</sup>
-                            <textarea class="form-control" id="AlamatUsaha" name="alamat_usaha" rows="3" placeholder="Masukan alamat usaha"></textarea>
+                            <textarea class="form-control @error('alamat_usaha') is-invalid @enderror" id="AlamatUsaha" name="alamat_usaha"
+                                rows="3" placeholder="Masukan alamat usaha"></textarea>
                             @error('alamat_usaha')
                                 <div class="invalid-feedback" role="alert">
                                     {{ $message }}
@@ -32,13 +33,13 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="form-row ">
+                    <div class="form-row">
                         <div class="form-group col-md-12">
-                            <label for="cariAkun">JENIS USAHA &nbsp;</label>
+                            <label for="cariJenisUsaha">JENIS USAHA &nbsp;</label>
                             <sup class="badge rounded-pill badge-danger text-white mb-2"
                                 style="background-color:rgba(230,82,82)">WAJIB</sup>
                             <input type="text" class="form-control @error('jenis_usaha') is-invalid @enderror"
-                                id="jenisUsaha" placeholder="Masukan jenis usaha" name="jenis_usaha" value="">
+                                id="jenis_usaha" placeholder="Masukan jenis usaha" name="jenis_usaha" value="">
                             @error('jenis_usaha')
                                 <div class="invalid-feedback" role="alert">
                                     {{ $message }}
@@ -94,11 +95,11 @@
                 // Lakukan validasi input di sini, misalnya:
                 var namaUsaha = $("#namaUsaha").val();
                 var alamatUsaha = $("#AlamatUsaha").val();
-                var jenisUsaha = $("#jenisUsaha").val();
+                var jenisUsaha = $("#jenis_usaha").val();
                 var produkUsaha = $("#produkUsaha").val();
 
                 // Cek apakah semua input telah diisi
-                if (namaUsaha !== '' && alamatUsaha !== '' && jenisUsaha !== '' && produkUsaha !== '') {
+                if (namaUsaha !== '' && alamatUsaha !== '' && produkUsaha !== '' && jenisUsaha !== '') {
                     // Aktifkan tombol Simpan jika semua input valid
                     $('#simpan').prop('disabled', false);
                 } else {
@@ -110,8 +111,8 @@
             // Panggil fungsi validateForm saat input berubah
             $('#namaUsaha').on('change', validateForm);
             $('#AlamatUsaha').on('change', validateForm);
-            $('#jenisUsaha').on('change', validateForm);
             $('#produkUsaha').on('change', validateForm);
+            $('#jenis_usaha').on('change', validateForm);
         });
     </script>
 
@@ -121,7 +122,7 @@
             $('#reset').on('click', function() {
                 $('#namaUsaha').val('');
                 $('#AlamatUsaha').val('');
-                $('#jenisUsaha').val('');
+                $('#jenis_usaha').val('');
                 $('#produkUsaha').val('');
             });
         });
@@ -129,7 +130,7 @@
             $('#resetData').on('click', function() {
                 $('#namaUsaha').val('');
                 $('#AlamatUsaha').val('');
-                $('#jenisUsaha').val('');
+                $('#jenis_usaha').val('');
                 $('#produkUsaha').val('');
             });
         });
