@@ -21,6 +21,8 @@ class LaporanPengeluaranController extends Controller
         // Ambil nilai $pemasukanBelumActive dari sesi
         $pengeluaranBelumActive = session('pengeluaranBelumActive');
         
+        $filterBulan = '';
+        $filterTahun = '';
         // dd($filterDaterange);
         if (
             ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
@@ -29,11 +31,8 @@ class LaporanPengeluaranController extends Controller
                     $filterTahun = $request->input('filter_tahun');
                     // dd($filterBulan);
         } else {
-            $filterDaterange = Carbon::now(); // Mengambil tanggal saat ini
-
-            // Mengambil bulan dan tahun dari tanggal
-            $filterBulan = $filterDaterange->format('m'); 
-            $filterTahun = $filterDaterange->format('Y');
+            $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
+            $filterDate = \Carbon\Carbon::createFromFormat('Y-m-d', $filterDaterange)->format('d F Y');
         }
 
         $selectedKlasifikasi = $request->input('klasifikasi');
@@ -115,7 +114,7 @@ class LaporanPengeluaranController extends Controller
         $jumlah = $data->sum('nominal');
         // dd($jumlah);
 
-        $pdf = PDF::loadView('print.print_pengeluaran_pdf', compact('data', 'selectedKlasifikasi', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'pengeluaranBelumActive', 'count', 'jumlah'));
+        $pdf = PDF::loadView('print.print_pengeluaran_pdf', compact('data', 'selectedKlasifikasi', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'filterDate', 'pengeluaranBelumActive', 'count', 'jumlah'));
         $pdf->setPaper('A4', 'landscape');
         return $pdf->stream('Print Pemasukan.pdf');
         // Generate the PDF

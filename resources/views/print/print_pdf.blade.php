@@ -14,18 +14,23 @@
 
 <body>
     @php
-        if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
-            $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
-            $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
-        } elseif ($filterBulan == 'Semua') {
-            $periode = $filterTahun;
-        } elseif ($filterTahun == 'Semua') {
-            $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
-            $periode = $namaBulan;
-        } else {
-            $periode = 'Semua';
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        if (($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) || (isset($selectedRole) && $selectedRole != 'kasir')) {
+            if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
+            } elseif ($filterBulan == 'Semua') {
+                $periode = $filterTahun;
+            } elseif ($filterTahun == 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan;
+            } else {
+                $periode = 'Semua';
+            }
         }
     @endphp
+
 
     <div>
         <p
@@ -47,7 +52,11 @@
                     <td style="width:168pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top; ">
                         <p
                             style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt; margin-right:3pt;">
-                            <span style="font-family:'Times New Roman';">{{ $periode }}</span>
+                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
+                                <span style="font-family:'Times New Roman';">{{ $filterDate }}</span>
+                            @else
+                                <span style="font-family:'Times New Roman';">{{ $periode }}</span>
+                            @endif
                         </p>
                     </td>
                 </tr>

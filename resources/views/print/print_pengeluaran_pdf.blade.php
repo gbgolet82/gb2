@@ -14,16 +14,20 @@
 
 <body>
     @php
-        if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
-            $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
-            $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
-        } elseif ($filterBulan == 'Semua') {
-            $periode = $filterTahun;
-        } elseif ($filterTahun == 'Semua') {
-            $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
-            $periode = $namaBulan;
-        } else {
-            $periode = 'Semua';
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        if (($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) || (isset($selectedRole) && $selectedRole != 'kasir')) {
+            if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
+            } elseif ($filterBulan == 'Semua') {
+                $periode = $filterTahun;
+            } elseif ($filterTahun == 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan;
+            } else {
+                $periode = 'Semua';
+            }
         }
     @endphp
 
@@ -47,7 +51,11 @@
                     <td style="width:168pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top; ">
                         <p
                             style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt; margin-right:3pt;">
-                            <span style="font-family:'Times New Roman';">{{ $periode }}</span>
+                            @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
+                                <span style="font-family:'Times New Roman';">{{ $filterDate }}</span>
+                            @else
+                                <span style="font-family:'Times New Roman';">{{ $periode }}</span>
+                            @endif
                         </p>
                     </td>
                 </tr>
@@ -231,25 +239,25 @@
                                     style="font-family:'Times New Roman';">{{ $noUrut++ }}.</span></p>
                         </td>
                         @if ($pengeluaranBelumActive == false)
-                        <td
-                            style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
-                            <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
-                                    style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
-                            <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
-                                @if ($item->status_cek == 'Sudah Dicek')
-                                    <span>
-                                        <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
-                                        </strong>
-                                    </span>
-                                @else
-                                    <span>
-                                        <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
-                                        </strong>
-                                    </span>
-                                @endif
-                            </p>
-                        </td>
-                        
+                            <td
+                                style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
+                                <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
+                                        style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
+                                <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
+                                    @if ($item->status_cek == 'Sudah Dicek')
+                                        <span>
+                                            <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
+                                            </strong>
+                                        </span>
+                                    @else
+                                        <span>
+                                            <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
+                                            </strong>
+                                        </span>
+                                    @endif
+                                </p>
+                            </td>
+
                             <td
                                 style="width:50pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
                                 <p style="margin-top:5pt; margin-bottom:0pt; line-height:115%; font-size:11pt;"><span
@@ -289,24 +297,24 @@
                                         style="font-family:'Times New Roman';">{{ $item->akun }}</span></p>
                             </td>
                         @else
-                        <td
-                            style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
-                            <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
-                                    style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
-                            <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
-                                @if ($item->status_cek == 'Sudah Dicek')
-                                    <span>
-                                        <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
-                                        </strong>
-                                    </span>
-                                @else
-                                    <span>
-                                        <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
-                                        </strong>
-                                    </span>
-                                @endif
-                            </p>
-                        </td>
+                            <td
+                                style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
+                                <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
+                                        style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
+                                <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
+                                    @if ($item->status_cek == 'Sudah Dicek')
+                                        <span>
+                                            <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
+                                            </strong>
+                                        </span>
+                                    @else
+                                        <span>
+                                            <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
+                                            </strong>
+                                        </span>
+                                    @endif
+                                </p>
+                            </td>
                             <td
                                 style="width:54.2pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
                                 <p style="margin-top:5pt; margin-bottom:5pt; line-height:115%; font-size:11pt;"><span

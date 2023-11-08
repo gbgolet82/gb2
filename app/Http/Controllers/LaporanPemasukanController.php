@@ -25,6 +25,9 @@ class LaporanPemasukanController extends Controller
         $pemasukanBelumActive = session('pemasukanBelumActive');
         
         // dd($filterDaterange);
+        $filterBulan = '';
+        $filterTahun = '';
+        
         if (
             ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                 (isset($selectedRole) && $selectedRole != 'kasir')) {
@@ -32,11 +35,8 @@ class LaporanPemasukanController extends Controller
                     $filterTahun = $request->input('filter_tahun');
                     // dd($filterBulan);
         } else {
-            $filterDaterange = Carbon::now(); // Mengambil tanggal saat ini
-
-            // Mengambil bulan dan tahun dari tanggal
-            $filterBulan = $filterDaterange->format('m'); 
-            $filterTahun = $filterDaterange->format('Y');
+            $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
+            $filterDate = \Carbon\Carbon::createFromFormat('Y-m-d', $filterDaterange)->format('d F Y');
         }
 
         $selectedUsaha = $request->input('usaha');
@@ -86,12 +86,17 @@ class LaporanPemasukanController extends Controller
             $query->where('laporan.status_cek', 'Sudah Dicek');
         }
 
-        if ($filterBulan != 'Semua') {
-            $query->whereMonth('laporan.tanggal_laporan', $filterBulan);
-        }
-
-        if ($filterTahun != 'Semua') {
-            $query->whereYear('laporan.tanggal_laporan', $filterTahun);
+        if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
+        {
+            $query->where('laporan.tanggal_laporan', $filterDaterange);
+        } else {
+            if ($filterBulan != 'Semua') {
+                $query->whereMonth('laporan.tanggal_laporan', $filterBulan);
+            }
+    
+            if ($filterTahun != 'Semua') {
+                $query->whereYear('laporan.tanggal_laporan', $filterTahun);
+            }
         }
 
         if ($selectedUsaha != 'Semua') {
@@ -112,7 +117,7 @@ class LaporanPemasukanController extends Controller
         $jumlah = $data->sum('nominal');
         // dd($jumlah);
 
-        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'pemasukanBelumActive', 'count', 'jumlah'));
+        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'pemasukanBelumActive', 'count', 'jumlah', 'filterDate'));
         $pdf->setPaper('A4', 'landscape');
         return $pdf->stream('Print Pemasukan.pdf');
         // Generate the PDF
