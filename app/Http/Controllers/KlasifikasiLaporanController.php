@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Akun;
 use App\Models\BuktiValid;
 use App\Models\KlasifikasiLaporan;
+use App\Models\Laporan;
 use App\Models\SubAkun1;
 use App\Models\SubAkun2;
 use App\Models\SubAkun3;
@@ -13,6 +14,7 @@ use Carbon\Carbon;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class KlasifikasiLaporanController extends Controller
 {
@@ -72,7 +74,32 @@ class KlasifikasiLaporanController extends Controller
 
     public function simpanAkun(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
+        // validasi
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'klasifikasi' => 'required',
+                'usaha' => 'required',
+                'akun' => 'required',
+                'input_Akun_Baru' => 'required_if:akun,tambah-akun-baru',
+                'bukti_valid_100rb' => 'required',
+                'bukti_valid_lebih100rb' => 'required',
+            ],
+            [
+                'klasifikasi.required' => 'Klasifikasi harus diisi.',
+                'usaha.required' => 'Usaha harus diisi.',
+                'akun.required' => 'Akun harus diisi.',
+                'input_Akun_Baru.required_if' => 'Akun Baru harus diisi jika memilih "Tambah Akun Baru".',
+                'bukti_valid_100rb.required' => 'Bukti Valid (<100rb) harus diisi.',
+                'bukti_valid_lebih100rb.required' => 'Bukti Valid (>100rb) harus diisi.',
+            ]
+        );
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
         $selectedKlasifikasiName = $request->input('klasifikasi');
         $selectedKlasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', $selectedKlasifikasiName)->first();
 
@@ -86,12 +113,18 @@ class KlasifikasiLaporanController extends Controller
 
         $selectedSubAkun1Name = $request->input('sub_akun_1');
         $inputSubAkun1Baru = $request->input('input_Sub_Akun_1_Baru');
+        $selectedSubAkun1Baru = SubAkun1::where('sub_akun_1', $inputSubAkun1Baru)->first();
+        $selectedSubAkun1 = SubAkun1::where('sub_akun_1', $selectedSubAkun1Name)->first();
 
         $selectedSubAkun2Name = $request->input('sub_akun_2');
         $inputSubAkun2Baru = $request->input('input_Sub_Akun_2_Baru');
+        $selectedSubAkun2Baru = SubAkun2::where('sub_akun_2', $inputSubAkun2Baru)->first();
+        $selectedSubAkun2 = SubAkun2::where('sub_akun_2', $selectedSubAkun2Name)->first();
 
         $selectedSubAkun3Name = $request->input('sub_akun_3');
         $inputSubAkun3Baru = $request->input('input_Sub_Akun_3_Baru');
+        $selectedSubAkun3Baru = SubAkun3::where('sub_akun_3', $inputSubAkun3Baru)->first();
+        $selectedSubAkun3 = SubAkun3::where('sub_akun_3', $selectedSubAkun3Name)->first();
 
         $buktiValidLt100rb = $request->input('bukti_valid_100rb');
         $buktiValidGt100rb = $request->input('bukti_valid_lebih100rb');
@@ -107,10 +140,10 @@ class KlasifikasiLaporanController extends Controller
             ]);
         }
 
-        if ($selectedSubAkun1Name === 'input_Sub_Akun_1_Baru' && !empty($inputSubAkun1Baru)) {
+        if ($selectedSubAkun1Name === 'input_Sub_Akun_1_Baru') {
             $selectedSubAkun1 = SubAkun1::create([
                 'id_sub_akun_1' => Uuid::uuid4(),
-                'id_akun' => $selectedAkun->id_akun ?? $selectedAkunBaru,
+                'id_akun' => $selectedAkun->id_akun,
                 'sub_akun_1' => $inputSubAkun1Baru,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -138,205 +171,54 @@ class KlasifikasiLaporanController extends Controller
             ]);
         }
 
-        $buktiValid = BuktiValid::create([
-            'id_bukti_valid' => Uuid::uuid4(),
-            'id_akun' => $selectedAkun->id_akun,
-            'bukti_valid_100rb' => $buktiValidLt100rb,
-            'bukti_valid_lebih100rb' => $buktiValidGt100rb,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-
-
-
-
-        // // Check if a new account is added
-        // if ($selectedAkun === 'input_Akun_Baru') {
-        //     $newAkun = Akun::create([
-        //         'id_akun' => Uuid::uuid4(),
-        //         'id_klasifikasi' => $selectedKlasifikasi->id_klasifikasi,
-        //         'id_usaha' => $selectedUsaha->id_usaha,
-        //         'akun' => $inputAkunBaru,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-
-        //     // Create a BuktiValid record with the new account's id
-        //     $buktiValid = BuktiValid::create([
-        //         'id_bukti_valid' => Uuid::uuid4(),
-        //         'id_akun' => $newAkun->id_akun, // Use the new account's id
-        //         'bukti_valid_100rb' => $buktiValidLt100rb,
-        //         'bukti_valid_lebih100rb' => $buktiValidGt100rb,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-        // } else {
-        //     $klasifikasiAkun = Akun::create([
-        //         'id_akun' => Uuid::uuid4(),
-        //         'id_klasifikasi' => $selectedKlasifikasi->id_klasifikasi,
-        //         'id_usaha' => $selectedUsaha->id_usaha,
-        //         'akun' => $selectedAkun,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-
-        //     // Create a BuktiValid record with the existing account's id
-        //     $buktiValid = BuktiValid::create([
-        //         'id_bukti_valid' => Uuid::uuid4(),
-        //         'id_akun' => $klasifikasiAkun->id_akun, // Use the existing account's id
-        //         'bukti_valid_100rb' => $buktiValidLt100rb,
-        //         'bukti_valid_lebih100rb' => $buktiValidGt100rb,
-        //         'created_at' => now(),
-        //         'updated_at' => now(),
-        //     ]);
-        // }
-
+        if ($selectedAkunName === 'input_Akun_Baru') {
+            $buktiValid = BuktiValid::create([
+                'id_bukti_valid' => Uuid::uuid4(),
+                'id_akun' => $selectedAkun->id_akun,
+                'bukti_valid_100rb' => $buktiValidLt100rb,
+                'bukti_valid_lebih100rb' => $buktiValidGt100rb,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         // dd($newAkun, $buktiValid, $subAkun1);
-        return redirect()->route('akun')->with('success', 'Klasifikasi dan Akun berhasil ditambah.');
+        return redirect()->route('akun')->with('success', 'Akun berhasil ditambahkan.');
     }
 
+    public function HapusData($id_key)
+    {
+        if (SubAkun3::where('id_sub_akun_3', $id_key)->exists()) {
+            // Cek apakah Sub Akun 3 terkait dengan data laporan
+            if (Laporan::where('id_sub_akun_3', $id_key)->exists()) {
+                return redirect()->to('/akun')->with('error', 'Sub Akun 3 terhubung dengan data Laporan.')->with('errorModalId', $id_key);
+            } else {
+                SubAkun3::where('id_sub_akun_3', $id_key)->delete();
+                return redirect()->to('/akun')->with('success', 'Sub Akun 3 berhasil dihapus.');
+            }
+        } else if (SubAkun2::where('id_sub_akun_2', $id_key)->exists()) {
+            // Cek apakah Sub Akun 2 terkait dengan data laporan
+            if (Laporan::where('id_sub_akun_2', $id_key)->exists()) {
+                return redirect()->to('/akun')->with('error', 'Sub Akun 2 terhubung dengan data Laporan.')->with('errorModalId', $id_key);
+            } else {
+                SubAkun2::where('id_sub_akun_2', $id_key)->delete();
+                return redirect()->to('/akun')->with('success', 'Sub Akun 2 berhasil dihapus.');
+            }
+        } else if (SubAkun1::where('id_sub_akun_1', $id_key)->exists()) {
+            // Cek apakah Sub Akun 1 terkait dengan data laporan
+            if (Laporan::where('id_sub_akun_1', $id_key)->exists()) {
+                return redirect()->to('/akun')->with('error', 'Sub Akun 1 terhubung dengan data Laporan.')->with('errorModalId', $id_key);
+            } else {
+                SubAkun1::where('id_sub_akun_1', $id_key)->delete();
+                return redirect()->to('/akun')->with('success', 'Sub Akun 1 berhasil dihapus.');
+            }
+        } else if (Akun::where('id_Akun', $id_key)->exists()) {
+            $akun = Akun::find($id_key);
 
+            // Hapus akun dan kaskade penghapusan pada tabel bukti_valid
+            $akun->delete();
 
-    // // Check if a new account is added
-    // if ($selectedAkun === 'input_Akun_Baru') {
-    //     // Create SubAkun1 record if $selectedSubAkun1 is not null
-    //     // Check if a new SubAkun1 is added
-    //     if ($selectedSubAkun1 === 'input_Sub_Akun_1_Baru') {
-    //         $subAkun1new = SubAkun1::create([
-    //             'id_sub_akun_1' => Uuid::uuid4(),
-    //             'id_akun' => $newAkun->id_akun,
-    //             'sub_akun_1' => $inputSubAkun1Baru,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-    //     } else {
-    //         if (!is_null($selectedSubAkun1)) {
-    //             $subAkun1 = SubAkun1::create([
-    //                 'id_sub_akun_1' => Uuid::uuid4(),
-    //                 'id_akun' => $newAkun->id_akun,
-    //                 'sub_akun_1' => $selectedSubAkun1,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now(),
-    //             ]);
-    //         }
-    //     }
-    // } else {
-    //     // Create a SubAkun1 record with the existing account's id
-    //     // Create SubAkun1 record if $selectedSubAkun1 is not null
-    //     if ($selectedSubAkun1 === 'input_Sub_Akun_1_Baru') {
-    //         $subAkun1new = SubAkun1::create([
-    //             'id_sub_akun_1' => Uuid::uuid4(),
-    //             'id_akun' => $klasifikasiAkun->id_akun,
-    //             'sub_akun_1' => $inputSubAkun1Baru,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-    //     } else {
-    //         if (!is_null($selectedSubAkun1)) {
-    //             $subAkun1 = SubAkun1::create([
-    //                 'id_sub_akun_1' => Uuid::uuid4(),
-    //                 'id_akun' => $klasifikasiAkun->id_akun,
-    //                 'sub_akun_1' => $selectedSubAkun1,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now(),
-    //             ]);
-    //         }
-    //     }
-    // }
-
-    // cek jika menginputkan sub akun 2 dengan akun baru
-    // if ($selectedSubAkun1 === 'input_Sub_Akun_1_Baru') {
-    //     // Create SubAkun2 record if $selectedSubAkun2 is not null
-    //     if ($selectedSubAkun2 === 'input_Sub_Akun_2_Baru') {
-    //         $subAkun2new = SubAkun2::create([
-    //             'id_sub_akun_2' => Uuid::uuid4(),
-    //             'id_sub_akun_1' => $inputSubAkun1Baru, // Pastikan Anda memeriksa apakah $subAkun1 ada
-    //             'sub_akun_2' => $inputSubAkun2Baru,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-    //     } else {
-    //         if (!is_null($selectedSubAkun2)) {
-    //             $subAkun2 = SubAkun2::create([
-    //                 'id_sub_akun_2' => Uuid::uuid4(),
-    //                 'id_sub_akun_1' => $inputSubAkun1Baru, // Pastikan Anda memeriksa apakah $subAkun1 ada
-    //                 'sub_akun_2' => $selectedSubAkun2,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now(),
-    //             ]);
-    //         }
-    //     }
-    // } else {
-    //     // Create SubAkun2 record if $selectedSubAkun2 is not null
-    //     if ($selectedSubAkun2 === 'input_Sub_Akun_2_Baru') {
-    //         $subAkun2 = SubAkun2::create([
-    //             'id_sub_akun_2' => Uuid::uuid4(),
-    //             'id_sub_akun_1' => $subAkun1->id_sub_akun_1, // Pastikan Anda memeriksa apakah $subAkun1 ada
-    //             'sub_akun_2' => $inputSubAkun2Baru,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-    //     } else {
-    //         if (!is_null($selectedSubAkun2)) {
-    //             $subAkun2 = SubAkun2::create([
-    //                 'id_sub_akun_2' => Uuid::uuid4(),
-    //                 'id_sub_akun_1' => $subAkun1->id_sub_akun_1, // Pastikan Anda memeriksa apakah $subAkun1 ada
-    //                 'sub_akun_2' => $selectedSubAkun2,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now(),
-    //             ]);
-    //         }
-    //     }
-    // }
-
-    // if ($selectedSubAkun2 === 'input_Sub_Akun_2_Baru') {
-    //     // Create SubAkun3 record if $selectedSubAkun3 is not null
-    //     if ($selectedSubAkun3 === 'input_Sub_Akun_3_Baru') {
-    //         $subAkun3new = SubAkun3::create([
-    //             'id_sub_akun_3' => Uuid::uuid4(),
-    //             'id_akun' => $klasifikasiAkun->id_akun,
-    //             'id_sub_akun_2' => $inputSubAkun1Baru, // Pastikan Anda memeriksa apakah $subAkun2 ada
-    //             'sub_akun_3' => $inputSubAkun3Baru,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-    //     } else {
-    //         if (!is_null($selectedSubAkun3)) {
-    //             $subAkun3 = SubAkun3::create([
-    //                 'id_sub_akun_3' => Uuid::uuid4(),
-    //                 'id_akun' => $klasifikasiAkun->id_akun,
-    //                 'id_sub_akun_2' => $inputSubAkun1Baru, // Pastikan Anda memeriksa apakah $subAkun2 ada
-    //                 'sub_akun_3' => $selectedSubAkun3,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now(),
-    //             ]);
-    //         }
-    //     }
-    // } else {
-    //     // Create SubAkun3 record if $selectedSubAkun3 is not null
-    //     if ($selectedSubAkun3 === 'input_Sub_Akun_3_Baru') {
-    //         $subAkun3new = SubAkun3::create([
-    //             'id_sub_akun_3' => Uuid::uuid4(),
-    //             'id_akun' => $klasifikasiAkun->id_akun,
-    //             'id_sub_akun_2' => $subAkun2->id_sub_akun_2, // Pastikan Anda memeriksa apakah $subAkun2 ada
-    //             'sub_akun_3' => $inputSubAkun3Baru,
-    //             'created_at' => now(),
-    //             'updated_at' => now(),
-    //         ]);
-    //     } else {
-    //         if (!is_null($selectedSubAkun3)) {
-    //             $subAkun3 = SubAkun3::create([
-    //                 'id_sub_akun_3' => Uuid::uuid4(),
-    //                 'id_akun' => $klasifikasiAkun->id_akun,
-    //                 'id_sub_akun_2' => $subAkun2->id_sub_akun_2, // Pastikan Anda memeriksa apakah $subAkun2 ada
-    //                 'sub_akun_3' => $selectedSubAkun3,
-    //                 'created_at' => now(),
-    //                 'updated_at' => now(),
-    //             ]);
-    //         }
-    //     }
-    // }
-
+            return redirect()->to('/akun')->with('success', 'Akun berhasil dihapus.');
+        }
+    }
 }

@@ -10,7 +10,7 @@ class LabaRugiController extends Controller
 {
     public function laba_rugi(Request $request)
     {
-        // dd($request->all());
+
         $active_page = 'Laba Rugi';
         $usahaOption = Usaha::select('id_usaha', 'nama_usaha')
             ->where('nama_usaha', '!=', 'SEMUA') // Exclude "SEMUA" option
@@ -20,29 +20,31 @@ class LabaRugiController extends Controller
         $tahun_get = Laporan::distinct()
             ->selectRaw('YEAR(tanggal_laporan) as tahun')
             ->get();
-            // dd($tahun_get);
+            // dd($tahun);
 
         // $tanggalAwal = date('Y-m-d', strtotime(str_replace('/', '-', '-30 days')));
         // $tanggalAkhir = date('Y-m-d', strtotime(str_replace('/', '-', 'now')));
         // $bulanAwal = date('m', strtotime('-30 days'));
         // $bulanAkhir = date('m', strtotime('now'));
         // dd($bulanAwal . '|||' . $bulanAkhir);
-        $pemasukan = '';
-        $pengeluaran = '';
-        $keuntungan = '';
+
+
+        $bulan = '';
+        $tahun = '';
+        $usaha = '';
+
+
+        return view('contents.laba_rugi', compact('active_page', 'usahaOption', 'tahun', 'tahun_get', 'bulan', 'usaha'));
+    }
+
+    public function filter_laba_rugi(Request $request)
+    {
 
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $usaha = $request->usaha;
         // dd($bulan);
         
-
-
-        return view('contents.laba_rugi', compact('active_page', 'usahaOption',  'pemasukan', 'pengeluaran', 'keuntungan', 'tahun','tahun_get', 'bulan', 'usaha'));
-    }
-
-    public function filter_laba_rugi(Request $request)
-    {
 
         // Mengambil tanggal dari input request
         $tanggal = $request->filter_daterange;
@@ -61,6 +63,9 @@ class LabaRugiController extends Controller
 
         // dd($tanggalAwal . '|||'. $tanggalAkhir . '|||'. $request->usaha);
 
+
+
+
         $active_page = 'Laba Rugi';
         $usahaOption = Usaha::select('id_usaha', 'nama_usaha')
             ->where('nama_usaha', '!=', 'SEMUA') // Exclude "SEMUA" option
@@ -80,8 +85,6 @@ class LabaRugiController extends Controller
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $usaha = $request->usaha;
-        // dd($bulan);
-        // dd($tahun);
 
         return view('contents.laba_rugi', compact('active_page', 'usahaOption', 'pemasukan', 'pengeluaran', 'keuntungan', 'tahun','tahun_get', 'bulan', 'usaha'));
     }

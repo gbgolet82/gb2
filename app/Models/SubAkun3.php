@@ -14,8 +14,8 @@ class SubAkun3 extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id_sub_akun_3',
-        'id_akun',
-        'sub_akun_3	',
+        'id_sub_akun_2',
+        'sub_akun_3',
         'created_at',
         'updated_at'
     ];

@@ -10,6 +10,7 @@ use App\Http\Controllers\LaporanPemasukanController;
 use App\Http\Controllers\KlasifikasiLaporanController;
 use App\Http\Controllers\LabaRugiController;
 use App\Http\Controllers\LaporanPengeluaranController;
+use App\Models\KlasifikasiLaporan;
 use App\Http\Controllers\PdfPemasukanController;
 use App\Http\Controllers\PdfPengeluaranController;
 use App\Http\Controllers\PrintLaporanPemasukan;
@@ -88,12 +89,13 @@ Route::group(['middleware' => 'role:owner'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/laba_rugi', [LabaRugiController::class, 'laba_rugi'])->name('laba_rugi');
 
-    Route::get('/klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('akun');
+    Route::get('/akun', [KlasifikasiLaporanController::class, 'index'])->name('akun');
     Route::get('/tambah-klasifikasi-akun', [KlasifikasiLaporanController::class, 'index'])->name('tambah.klasifikasi-akun');
-    Route::post('/tambah-akun', [DataUsahaController::class, 'simpanAkun'])->name('tambah.akun');
+    Route::post('/tambah-akun', [KlasifikasiLaporanController::class, 'simpanAkun'])->name('tambah.akun');
+    Route::delete('/hapus-akun/{id_key}', [KlasifikasiLaporanController::class, 'HapusData'])->name('hapus.akun');
     Route::get('/data-usaha', [DataUsahaController::class, 'index'])->name('usaha');
     Route::post('/tambah-usaha', [DataUsahaController::class, 'simpanData'])->name('tambah.usaha');
-    Route::post('/edit-usaha', [DataUsahaController::class, 'editData'])->name('edit.usaha');
+    Route::post('/edit-usaha/{id}', [DataUsahaController::class, 'editData'])->name('edit.usaha');
     Route::delete('/hapus-usaha/{id}', [DataUsahaController::class, 'HapusData'])->name('hapus.usaha');
     Route::get('/data-karyawan', [DataKaryawanController::class, 'index'])->name('karyawan');
     Route::post('/tambah-karyawan', [DataKaryawanController::class, 'simpanData'])->name('tambah.karyawan');
@@ -101,9 +103,6 @@ Route::group(['middleware' => 'role:owner'], function () {
     Route::post('/upload-karyawan/{id_karyawan}', [DataKaryawanController::class, 'uploadFoto'])->name('upload.foto');
     Route::post('/update-password/{id_karyawan}', [DataKaryawanController::class, 'proses_ubah_password'])->name('update.password');
     Route::get('/data-detail-karyawan/{id_karyawan}', [DataKaryawanController::class, 'detail'])->name('detail.karyawan');
-    Route::get('/akun', [KlasifikasiLaporanController::class, 'index'])->name('akun');
-    Route::post('/detail-akun/{id_klasifikasi}', [KlasifikasiLaporanController::class, 'detailKlasifikasi'])->name('detail.klasifikasi');
-    Route::post('/tambah-akun', [KlasifikasiLaporanController::class, 'simpanAkun'])->name('tambah.akun');
 });
 
 

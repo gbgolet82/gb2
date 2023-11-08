@@ -7,6 +7,7 @@ use App\Models\Usaha;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class DataUsahaController extends Controller
 {
@@ -14,6 +15,7 @@ class DataUsahaController extends Controller
     {
         //get data tabel usaha
         $dataUsaha = Usaha::select('id_usaha', 'nama_usaha', 'alamat_usaha', 'jenis_usaha', 'produk_usaha')
+            ->where('nama_usaha', '!=', 'SEMUA')
             ->get();
 
         $modelHead = "Tambah Data Usaha";
@@ -25,7 +27,8 @@ class DataUsahaController extends Controller
     {
         // dd($request->all());
         // Validasi data
-        $request->validate(
+        $validator = Validator::make(
+            $request->all(),
             [
                 'nama_usaha' => 'required',
                 'alamat_usaha' => 'required',
@@ -40,6 +43,11 @@ class DataUsahaController extends Controller
             ]
         );
 
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+
         // Membuat UUID baru
         $idUsaha = Uuid::uuid4();
 
@@ -53,32 +61,35 @@ class DataUsahaController extends Controller
             'updated_at' => Carbon::now(),
         ]);
 
-        // $result = DB::table('usaha')->insert([
-        //     'id_usaha' => $idUsaha,
-        //     'nama_usaha' => $request->input('nama_usaha'),
-        //     'alamat_usaha' => $request->input('alamat_usaha'),
-        //     'jenis_usaha' => $request->input('jenis_usaha'),
-        //     'produk_usaha' => $request->input('produk_usaha'),
-        //     'created_at' => Carbon::now(),
-        //     'updated_at' => Carbon::now(),
-        // ]);
-
-        // Redirect atau berikan respons sesuai kebutuhan
         if ($result) {
             return redirect()->to('/data-usaha')->with('success', 'Data Usaha berhasil disimpan.');
         } else {
-            return redirect()->to('/data-usaha')->with('error', 'Terjadi kesalahan saat menyimpan data informasi.');
+            return redirect()->back()->withErrors($validator)->withInput();
         }
     }
 
-    public function editUsaha(Request $request)
+    public function editData(Request $request, $id)
     {
-        $id = $request->id;
+        // dd($id_usaha);
+        // Validasi inputan jika diperlukan
+        $validatedData = $request->validate([
+            'nama_usaha_edit' => 'required',
+            'alamat_usaha_edit' => 'required',
+            'jenis_usaha_edit' => 'required',
+            'produk_usaha_edit' => 'required',
+        ]);
+        // dd($validatedData);
 
-        // Fetch the data or perform any necessary operations for editing
+        // Simpan perubahan data usaha
         $usaha = Usaha::find($id);
+        $usaha->nama_usaha = $request->nama_usaha_edit;
+        $usaha->alamat_usaha = $request->alamat_usaha_edit;
+        $usaha->jenis_usaha = $request->jenis_usaha_edit;
+        $usaha->produk_usaha = $request->produk_usaha_edit;
+        $usaha->save();
 
-        return view('modals.edit-usaha', compact('usaha'));
+        // Redirect atau berikan respons sukses kepada pengguna
+        return redirect()->route('usaha')->with('success', 'Data usaha berhasil disimpan');
     }
 
     public function HapusData($id)
@@ -91,37 +102,5 @@ class DataUsahaController extends Controller
         } else {
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus data usaha');
         }
-    }
-
-    public function simpanSubAkun1(Request $request)
-    {
-        // Validasi data
-        $request->validate(
-            [
-                'nama_usaha' => 'required',
-                'alamat_usaha' => 'required',
-                'jenis_usaha' => 'required',
-                'produk_usaha' => 'required',
-            ],
-            [
-                'nama_usaha.required' => 'Masukan nama usaha',
-                'alamat_usaha.required' => 'Masukan alamat usaha',
-                'jenis_usaha.required' => 'Masukan jenis usaha',
-                'produk_usaha.required' => 'Masukan produk usaha',
-            ]
-        );
-
-        // Membuat UUID baru
-        $idUsaha = Uuid::uuid4();
-
-        $result = Usaha::create([
-            'id_usaha' => $idUsaha,
-            'nama_usaha' => $request->input('nama_usaha'),
-            'alamat_usaha' => $request->input('alamat_usaha'),
-            'jenis_usaha' => $request->input('jenis_usaha'),
-            'produk_usaha' => $request->input('produk_usaha'),
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ]);
     }
 }
