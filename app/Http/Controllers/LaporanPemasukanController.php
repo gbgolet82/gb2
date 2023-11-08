@@ -27,7 +27,8 @@ class LaporanPemasukanController extends Controller
         // dd($filterDaterange);
         $filterBulan = '';
         $filterTahun = '';
-        
+        $filterDate = '';
+
         if (
             ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                 (isset($selectedRole) && $selectedRole != 'kasir')) {
