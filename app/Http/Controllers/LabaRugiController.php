@@ -10,7 +10,7 @@ class LabaRugiController extends Controller
 {
     public function laba_rugi(Request $request)
     {
-     
+        // dd($request->all());
         $active_page = 'Laba Rugi';
         $usahaOption = Usaha::select('id_usaha', 'nama_usaha')
             ->where('nama_usaha', '!=', 'SEMUA') // Exclude "SEMUA" option
@@ -20,7 +20,7 @@ class LabaRugiController extends Controller
         $tahun_get = Laporan::distinct()
             ->selectRaw('YEAR(tanggal_laporan) as tahun')
             ->get();
-            // dd($tahun);
+            // dd($tahun_get);
 
         // $tanggalAwal = date('Y-m-d', strtotime(str_replace('/', '-', '-30 days')));
         // $tanggalAkhir = date('Y-m-d', strtotime(str_replace('/', '-', 'now')));
@@ -34,6 +34,8 @@ class LabaRugiController extends Controller
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $usaha = $request->usaha;
+        // dd($bulan);
+        
 
 
         return view('contents.laba_rugi', compact('active_page', 'usahaOption',  'pemasukan', 'pengeluaran', 'keuntungan', 'tahun','tahun_get', 'bulan', 'usaha'));
@@ -78,6 +80,8 @@ class LabaRugiController extends Controller
         $bulan = $request->bulan;
         $tahun = $request->tahun;
         $usaha = $request->usaha;
+        // dd($bulan);
+        // dd($tahun);
 
         return view('contents.laba_rugi', compact('active_page', 'usahaOption', 'pemasukan', 'pengeluaran', 'keuntungan', 'tahun','tahun_get', 'bulan', 'usaha'));
     }

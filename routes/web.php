@@ -80,6 +80,7 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/print_laporan_pemasukan/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan'])->name('print_laporan_pemasukan');
     Route::get('/print_laporan_pemasukan_a4/{id}', [PrintLaporanPemasukan::class, 'print_laporan_pemasukan_a4'])->name('print_laporan_pemasukan_a4');
     Route::post('/cetak-laporan', [LaporanPemasukanController::class, 'cetakLaporan'])->name('cetak.laporan');
+    Route::post('/cetak-laporan-pengeluaran', [LaporanPengeluaranController::class, 'cetakLaporan'])->name('cetak.laporan.pengeluaran');
 
 });
 
@@ -107,3 +108,4 @@ Route::group(['middleware' => 'role:owner'], function () {
 
 
 Route::get('/filter_laba_rugi', [LabaRugiController::class, 'filter_laba_rugi'])->name('filter_laba_rugi');
+Route::get('/filter_pemasukan', [LaporanPemasukanController::class, 'index'])->name('filter_pemasukan');

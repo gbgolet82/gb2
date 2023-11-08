@@ -104,14 +104,41 @@
                                         <div class="card-body p-3">
 
                                             <div class="row">
-                                                {{-- filter tanggal owner --}}
                                                 @if (
                                                     ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                                                         (isset($selectedRole) && $selectedRole != 'kasir'))
                                                     <div class="col-12 col-md-3 mb-2">
-                                                        <input type="text" class="form-control text-center icon-input"
-                                                            id="reportrange" name="filter_daterange" readonly=""
-                                                            style="background-color: white;cursor: pointer;min-width:175px;height:37.5px;">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <select class="custom-select" name="bulan" id="Bulan">
+                                                                    <option disabled selected hidden>Bulan</option>
+                                                                    <option value="Semua">Semua</option>
+                                                                    <option value="01">Januari</option>
+                                                                    <option value="02">Februari</option>
+                                                                    <option value="03">Maret</option>
+                                                                    <option value="04">April</option>
+                                                                    <option value="05">Mei</option>
+                                                                    <option value="06">Juni</option>
+                                                                    <option value="07">Juli</option>
+                                                                    <option value="08">Agustus</option>
+                                                                    <option value="09">September</option>
+                                                                    <option value="10">Oktober</option>
+                                                                    <option value="11">November</option>
+                                                                    <option value="12">Desember</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <select class="custom-select" name="tahun" id="Tahun">
+                                                                    <option value="Semua">Semua</option>
+                                                                    <option disabled selected hidden>Tahun</option>
+                                                                    @foreach ($tahun_get as $th)
+                                                                        <option value="{{ $th->tahun }}">
+                                                                            {{ $th->tahun }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 @endif
 
@@ -198,7 +225,8 @@
                                                                     Akun
                                                                     1</span>
                                                             </div>
-                                                            <select class="custom-select" id="namaSub" name="sub_akun_1">
+                                                            <select class="custom-select" id="namaSub"
+                                                                name="sub_akun_1">
                                                                 <option value="Semua" selected>Semua Data</option>
                                                             </select>
                                                         </div>
@@ -215,8 +243,8 @@
                                                             <!-- Adjust the width as needed -->
                                                             <button class="btn text-white w-100"
                                                                 style="background-color: #28a745; border-radius: 10px;"
-                                                                type="button" data-toggle="modal" data-target="#tambahData"
-                                                                aria-expanded="false">
+                                                                type="button" data-toggle="modal"
+                                                                data-target="#tambahData" aria-expanded="false">
                                                                 <i class="fas fa-plus-circle left-icon-holder"></i>
                                                                 Tambah
                                                             </button>
@@ -243,8 +271,10 @@
                                                                 @if (
                                                                     ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                                                                         (isset($selectedRole) && $selectedRole != 'kasir'))
-                                                                    <input type="hidden" id="filter_daterange_hidden"
-                                                                        name="filter_daterange">
+                                                                    <input type="hidden" id="filter_bulan_hidden"
+                                                                        name="filter_bulan">
+                                                                    <input type="hidden" id="filter_tahun_hidden"
+                                                                        name="filter_tahun">
                                                                 @endif
                                                                 <input type="hidden" id="usaha_hidden" name="usaha">
                                                                 <input type="hidden" id="akun_hidden" name="akun">
@@ -397,7 +427,7 @@
                         </div>
                     </div>
 
-                    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
+                    @if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner') && $pemasukanBelumActive == false)
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="card">
@@ -447,6 +477,37 @@
 
 @push('script')
     <script>
+        $(document).ready(function() {
+            // Simpan instance DataTable dalam variabel
+            var table = $('#example2').DataTable();
+            // Tangani perubahan nilai pada select bulan dan tahun
+            $('select[name="bulan"]').change(function() {
+                var bulan = $('select[name="bulan"]').val();
+                var filterBulan = '/' + bulan + '/';
+
+                if (bulan === 'Semua') {
+                    // Clear the Akun filter
+                    table.columns(2).search('').draw();
+                } else {
+                    table.columns(2).search(filterBulan).draw();
+                }
+            });
+
+            $('select[name="tahun"]').change(function() {
+                var tahun = $('select[name="tahun"]').val();
+                var filterTahun = tahun;
+
+                if (tahun === 'Semua') {
+                    // Clear the Akun filter
+                    table.columns(2).search('').draw();
+                } else {
+                    table.columns(2).search(filterTahun).draw();
+                }
+            });
+        });
+    </script>
+
+    <script>
         function submitForm() {
             @php
                 $selectedRole = session('selectedRole');
@@ -456,8 +517,10 @@
             @if (
                 ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                     (isset($selectedRole) && $selectedRole != 'kasir'))
-                var filterDaterange = document.getElementById('reportrange').value;
-                document.getElementById('filter_daterange_hidden').value = filterDaterange;
+                var filterBulan = document.getElementById('Bulan').value;
+                document.getElementById('filter_bulan_hidden').value = filterBulan;
+                var filterTahun = document.getElementById('Tahun').value;
+                document.getElementById('filter_tahun_hidden').value = filterTahun;
             @endif
             var selectedUsaha = document.getElementById('namaUsaha').value;
             var selectedAkun = document.getElementById('namaAkun').value;
@@ -489,358 +552,6 @@
 
         }
     </script>
-
-    @php
-        $selectedRole = session('selectedRole');
-        $karyawanRoles = session('karyawanRoles');
-    @endphp
-
-    @if (
-        ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
-            (isset($selectedRole) && $selectedRole != 'kasir'))
-        <script>
-            var originalData;
-
-            $(document).ready(function() {
-                var table = $('#example2').DataTable();
-                originalData = table.rows().data().toArray();
-
-                var defaultStartDate = moment().subtract(29, 'days');
-                var defaultEndDate = moment();
-
-                // Filter data untuk 30 hari terakhir saat halaman dimuat
-                var defaultFilteredData = originalData.filter(function(dataRow) {
-                    var dateValue = moment(dataRow[2], 'DD/MM/YYYY');
-                    return dateValue.isBetween(defaultStartDate, defaultEndDate, null, '[]');
-                });
-
-                // Menampilkan data yang difilter pada DataTable
-                table.clear().rows.add(defaultFilteredData).draw();
-
-                $('#reportrange').daterangepicker({
-                    locale: {
-                        format: 'DD/MM/YYYY',
-                        separator: ' - ',
-                        applyLabel: 'Pilih',
-                        cancelLabel: 'Batal',
-                        fromLabel: 'Dari',
-                        toLabel: 'Hingga',
-                        customRangeLabel: 'Pilih Tanggal',
-                        weekLabel: 'Mg',
-                        daysOfWeek: ['Mg', 'Sn', 'Sl', 'Rb', 'Km', 'Jm', 'Sb'],
-                        monthNames: [
-                            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-                            'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                        ],
-                        firstDay: 1
-                    },
-                    ranges: {
-                        'Hari ini': [moment(), moment()],
-                        'Kemarin': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                        '7 Hari Terakhir': [moment().subtract(6, 'days'), moment()],
-                        '30 Hari Terakhir': [moment().subtract(29, 'days'), moment()],
-                        'Bulan ini': [moment().startOf('month'), moment().endOf('month')],
-                        'Bulan lalu': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
-                            'month').endOf('month')]
-                    },
-                    startDate: defaultStartDate,
-                    endDate: defaultEndDate
-                }, function(start, end) {
-                    var filteredData = originalData.filter(
-                        function(dataRow) {
-                            var dateValue = moment(dataRow[2], 'DD/MM/YYYY');
-                            return dateValue.isBetween(start, end, null, '[]');
-                        });
-
-                    var selectedRange = $('#reportrange').data('daterangepicker').chosenLabel;
-                    // console.log(start);
-                    // console.log(end);
-                    // console.log(dataRow);
-
-                    if (filteredData.length === 0 && selectedRange !== '30 Hari Terakhir') {
-                        table.clear().draw();
-                    } else {
-                        table.clear().rows.add(filteredData).draw();
-                    }
-                });
-            });
-        </script>
-    @endif
-
-    @if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner')
-        <script>
-            $('#reportrange, #namaUsaha').on('change', function() {
-                var filteredDate = $('#reportrange').val();
-                var namaUsaha = $('#namaUsaha').val();
-                console.log("namanama", namaUsaha);
-
-                $('#periodeUsaha').val(filteredDate);
-                $('#periodeUsaha').text(filteredDate);
-
-                // Memisahkan rentang tanggal menjadi dua tanggal terpisah
-                var dateRange = filteredDate.split(" - ");
-                var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
-                var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
-
-                var formattedStartDate = startDate.substr(3, 2);
-                var formattedEndDate = endDate.substr(3, 2);
-
-                $.ajax({
-                    url: '/getPemasukan/' + startDate + '/' + endDate + '/' + namaUsaha,
-                    method: 'GET',
-                    dataType: 'json',
-
-                    success: function(data) {
-                        console.log(data);
-                        var datasets = {};
-                        var namaBulan = [
-                            'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                            'Jul', 'Ag', 'Sep', 'Okt', 'Nov', 'Des'
-                        ];
-
-                        // Array warna yang telah ditentukan
-                        var colors = ['green', 'blue', 'orange', 'purple']; // Ganti warna sesuai kebutuhan
-                        // Memproses data untuk setiap entri dari respons
-                        // Assuming 'data' is the array containing your data
-
-                        var daysInMonth; // Declare daysInMonth outside the loop
-
-                        // Proses data dari respons server
-                        // Proses data dari respons server
-                        // Modify the loop that processes the data to handle missing data
-                        data.forEach(function(item, index) {
-                            var month = item.bulan; // Assuming 'bulan' represents the month
-
-                            // Determine the number of days in the given month
-                            var year = new Date().getFullYear(); // Get the current year
-                            daysInMonth = new Date(year, month, 0).getDate();
-
-                            var day = item.day;
-
-                            if (!datasets[item.nama_usaha]) {
-                                datasets[item.nama_usaha] = Array(daysInMonth).fill(null);
-                            }
-                            datasets[item.nama_usaha][day - 1] = item.total_nominal;
-                        });
-
-                        Object.keys(datasets).forEach(function(usaha) {
-                            var previousData = null; // Menyimpan data sebelumnya
-
-                            datasets[usaha].forEach(function(value, i) {
-                                if (value !== null) {
-                                    // Jika ada data pada hari ini, set previousData menjadi data tersebut
-                                    previousData = value;
-                                } else {
-                                    // Jika data pada hari ini adalah null, ganti dengan previousData (nilai sebelumnya yang tidak null)
-                                    datasets[usaha][i] = previousData;
-                                }
-                            });
-                        });
-
-
-
-                        // Generate labels based on the number of days in the month
-                        var labels = Array.from({
-                            length: daysInMonth
-                        }, (_, i) => (i + 1).toString());
-
-                        var chartData = {
-                            labels: labels,
-                            datasets: Object.keys(datasets).map(function(usaha, index) {
-                                return {
-                                    label: usaha,
-                                    data: datasets[usaha],
-                                    borderColor: colors[index % colors
-                                        .length], // Gunakan warna berdasarkan indeks
-                                    borderWidth: 2,
-                                    fill: false
-                                };
-                            })
-                        };
-
-                        var ctx = document.getElementById('lineChart').getContext('2d');
-                        // Hancurkan grafik sebelumnya jika ada
-                        // if (window.lineChart !== undefined) {
-                        //     window.lineChart.destroy();
-                        // }
-                        if (window.lineChart instanceof Chart) {
-                            window.lineChart.destroy(); // Destroy the previous chart instance
-                        }
-
-                        // Buat grafik yang baru
-                        var chart = new Chart(ctx, {
-                            type: 'line',
-                            data: chartData,
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                scales: {
-                                    x: {
-                                        type: 'category',
-                                        position: 'bottom',
-                                    },
-                                    y: {
-                                        type: 'linear',
-                                    },
-                                },
-                            },
-                        });
-                        window.lineChart = chart;
-                    },
-
-                    error: function(xhr, status, error) {
-                        console.error(error);
-                    }
-                });
-            });
-        </script>
-
-        <script>
-            $(document).ready(function() {
-                $('#reportrange, #namaUsaha, #namaAkun').on('change', function() {
-                    // console.log('nik');
-                    var filteredDate = $('#reportrange').val();
-                    var namaUsaha = $('#namaUsaha').val();
-                    var namaAkun = $('#namaAkun').val();
-                    // console.log("baba", namaUsaha);
-
-                    $('#periodeAkun').val(filteredDate);
-                    $('#periodeAkun').text(filteredDate);
-
-                    // $(document).ready(function() {
-                    //     // Tempatkan kode event listener di sini
-                    //     $('#namaUsaha').on('change', function() {
-                    //         console.log("baba");
-                    //     });
-                    // });
-
-
-                    // Memisahkan rentang tanggal menjadi dua tanggal terpisah
-                    var dateRange = filteredDate.split(" - ");
-                    var startDate = dateRange[0].replace(/\//g, '-'); // Tanggal awal
-                    var endDate = dateRange[1].replace(/\//g, '-'); // Tanggal akhir
-
-                    var formattedStartDate = startDate.substr(3, 2);
-                    var formattedEndDate = endDate.substr(3, 2);
-
-                    $.ajax({
-                        url: '/getPemasukan/' + startDate + '/' + endDate + '/' + namaUsaha + '/' +
-                            namaAkun,
-                        method: 'GET',
-                        dataType: 'json',
-
-                        success: function(data) {
-                            console.log(data);
-                            var datasets = {};
-                            var namaBulan = [
-                                'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                                'Jul', 'Ag', 'Sep', 'Okt', 'Nov', 'Des'
-                            ];
-
-                            // Array warna yang telah ditentukan
-                            var colors = ['green', 'blue', 'orange',
-                                'purple'
-                            ]; // Ganti warna sesuai kebutuhan
-
-                            if (formattedStartDate === formattedEndDate) {
-                                var daysInMonth; // Declare daysInMonth outside the loop
-
-                                data.forEach(function(item, index) {
-                                    var month = item
-                                        .bulan; // Assuming 'bulan' represents the month
-
-                                    // Determine the number of days in the given month
-                                    var year = new Date()
-                                        .getFullYear(); // Get the current year
-                                    daysInMonth = new Date(year, month, 0).getDate();
-
-                                    var day = item.day;
-
-                                    if (!datasets[item.akun]) {
-                                        datasets[item.akun] = Array(daysInMonth).fill(
-                                            null);
-                                    }
-                                    datasets[item.akun][day - 1] = item.total_nominal;
-                                });
-
-
-                                // Generate labels based on the number of days in the month
-                                var labels = Array.from({
-                                    length: daysInMonth
-                                }, (_, i) => (i + 1).toString());
-                            } else {
-                                data.forEach(function(item, index) {
-                                    var day = item.day;
-
-                                    if (!datasets[item.akun]) {
-                                        datasets[item.akun] =
-                                            Array(12)
-                                            .fill(
-                                                null
-                                            ); // Inisialisasi array 12 bulan dengan nilai null
-                                    }
-
-                                    datasets[item.akun][item
-                                            .bulan - 1
-                                        ] =
-                                        item
-                                        .total_nominal;
-                                });
-
-                                var labels = namaBulan; // Menggunakan singkatan bulan sebagai label
-                            }
-
-                            var chartData = {
-                                labels: labels,
-                                datasets: Object.keys(datasets).map(function(label, index) {
-                                    return {
-                                        label: label,
-                                        data: datasets[label],
-                                        borderColor: colors[index % colors.length],
-                                        borderWidth: 2,
-                                        fill: false
-                                    };
-                                })
-                            };
-
-                            var ctx = document.getElementById('lineChart1').getContext('2d');
-                            // Hancurkan grafik sebelumnya jika ada
-                            // if (window.lineChart !== undefined) {
-                            //     window.lineChart.destroy();
-                            // }
-                            if (window.lineChart1 instanceof Chart) {
-                                window.lineChart1.destroy(); // Destroy the previous chart instance
-                            }
-
-                            // Buat grafik yang baru
-                            var chart = new Chart(ctx, {
-                                type: 'line',
-                                data: chartData,
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    scales: {
-                                        x: {
-                                            type: 'category',
-                                            position: 'bottom',
-                                        },
-                                        y: {
-                                            type: 'linear',
-                                        },
-                                    },
-                                },
-                            });
-                            window.lineChart1 = chart;
-                        },
-                        error: function(xhr, status, error) {
-                            console.error(error);
-                        }
-                    });
-                });
-            });
-        </script>
-    @endif
-
 
     <script>
         $(document).ready(function() {

@@ -28,16 +28,16 @@ class LaporanPemasukanController extends Controller
         if (
             ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
                 (isset($selectedRole) && $selectedRole != 'kasir')) {
-                    $filterDaterange = $request->input('filter_daterange');
+                    $filterBulan = $request->input('filter_bulan');
+                    $filterTahun = $request->input('filter_tahun');
+                    // dd($filterBulan);
         } else {
-            $filterDaterange = Carbon::now()->toDateString();
+            $filterDaterange = Carbon::now(); // Mengambil tanggal saat ini
+
+            // Mengambil bulan dan tahun dari tanggal
+            $filterBulan = $filterDaterange->format('m'); 
+            $filterTahun = $filterDaterange->format('Y');
         }
-        // dd($request->all());
-        // $dateArray = explode(" - ", $filterDaterange);
-        // $startDate = $dateArray[0];
-        // $endDate = $dateArray[1];
-        // $dateAwal = \Carbon\Carbon::createFromFormat('d/m/Y', $startDate)->format('Y-m-d');
-        // $dateAkhir = \Carbon\Carbon::createFromFormat('d/m/Y', $endDate)->format('Y-m-d');
 
         $selectedUsaha = $request->input('usaha');
         $selectedAkun = $request->input('akun');
@@ -51,7 +51,6 @@ class LaporanPemasukanController extends Controller
         // dd($sub);
     
     // Adjust the 'join' condition and 'where' clause as per your table schema and requirements
-    
 
         $query = Laporan::select(
             'klasifikasi_laporan.klasifikasi_laporan as klasifikasi',
@@ -87,6 +86,14 @@ class LaporanPemasukanController extends Controller
             $query->where('laporan.status_cek', 'Sudah Dicek');
         }
 
+        if ($filterBulan != 'Semua') {
+            $query->whereMonth('laporan.tanggal_laporan', $filterBulan);
+        }
+
+        if ($filterTahun != 'Semua') {
+            $query->whereYear('laporan.tanggal_laporan', $filterTahun);
+        }
+
         if ($selectedUsaha != 'Semua') {
             $query->where('laporan.id_usaha', $usaha);
         }
@@ -105,7 +112,7 @@ class LaporanPemasukanController extends Controller
         $jumlah = $data->sum('nominal');
         // dd($jumlah);
 
-        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterDaterange', 'pemasukanBelumActive', 'count', 'jumlah'));
+        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'pemasukanBelumActive', 'count', 'jumlah'));
         $pdf->setPaper('A4', 'landscape');
         return $pdf->stream('Print Pemasukan.pdf');
         // Generate the PDF
@@ -114,6 +121,11 @@ class LaporanPemasukanController extends Controller
 
     public function index(Request $request)
     {
+
+        $tahun_get = Laporan::distinct()
+            ->selectRaw('YEAR(tanggal_laporan) as tahun')
+            ->get();
+
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
         // buat ambil rute yang aktif
@@ -198,11 +210,15 @@ class LaporanPemasukanController extends Controller
         
         $data = $data->get();
         $active_page = "PEMASUKAN";
-        return view('contents.pemasukan', compact('active_page', 'data', 'akunOptions', 'kodeLaporan', 'idKlasifikasiPemasukan', 'pemasukanBelumActive', 'usahaOption'));
+        return view('contents.pemasukan', compact('tahun_get', 'active_page', 'data', 'akunOptions', 'kodeLaporan', 'pemasukanBelumActive', 'usahaOption'));
     }
 
     public function pemasukan(Request $request)
     {
+        $tahun_get = Laporan::distinct()
+            ->selectRaw('YEAR(tanggal_laporan) as tahun')
+            ->get();
+
         $idKaryawan = session('id_karyawan');
 
         $pemasukanBelumActive = $request->url() == route('pemasukan_blm');
@@ -265,7 +281,7 @@ class LaporanPemasukanController extends Controller
         
         $data = $data->get();
         $active_page = "PEMASUKAN";
-        return view('contents.pemasukan', compact('active_page', 'data', 'akunOptions', 'pemasukanBelumActive', 'usahaOption'));
+        return view('contents.pemasukan', compact('tahun_get', 'active_page', 'data', 'akunOptions', 'pemasukanBelumActive', 'usahaOption'));
     }
 
 
@@ -430,9 +446,17 @@ class LaporanPemasukanController extends Controller
 
     public function getJumlahBelumDicek()
     {
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        $session = session('nama_usaha');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->where('status_cek', 'Belum dicek');
+
+        if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+        $session != 'SEMUA') {
+            $query->where('laporan.id_usaha', session('id_usaha'));
+        }
 
         $jumlahBelumDicek = $query->count();
 
@@ -442,9 +466,17 @@ class LaporanPemasukanController extends Controller
 
     public function getJumlahSudahDicek()
     {
+        $selectedRole = session('selectedRole');
+        $karyawanRoles = session('karyawanRoles');
+        $session = session('nama_usaha');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->where('status_cek', 'Sudah dicek');
+
+        if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
+        $session != 'SEMUA') {
+            $query->where('usaha.id_usaha', session('id_usaha'));
+        }
 
         $jumlahSudahDicek = $query->count();
 

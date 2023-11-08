@@ -8,7 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous" />
-    <title>Laporan Pemasukan</title>
+    <title>Laporan Pengeluaran</title>
     <link rel="icon" href="{{ public_path('gambar/gunabakti-logo.png') }}" />
 </head>
 
@@ -32,9 +32,9 @@
             style="margin-top:0pt; margin-bottom:8pt; margin-right:3pt; text-align:right; line-height:108%; font-size:20pt;">
             <span style="height:0pt; text-align:left; display:block; position:relative; z-index:0;">
                 <img src="{{ public_path('logo/guna_bakti_logo.png') }}" width="317" height="92" alt=""
-                    style="margin: 20px 0 0 auto; display: block;">
+                    style="margin: 30px 0 0 auto; display: block;">
             </span>
-            <strong><span style="font-family:'Times New Roman';">Laporan Pemasukan</span></strong>
+            <strong><span style="font-family:'Times New Roman';">Laporan Pengeluaran</span></strong>
         </p>
 
         <table cellspacing="0" cellpadding="0" style="margin-left:530pt; border-collapse:collapse;">
@@ -48,6 +48,18 @@
                         <p
                             style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt; margin-right:3pt;">
                             <span style="font-family:'Times New Roman';">{{ $periode }}</span>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:45pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top;">
+                        <p style="margin-top:0pt; margin-bottom:0pt; font-size:12pt;"><span
+                                style="font-family:'Times New Roman';">Klasifikasi</span></p>
+                    </td>
+                    <td style="width:168pt; padding-right:5.4pt; padding-left:5.4pt; vertical-align:top;">
+                        <p
+                            style="margin-top:0pt; margin-bottom:0pt; text-align:right; font-size:12pt; margin-right:3pt;">
+                            <span style="font-family:'Times New Roman';">{{ $selectedKlasifikasi }}</span>
                         </p>
                     </td>
                 </tr>
@@ -105,7 +117,7 @@
                         <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; font-size:11pt;"><strong><span
                                     style="font-family:'Times New Roman';">No</span></strong></p>
                     </td>
-                    @if ($pemasukanBelumActive == false)
+                    @if ($pengeluaranBelumActive == false)
                         <td
                             style="width:60pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; border-bottom-style:solid; border-bottom-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:middle; background-color:#a8d08d;">
                             <p style="margin-top:5pt; margin-bottom:5pt; text-align:center; font-size:11pt;">
@@ -218,26 +230,26 @@
                             <p style="margin-top:5pt; margin-bottom:5pt; line-height:115%; font-size:11pt;"><span
                                     style="font-family:'Times New Roman';">{{ $noUrut++ }}.</span></p>
                         </td>
-                        @if ($pemasukanBelumActive == false)
-                            <td
-                                style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
-                                <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
-                                        style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
-                                <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
-                                    @if ($item->status_cek == 'Sudah Dicek')
-                                        <span>
-                                            <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
-                                            </strong>
-                                        </span>
-                                    @else
-                                        <span>
-                                            <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
-                                            </strong>
-                                        </span>
-                                    @endif
-                                </p>
-                            </td>
-
+                        @if ($pengeluaranBelumActive == false)
+                        <td
+                            style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
+                            <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
+                                    style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
+                            <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
+                                @if ($item->status_cek == 'Sudah Dicek')
+                                    <span>
+                                        <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
+                                        </strong>
+                                    </span>
+                                @else
+                                    <span>
+                                        <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
+                                        </strong>
+                                    </span>
+                                @endif
+                            </p>
+                        </td>
+                        
                             <td
                                 style="width:50pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
                                 <p style="margin-top:5pt; margin-bottom:0pt; line-height:115%; font-size:11pt;"><span
@@ -277,24 +289,24 @@
                                         style="font-family:'Times New Roman';">{{ $item->akun }}</span></p>
                             </td>
                         @else
-                            <td
-                                style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
-                                <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
-                                        style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
-                                <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
-                                    @if ($item->status_cek == 'Sudah Dicek')
-                                        <span>
-                                            <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
-                                            </strong>
-                                        </span>
-                                    @else
-                                        <span>
-                                            <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
-                                            </strong>
-                                        </span>
-                                    @endif
-                                </p>
-                            </td>
+                        <td
+                            style="width:60pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
+                            <p style="margin-top:5pt; margin-bottom:2pt; line-height:115%; font-size:11pt;"><span
+                                    style="font-family:'Times New Roman';">{{ $item->kode_laporan }}</span>
+                            <p style="margin-top:0pt; margin-bottom:3pt; line-height:115%; font-size:11pt;">
+                                @if ($item->status_cek == 'Sudah Dicek')
+                                    <span>
+                                        <strong style="font-size: 12px; color: #28a745"> {{ $item->status_cek }}
+                                        </strong>
+                                    </span>
+                                @else
+                                    <span>
+                                        <strong style="font-size: 12px; color: #fd7e14"> {{ $item->status_cek }}
+                                        </strong>
+                                    </span>
+                                @endif
+                            </p>
+                        </td>
                             <td
                                 style="width:54.2pt; border-top-style:solid; border-top-width:0.75pt; border-right-style:solid; border-right-width:0.75pt; border-left-style:solid; border-left-width:0.75pt; padding-right:5.03pt; padding-left:5.03pt; vertical-align:top;">
                                 <p style="margin-top:5pt; margin-bottom:5pt; line-height:115%; font-size:11pt;"><span

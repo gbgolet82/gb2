@@ -108,18 +108,20 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-12">
-                @if (($karyawanRoles->count() == 1 && !$karyawanRoles->contains('manajer')) || $selectedRole != 'manajer')
+                <input type="hidden" name="tanggal_cek"
+                    value="{{ old('tanggal_cek',\Carbon\Carbon::now()->timezone('Asia/Jakarta')->format('Y-m-d\TH:i:s')) }}">
+                @if (!($karyawanRoles->count() == 1 && $karyawanRoles->contains('manajer')) && $selectedRole != 'manajer')
                     @if ($pengeluaran->status_cek == 'Belum Dicek')
                         <textarea class="form-control" id="inputCatatan" name="catatan" placeholder="Belum Dicek Manajer" rows="3"
                             disabled></textarea>
                     @else
-                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>{{ $pengeluaran->catatan }}</textarea>
+                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>Dicek Oleh : {{ $pengeluaran->nama_manager }}, Tgl Cek : {{ \Carbon\Carbon::parse($pengeluaran->tanggal_cek)->locale('id_ID')->isoFormat('D MMMM Y HH:mm:ss') }} - {{ $pengeluaran->catatan }}</textarea>
                     @endif
                 @else
                     @if ($pengeluaran->status_cek == 'Belum Dicek')
                         <textarea class="form-control" id="inputCatatan" name="catatan" placeholder="Masukan catatan pengecekan" rows="3"></textarea>
                     @else
-                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>{{ $pengeluaran->catatan }}</textarea>
+                        <textarea class="form-control" id="inputCatatan" name="catatan" rows="2" disabled>Dicek Oleh : {{ $pengeluaran->nama_manager }}, Tgl Cek : {{ \Carbon\Carbon::parse($pengeluaran->tanggal_cek)->locale('id_ID')->isoFormat('D MMMM Y HH:mm:ss') }} - {{ $pengeluaran->catatan }}</textarea>
                     @endif
                 @endif
             </div>
