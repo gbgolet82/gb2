@@ -8,8 +8,9 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="cariKlasifikasi">KLASIFIKASI &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white mb-2"
-                                style="background-color:rgba(230,82,82)">WAJIB</sup>
+                            {{-- <sup class="badge rounded-pill badge-danger text-white mb-2"
+                                style="background-color:rgba(230,82,82)">WAJIB</sup> --}}
+                                <span style="color:rgba(230, 82, 82)">*</span>
                             <select class="custom-select @error('klasifikasi') is-invalid @enderror"
                                 id="inputGroupKlasifikasi" name="klasifikasi">
                                 <option value="" disabled selected>Pilih Klasifikasi</option>
@@ -35,8 +36,9 @@
 
                         <div class="form-group col-md-6">
                             <label for="cariUnitUsaha">UNIT USAHA &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white mb-2"
-                                style="background-color: rgba(230, 82, 82)">WAJIB</sup>
+                            {{-- <sup class="badge rounded-pill badge-danger text-white mb-2"
+                                style="background-color: rgba(230, 82, 82)">WAJIB</sup> --}}
+                                <span style="color:rgba(230, 82, 82)">*</span>
                             <div class="d-flex align-items-center">
                                 <select class="custom-select @error('usaha') is-invalid @enderror" id="inputGroupUsaha"
                                     name="usaha">
@@ -65,8 +67,9 @@
                         <div class="col-md-12" id="akunCol">
                             <div class="form-group">
                                 <label for="cariAkun">AKUN &nbsp;</label>
-                                <sup class="badge rounded-pill badge-danger text-white mb-2"
-                                    style="background-color: rgba(230, 82, 82)">WAJIB</sup>
+                                {{-- <sup class="badge rounded-pill badge-danger text-white mb-2"
+                                    style="background-color: rgba(230, 82, 82)">WAJIB</sup> --}}
+                                    <span style="color:rgba(230, 82, 82)">*</span>
                                 <select class="custom-select" name="akun" id="inputGroupAkun">
                                     <option value="" disabled selected>Pilih Akun</option>
                                     <option value="tambah-akun-baru">Tambah Akun Baru</option>
@@ -243,8 +246,9 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="cariBuktiValid">BUKTI VALID (<100rb) &nbsp;</label>
-                                    <sup class="badge rounded-pill badge-danger text-white mb-2"
-                                        style="background-color: rgba(230, 82, 82)">WAJIB</sup>
+                                    {{-- <sup class="badge rounded-pill badge-danger text-white mb-2"
+                                        style="background-color: rgba(230, 82, 82)">WAJIB</sup> --}}
+                                        <span style="color:rgba(230, 82, 82)">*</span>
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="bukti_valid_100rb"
                                             id="buktiValid100rb" placeholder="Masukan Bukti Valid (<100rb)">
@@ -257,8 +261,9 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="cariBuktiValid">BUKTI VALID (>100rb) &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white mb-2"
-                                style="background-color: rgba(230, 82, 82)">WAJIB</sup>
+                            {{-- <sup class="badge rounded-pill badge-danger text-white mb-2"
+                                style="background-color: rgba(230, 82, 82)">WAJIB</sup> --}}
+                                <span style="color:rgba(230, 82, 82)">*</span>
                             <div class="input-group">
                                 <input type="text" class="form-control" name="bukti_valid_lebih100rb"
                                     id="buktiValidlebih100rb" placeholder="Masukan Bukti Valid (>100rb)">
@@ -300,7 +305,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="validasiModalLabel">Konfirmasi Simpan</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" id="close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -308,11 +313,11 @@
                             Apakah Anda yakin ingin menyimpan?
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                Batal
+                            <button type="button" class="btn btn-secondary" id="batalButton">
+                                <i class="fas fa-sync-alt"></i> Batal
                             </button>
                             <button type="submit" class="btn bg-success" id="konfirmasiSimpan">
-                                Ya, Simpan
+                                <i class="fas fa-check"></i> Ya, Simpan
                             </button>
                         </div>
                     </div>
@@ -322,21 +327,6 @@
     </div>
 </form>
 @push('script')
-    <script>
-        document.getElementById("simpanButton").addEventListener("click", function() {
-            // Tampilkan modal validasi
-            $('#validasiModal').modal('show');
-        });
-
-        document.getElementById("konfirmasiSimpan").addEventListener("click", function() {
-            // Sembunyikan modal validasi
-            $('#validasiModal').modal('hide');
-
-            // Sembunyikan tombol Simpan dan tampilkan tombol Batal
-            document.getElementById("simpanButton").style.display = "none";
-        });
-    </script>
-
     {{-- untuk membuat bukti valid berdasarkan akun --}}
     <script>
         function loadBuktiValid() {

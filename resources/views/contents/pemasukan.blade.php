@@ -300,13 +300,20 @@
                                                             </form>
 
                                                         </div>
-                                                        <div class="col-6">
+                                                        {{-- <div class="col-6">
                                                             <button class="btn btn-outline-success"
                                                                 style="border-radius: 10px; width: 100%;" type="button"
                                                                 data-toggle="modal" data-target="#eksporData"
                                                                 aria-expanded="false">
                                                                 <i class="fas fa-file-excel"></i> Excel
                                                             </button>
+                                                        </div> --}}
+                                                        <div class="col-6">
+                                                            <a href="{{ route('export_excel_laporan_pemasukan_a4', ['id' => $laporan->id_laporan]) }}"
+                                                                class="btn btn-outline-success"
+                                                                style="border-radius: 10px; width: 100%">
+                                                                <i class="fas fa-file-excel"></i> Excel
+                                                            </a>
                                                         </div>
 
                                                     </div>

@@ -238,8 +238,9 @@
 
                             {{-- modal untuk edit usaha --}}
                             @foreach ($dataUsaha as $usaha)
-                                <div class="modal fade" id="editModal{{ $usaha->id_usaha }}" tabindex="-1" role="dialog"
-                                    aria-labelledby="editModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="editModal{{ $usaha->id_usaha }}" data-backdrop="static"
+                                    data-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true"
+                                    data-target="#staticBackdrop">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -302,3 +303,44 @@
         </div>
     </section>
 @endsection
+
+@push('script')
+    <script>
+        $(document).ready(function() {
+            // Tangani klik tombol Simpan
+            $('#simpanButton').click(function() {
+                // Tampilkan modal validasi
+                $('#validasiModal').modal('show');
+            });
+
+            // Tangani klik tombol Batal pada modal validasi
+            $('#close').click(function() {
+                // Sembunyikan modal validasi
+                $('#validasiModal').modal('hide');
+                // Kembalikan modal tambahData
+                $('#tambahData').modal('show');
+            });
+
+            // Tangani klik tombol Batal pada modal validasi
+            $('#batalButton').click(function() {
+                // Sembunyikan modal validasi
+                $('#validasiModal').modal('hide');
+                // Kembalikan modal tambahData
+                $('#tambahData').modal('show');
+            });
+        });
+    </script>
+
+    {{-- <script>
+        // Menyembunyikan modal pertama saat modal kedua ditampilkan
+        $('#validasiModalEdit').on('show.bs.modal', function(e) {
+            $('#editModal{{ $usaha->id_usaha }}').modal('hide');
+            console.log('#editModal{{ $usaha->id_usaha }}');
+        });
+
+        // Menyembunyikan modal kedua saat modal pertama ditampilkan
+        $('#editModal{{ $usaha->id_usaha }}').on('show.bs.modal', function(e) {
+            $('#validasiModalEdit').modal('hide');
+        });
+    </script> --}}
+@endpush
