@@ -27,22 +27,12 @@ class LabaRugiController extends Controller
         $tahun = '';
         $usaha = '';
 
-        $max_pemasukan_harian = '';
-        $max_keuntungan_harian = '';
-        $min_pemasukan_harian = '';
-        $min_keuntungan_harian = '';
-
         $max_keuntungan_tahunan = "";
         $max_pemasukan_tahunan = "";
-
         $min_keuntungan_tahunan = "";
         $min_pemasukan_tahunan = "";
 
 
-        $tgl_max_keuntungan = null;
-        $tgl_max_pemasukan = null;
-        $tgl_min_keuntungan = null;
-        $tgl_min_pemasukan = null;
 
         if (($bulan == null && $tahun == null) || ($bulan && $tahun == null)) {
             $nominal_tahun_pemasukan = [];
@@ -113,10 +103,6 @@ class LabaRugiController extends Controller
             'nominal_tahun_pemasukan',
             'nominal_tahun_pengeluaran',
             'nominal_tahun_keuntungan',
-            'max_pemasukan_harian',
-            'max_keuntungan_harian',
-            'min_pemasukan_harian',
-            'min_keuntungan_harian',
             'max_keuntungan_tahunan',
             'max_pemasukan_tahunan',
             'min_keuntungan_tahunan',
@@ -125,11 +111,6 @@ class LabaRugiController extends Controller
             'tahun_max_pemasukan',
             'tahun_min_keuntungan',
             'tahun_min_pemasukan',
-            'tgl_max_keuntungan',
-            'tgl_max_pemasukan',
-            'tgl_min_keuntungan',
-            'tgl_min_pemasukan',
-
         ));
     }
 
@@ -227,8 +208,6 @@ class LabaRugiController extends Controller
                     $min_pemasukan_harian = $nominal_pemasukan_harian;
                     $tgl_min_pemasukan = $tgl;
                 }
-
-               
             }
             // dd($tgl_max_keuntungan);
         }
@@ -238,9 +217,22 @@ class LabaRugiController extends Controller
         $tahun = $request->tahun;
         $usaha = $request->usaha;
 
-        $nominal_bulan_pemasukan = [];
-        $nominal_bulan_pengeluaran = [];
-        $nominal_bulan_keuntungan = [];
+        $nominal_bulanan_pemasukan = [];
+        $nominal_bulanan_pengeluaran = [];
+        $nominal_bulanan_keuntungan = [];
+
+        $max_keuntungan_bulanan = "";
+        $max_pemasukan_bulanan = "";
+
+        $min_keuntungan_bulanan = "";
+        $min_pemasukan_bulanan = "";
+
+        $bulans_max_keuntungan = "";
+        $bulans_max_pemasukan = "";
+        $bulans_min_keuntungan = "";
+        $bulans_min_pemasukan = "";
+
+
         if ($bulan == null && $tahun) {
 
             for ($bulans = 1; $bulans <= 12; $bulans++) {
@@ -267,9 +259,34 @@ class LabaRugiController extends Controller
                 // Menghitung keuntungan dengan mengurangkan pemasukan dan pengeluaran
                 $keuntungan_bulanan = $nominal_pemasukan_bulanan - $nominal_pengeluaran_bulanan;
 
-                $nominal_bulan_pemasukan[] = $nominal_pemasukan_bulanan;
-                $nominal_bulan_pengeluaran[] = $nominal_pengeluaran_bulanan;
-                $nominal_bulan_keuntungan[] = $keuntungan_bulanan;
+                $nominal_bulanan_pemasukan[] = $nominal_pemasukan_bulanan;
+                $nominal_bulanan_pengeluaran[] = $nominal_pengeluaran_bulanan;
+                $nominal_bulanan_keuntungan[] = $keuntungan_bulanan;
+
+                $max_keuntungan_bulanan = max($nominal_bulanan_keuntungan);
+                $min_keuntungan_bulanan = min($nominal_bulanan_keuntungan);
+                $max_pemasukan_bulanan = max($nominal_bulanan_pemasukan);
+                $min_pemasukan_bulanan = min($nominal_bulanan_pemasukan);
+
+                if ($keuntungan_bulanan >= $max_keuntungan_bulanan) {
+                    $max_keuntungan_bulanan = $keuntungan_bulanan;
+                    $bulans_max_keuntungan = $bulans;
+                }
+
+                if ($keuntungan_bulanan <= $min_keuntungan_bulanan) {
+                    $min_keuntungan_bulanan = $keuntungan_bulanan;
+                    $bulans_min_keuntungan = $bulans;
+                }
+
+                if ($nominal_pemasukan_bulanan >= $max_pemasukan_bulanan) {
+                    $max_pemasukan_bulanan = $nominal_pemasukan_bulanan;
+                    $bulans_max_pemasukan = $bulans;
+                }
+
+                if ($nominal_pemasukan_bulanan <= $min_pemasukan_bulanan) {
+                    $min_pemasukan_bulanan = $nominal_pemasukan_bulanan;
+                    $bulans_min_pemasukan = $bulans;
+                }
             }
         }
 
@@ -359,9 +376,9 @@ class LabaRugiController extends Controller
             'nominal_harian_pemasukan',
             'nominal_harian_pengeluaran',
             'nominal_harian_keuntungan',
-            'nominal_bulan_pemasukan',
-            'nominal_bulan_pengeluaran',
-            'nominal_bulan_keuntungan',
+            'nominal_bulanan_pemasukan',
+            'nominal_bulanan_pengeluaran',
+            'nominal_bulanan_keuntungan',
             'nominal_tahun_pemasukan',
             'nominal_tahun_pengeluaran',
             'nominal_tahun_keuntungan',
@@ -369,6 +386,10 @@ class LabaRugiController extends Controller
             'max_keuntungan_harian',
             'min_pemasukan_harian',
             'min_keuntungan_harian',
+            'max_keuntungan_bulanan',
+            'max_pemasukan_bulanan',
+            'min_keuntungan_bulanan',
+            'min_pemasukan_bulanan',
             'max_keuntungan_tahunan',
             'max_pemasukan_tahunan',
             'min_keuntungan_tahunan',
@@ -377,6 +398,10 @@ class LabaRugiController extends Controller
             'tahun_max_pemasukan',
             'tahun_min_keuntungan',
             'tahun_min_pemasukan',
+            'bulans_max_keuntungan',
+            'bulans_max_pemasukan',
+            'bulans_min_keuntungan',
+            'bulans_min_pemasukan',
             'tgl_max_keuntungan',
             'tgl_max_pemasukan',
             'tgl_min_keuntungan',
