@@ -437,7 +437,7 @@
                     </div>
                 </div>
             </div>
-            @if (
+            {{-- @if (
                 (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner') &&
                     $pengeluaranBelumActive == false)
                 <div class="row">
@@ -477,7 +477,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </section>
 @endsection

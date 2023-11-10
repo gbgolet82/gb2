@@ -378,8 +378,12 @@ class LaporanPengeluaranController extends Controller
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
         $session = session('nama_usaha');
+        $currentMonth = Carbon::now()->format('m');
+        $currentYear = Carbon::now()->format('Y');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan','!=', 'Pemasukan')
+        ->whereMonth('tanggal_laporan', $currentMonth)
+        ->whereYear('tanggal_laporan', $currentYear)
         ->where('status_cek', 'Sudah dicek');
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
