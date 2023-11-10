@@ -33,6 +33,10 @@ class LabaRugiController extends Controller
         $min_pemasukan_tahunan = "";
 
 
+        $tahun_max_keuntungan = "";
+        $tahun_max_pemasukan = "";
+        $tahun_min_keuntungan = "";
+        $tahun_min_pemasukan = "";
 
         if (($bulan == null && $tahun == null) || ($bulan && $tahun == null)) {
             $nominal_tahun_pemasukan = [];

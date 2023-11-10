@@ -348,12 +348,14 @@
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
                                                                 {{ $keuntungan_max_bulan }}</div>
                                                         @else
+                                                        @if($max_keuntungan_tahunan)
                                                             <b> Rp.
                                                                 {{ number_format($max_keuntungan_tahunan, 0, ',', '.') }}
                                                             </b>
+                                                            @endif
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
 
-                                                                Tahun {{ $tahun_max_keuntungan }}</div>
+                                                                Tahun {{ $tahun_max_keuntungan ?? '' }}</div>
                                                         @endif
                                                     </div>
                                                     <div class="col-auto">
@@ -401,9 +403,11 @@
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
                                                                 {{ $keuntungan_min_bulan }}</div>
                                                         @else
+                                                        @if($min_keuntungan_tahunan)
                                                             <b> Rp.
                                                                 {{ number_format($min_keuntungan_tahunan, 0, ',', '.') }}
                                                             </b>
+                                                            @endif
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
 
                                                                 Tahun {{ $tahun_min_keuntungan }}</div>
@@ -455,9 +459,11 @@
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
                                                                 {{ $pemasukan_max_bulan }}</div>
                                                         @else
+                                                        @if($max_pemasukan_tahunan)
                                                             <b> Rp.
                                                                 {{ number_format($max_pemasukan_tahunan, 0, ',', '.') }}
                                                             </b>
+                                                            @endif
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
 
                                                                 Tahun {{ $tahun_max_pemasukan }}</div>
@@ -507,9 +513,11 @@
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
                                                                 {{ $pemasukan_min_bulan }}</div>
                                                         @else
+                                                        @if($min_pemasukan_tahunan)
                                                             <b> Rp.
                                                                 {{ number_format($min_pemasukan_tahunan, 0, ',', '.') }}
                                                             </b>
+                                                            @endif
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
 
                                                                 Tahun {{ $tahun_min_pemasukan }}</div>
