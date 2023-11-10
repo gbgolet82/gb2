@@ -87,17 +87,18 @@ class LaporanPemasukanController extends Controller
             $query->where('laporan.status_cek', 'Sudah Dicek');
         }
 
-        if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
-        {
-            $query->where('laporan.tanggal_laporan', $filterDaterange);
-        } else {
+        if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir')) {
             if ($filterBulan != 'Semua') {
                 $query->whereMonth('laporan.tanggal_laporan', $filterBulan);
             }
-    
+
             if ($filterTahun != 'Semua') {
                 $query->whereYear('laporan.tanggal_laporan', $filterTahun);
             }
+        } else {
+            $query->whereDate('laporan.tanggal_laporan', '2023-11-09');
         }
 
         if ($selectedUsaha != 'Semua') {
@@ -118,9 +119,32 @@ class LaporanPemasukanController extends Controller
         $jumlah = $data->sum('nominal');
         // dd($jumlah);
 
-        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'pemasukanBelumActive', 'count', 'jumlah', 'filterDate'));
+        $periode = '';
+        if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir')) {
+            if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
+            } elseif ($filterBulan == 'Semua') {
+                $periode = $filterTahun;
+            } elseif ($filterTahun == 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan;
+            } else {
+                $periode = 'Semua';
+            }
+        } else {
+            $periode = $filterDate;
+        }
+
+        $pdf = PDF::loadView('print.print_pdf', compact('data', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'pemasukanBelumActive', 'count', 'jumlah', 'filterDate', 'periode'));
         $pdf->setPaper('A4', 'landscape');
-        return $pdf->stream('Print Pemasukan.pdf');
+        if ($pemasukanBelumActive == true) {
+        return $pdf->stream('Print Pemasukan'. '-' .'Belum Dicek'. '-'. $selectedUsaha . '-'. $periode .'.pdf');
+        } else {
+            return $pdf->stream('Print Pemasukan'. '-' .'Sudah Dicek'. '-'. $selectedUsaha . '-'. $periode .'.pdf');
+        }
         // Generate the PDF
         // return $pdf->download('Print Pemasukan.pdf');
     }
@@ -481,7 +505,7 @@ class LaporanPemasukanController extends Controller
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
         $session != 'SEMUA') {
-            $query->where('usaha.id_usaha', session('id_usaha'));
+            $query->where('laporan.id_usaha', session('id_usaha'));
         }
 
         $jumlahSudahDicek = $query->count();

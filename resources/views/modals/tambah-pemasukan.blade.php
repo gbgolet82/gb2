@@ -71,6 +71,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="inputUsaha">USAHA &nbsp;</label>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <select class="custom-select" name="id_usaha" id="Input_Usaha">
                                 <option disabled selected hidden>Pilih Usaha</option>
                                 @foreach ($usahaOption as $dataUsaha)
@@ -89,6 +90,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="cariAkun">AKUN &nbsp;</label>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <select class="custom-select" name="id_akun" id="inputGroupAkun">
                                 <option disabled selected hidden>Pilih Akun</option>
                                 @foreach ($akunOptions as $dataAkun)
@@ -103,6 +105,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="namaAkun">AKUN &nbsp;</label>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <select class="custom-select" name="id_akun" id="inputGroupAkun">
                                 <option disabled selected hidden>Pilih Akun</option>
                             </select>
@@ -137,6 +140,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-6">
                         <label for="nominal">NOMINAL &nbsp;</label>
+                        <span style="color:rgba(230, 82, 82)">*</span>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Rp</span>
@@ -153,6 +157,7 @@
                     </div>
                     <div class="form-group col-md-6">
                         <label for="gambarBukti">GAMBAR BUKTI &nbsp;</label>
+                        <span style="color:rgba(230, 82, 82)">*</span>
                         <div class="input-group">
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input gambar_bukti" id="customFileInput"
@@ -168,7 +173,7 @@
 
                 <div class="d-flex bd-highlight justify-content-end mt-3">
                     <div class="bd-highlight">
-                        <button type="button" class="btn btn-secondary mr-2" id="resetData"><i
+                        <button type="button" class="btn btn-secondary mr-2" id="resetData" data-dismiss="modal"><i
                                 class="fa fa-ban"></i>
                             Batal</button>
                         <button type="submit" class="btn btn-success text-white toastrDefaultSuccess"
@@ -182,6 +187,43 @@
 </form>
 
 @push('script')
+    <script>
+        // Fungsi untuk mereset nilai-nilai formulir input ke nilai default
+        function resetForm() {
+            document.getElementById("Input_Usaha").selectedIndex = 0; // Reset pilihan "Usaha" ke yang pertama
+            document.getElementById("inputGroupAkun").selectedIndex = 0; // Reset pilihan "Akun" ke yang pertama
+            // Reset pilihan "Sub Akun 1" ke yang pertama
+            $('#inputGroupSubAkun1').val('Pilih Sub Akun 1').trigger('change');
+
+            // Reset pilihan "Sub Akun 2" ke yang pertama
+            $('#inputGroupSubAkun2').val('Pilih Sub Akun 2').trigger('change');
+
+            // Reset pilihan "Sub Akun 3" ke yang pertama
+            $('#inputGroupSubAkun3').val('Pilih Sub Akun 3').trigger('change');
+            document.getElementById("besarNominal").value = ''; // Reset nilai "Nominal" menjadi kosong
+
+            // Mengambil elemen input file
+            var inputElement = document.getElementById("customFileInput");
+
+            // Membuat salinan elemen input file
+            var newInput = inputElement.cloneNode(true);
+
+            // Mengganti elemen input file dengan salinan baru
+            inputElement.parentNode.replaceChild(newInput, inputElement);
+
+            // Menghapus event listener yang mungkin terpasang pada input file lama
+            newInput.removeEventListener("change", updateLabel);
+
+            // Mengembalikan label ke teks awal
+            newInput.nextElementSibling.innerText = "Pilih file";
+
+            document.getElementById('simpanPemasukan').disabled = true;
+        }
+
+        // Event listener untuk tombol "Batal"
+        document.getElementById("resetData").addEventListener("click", resetForm);
+    </script>
+
     <script>
         $(document).ready(function() {
             $("#toggleForm").click(function(e) {

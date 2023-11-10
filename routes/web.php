@@ -61,8 +61,8 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/get-akun-options/{klasifikasi_laporan}', [LaporanPengeluaranController::class, 'getAkunPengeluaran']);
     Route::get('/get-akun-filter/{nama_usaha}', [LaporanPemasukanController::class, 'getAkun']);
     Route::get('/get-sub1-filter/{akun}', [LaporanPemasukanController::class, 'getSub1']);
-    Route::get('/get-akun-pengeluaran/{klasifikasi_laporan}/{nama_usaha}', [LaporanPengeluaranController::class, 'getPengeluaranAkun']);
-    Route::get('/ambil-akun-pengeluaran/{id_usaha}/{id_klasifikasi}', [LaporanPengeluaranController::class, 'getPengeluaranAkunn']);
+    Route::get('/get-akun-pengeluaran/{klasifikasi_laporan}', [LaporanPengeluaranController::class, 'getPengeluaranAkun']);
+    Route::get('/ambil-akun-pengeluaran/{id_klasifikasi}', [LaporanPengeluaranController::class, 'getPengeluaranAkunn']);
     Route::get('/get-sub-akun-1-options/{id_akun}', [LaporanPengeluaranController::class, 'getSubAkun1Pengeluaran']);
     Route::get('/get-sub1-pengeluaran/{akun}', [LaporanPengeluaranController::class, 'getSubAkun1Filter']);
     Route::get('/pemasukan-belum-cek', [LaporanPemasukanController::class, 'getJumlahBelumDicek'])->name('get-jumlah-belum-dicek');
@@ -93,6 +93,10 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::get('/print_laporan_pengeluaran_a4/{id}', [PrintLaporanPengeluaran::class, 'print_laporan_pengeluaran_a4'])->name('print_laporan_pengeluaran_a4');
 
     Route::post('/cetak-laporan', [LaporanPemasukanController::class, 'cetakLaporan'])->name('cetak.laporan');
+    Route::get('/data-detail-karyawan/{id_karyawan}', [DataKaryawanController::class, 'detail'])->name('detail.karyawan');
+    Route::post('/edit-karyawan/{id_karyawan}', [DataKaryawanController::class, 'update'])->name('update.karyawan');
+    Route::post('/upload-karyawan/{id_karyawan}', [DataKaryawanController::class, 'uploadFoto'])->name('upload.foto');
+    Route::post('/update-password/{id_karyawan}', [DataKaryawanController::class, 'proses_ubah_password'])->name('update.password');
 });
 
 Route::group(['middleware' => 'role:owner'], function () {
@@ -109,10 +113,7 @@ Route::group(['middleware' => 'role:owner'], function () {
     Route::delete('/hapus-usaha/{id}', [DataUsahaController::class, 'HapusData'])->name('hapus.usaha');
     Route::get('/data-karyawan', [DataKaryawanController::class, 'index'])->name('karyawan');
     Route::post('/tambah-karyawan', [DataKaryawanController::class, 'simpanData'])->name('tambah.karyawan');
-    Route::post('/edit-karyawan/{id_karyawan}', [DataKaryawanController::class, 'update'])->name('update.karyawan');
-    Route::post('/upload-karyawan/{id_karyawan}', [DataKaryawanController::class, 'uploadFoto'])->name('upload.foto');
-    Route::post('/update-password/{id_karyawan}', [DataKaryawanController::class, 'proses_ubah_password'])->name('update.password');
-    Route::get('/data-detail-karyawan/{id_karyawan}', [DataKaryawanController::class, 'detail'])->name('detail.karyawan');
+    Route::delete('/hapus-karyawan/{id_karyawan}', [DataKaryawanController::class, 'delete'])->name('hapus.karyawan');
 });
 
 

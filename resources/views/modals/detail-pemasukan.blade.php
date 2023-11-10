@@ -145,11 +145,13 @@
                     @endphp
 
                     @if ($acc)
+                    <div class="dropdown">
                         <button type="{{ $pemasukan->status_cek === 'Sudah Dicek' ? 'button' : 'submit' }}"
                             class="btn btn-success text-white toastrDefaultSuccess {{ $pemasukan->status_cek === 'Sudah Dicek' ? 'disabled' : '' }}"
                             id="simpanAcc">
                             <i class="fas fa-check-circle"></i> ACC
                         </button>
+                    </div>
                     @else
                         <div class="dropdown">
                             <button class="btn btn-success text-white toastrDefaultSuccess dropdown-toggle"

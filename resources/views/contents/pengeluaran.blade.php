@@ -218,7 +218,8 @@
                                                             <div class="col-6">
                                                                 <select class="custom-select" name="bulan"
                                                                     id="Bulan">
-                                                                    <option disabled selected hidden>Bulan</option>
+                                                                    <option value="Semua" disabled selected hidden>Bulan
+                                                                    </option>
                                                                     <option value="Semua">Semua</option>
                                                                     <option value="01">Januari</option>
                                                                     <option value="02">Februari</option>
@@ -237,7 +238,8 @@
                                                             <div class="col-6">
                                                                 <select class="custom-select" name="tahun"
                                                                     id="Tahun">
-                                                                    <option disabled selected hidden>Tahun</option>
+                                                                    <option value="Semua" disabled selected hidden>Tahun
+                                                                    </option>
                                                                     <option value="Semua">Semua</option>
                                                                     @foreach ($tahun_get as $th)
                                                                         <option value="{{ $th->tahun }}">
@@ -473,34 +475,55 @@
 
 @push('script')
     <script>
-        $(document).ready(function() {
-            // Simpan instance DataTable dalam variabel
-            var table = $('#example2').DataTable();
-            // Tangani perubahan nilai pada select bulan dan tahun
-            $('select[name="bulan"]').change(function() {
-                var bulan = $('select[name="bulan"]').val();
-                var filterBulan = '/' + bulan + '/';
+        @php
+            $selectedRole = session('selectedRole');
+            $karyawanRoles = session('karyawanRoles');
+        @endphp
 
-                if (bulan === 'Semua') {
-                    // Clear the Akun filter
-                    table.columns(2).search('').draw();
-                } else {
-                    table.columns(2).search(filterBulan).draw();
+        @if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir'))
+            $(document).ready(function() {
+                var table = $('#example2').DataTable();
+
+                // Set default values for month and year
+                var currentMonth = new Date().getMonth() + 1; // Adding 1 because months are zero-indexed
+                var currentYear = new Date().getFullYear();
+
+                // Set default values in dropdowns
+                $('#Bulan').val(currentMonth);
+                $('#Tahun').val(currentYear);
+
+                // Apply initial filter on DataTable
+                applyDataTableFilter();
+
+                // Handle changes in the month and year dropdowns
+                $('#Bulan, #Tahun').on('change', function() {
+                    applyDataTableFilter();
+                });
+
+                // Function to apply filter on DataTable
+                function applyDataTableFilter() {
+                    var month = $('#Bulan').val();
+                    var year = $('#Tahun').val();
+
+                    // Check if "Semua" is selected for either month or year
+                    if (month === 'Semua' && year !== 'Semua') {
+                        // Filter DataTable based on selected year
+                        table.columns(2).search(year).draw();
+                    } else if (month !== 'Semua' && (year === null || year === 'Semua')) {
+                        // Filter DataTable based on selected month
+                        table.columns(2).search(month).draw();
+                    } else if ((month !== null || month !== 'Semua') && year !== 'Semua') {
+                        // Filter DataTable based on selected month and year
+                        table.columns(2).search(month + '/' + year).draw();
+                    } else {
+                        // If both are "Semua", show all data
+                        table.columns(2).search('').draw();
+                    }
                 }
             });
-
-            $('select[name="tahun"]').change(function() {
-                var tahun = $('select[name="tahun"]').val();
-                var filterTahun = tahun;
-
-                if (tahun === 'Semua') {
-                    // Clear the Akun filter
-                    table.columns(2).search('').draw();
-                } else {
-                    table.columns(2).search(filterTahun).draw();
-                }
-            });
-        });
+        @endif
     </script>
 
     <script>
@@ -585,11 +608,13 @@
 
             $('#inputAkun').change(function() {
                 var selectedKlasifikasiId = $(this).val();
+                // console.log(selectedKlasifikasiId);
 
                 $.ajax({
                     url: '/get-sub-akun-1-options/' + selectedKlasifikasiId,
                     type: 'GET',
                     success: function(data) {
+                        console.log(data);
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.
                         $('#inputSub1').empty();
                         $('#inputSub1').append($('<option>', {
@@ -609,13 +634,13 @@
         });
 
         $(document).ready(function() {
-            $('#namaKlasifikasi, #namaUsaha').change(function() {
+            $('#namaKlasifikasi').change(function() {
                 var selectedKlasifikasi = $('#namaKlasifikasi').val();
-                var selectedUsaha = $('#namaUsaha').val();
+                // var selectedUsaha = $('#namaUsaha').val();
 
                 // Make an AJAX request with both selected values
                 $.ajax({
-                    url: '/get-akun-pengeluaran/' + selectedKlasifikasi + '/' + selectedUsaha,
+                    url: '/get-akun-pengeluaran/' + selectedKlasifikasi,
                     type: 'GET',
                     success: function(data) {
                         // Perbarui opsi sub akun 1 dengan data yang diterima dari server.

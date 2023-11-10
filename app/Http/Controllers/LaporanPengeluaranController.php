@@ -33,6 +33,7 @@ class LaporanPengeluaranController extends Controller
                     // dd($filterBulan);
         } else {
             $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
+            // dd($filterDaterange);
             $filterDate = \Carbon\Carbon::createFromFormat('Y-m-d', $filterDaterange)->format('d F Y');
         }
 
@@ -40,12 +41,18 @@ class LaporanPengeluaranController extends Controller
         $selectedUsaha = $request->input('usaha');
         $selectedAkun = $request->input('akun');
         $selectedSubAkun = $request->input('sub_akun_1');
-        // dd($selectedUsaha);
+        // dd($selectedAkun);
         
         $klasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', $selectedKlasifikasi)->value('id_klasifikasi');
         $usaha = Usaha::where('nama_usaha', $selectedUsaha)->value('id_usaha');
-        $akun = Akun::where('akun', $selectedAkun)->where('id_usaha', $usaha)->where('id_klasifikasi', $klasifikasi)
-        ->value('id_akun');
+        if ($selectedKlasifikasi == 'Pengeluaran NOP') {
+            $namaUsaha = Usaha::where('nama_usaha', 'SEMUA')->value('id_usaha');
+            $akun = Akun::where('akun', $selectedAkun)->where('id_usaha', $namaUsaha)->where('id_klasifikasi', $klasifikasi)->value('id_akun');
+        } else {
+            $akun = Akun::where('akun', $selectedAkun)->where('id_usaha', $usaha)->where('id_klasifikasi', $klasifikasi)->value('id_akun');
+        }
+       
+        // dd($akun);
         $sub = DB::table('sub_akun_1')->where('id_akun', $akun)->where('sub_akun_1', $selectedSubAkun)->value('id_sub_akun_1');
         // dd($sub);
     
@@ -93,12 +100,18 @@ class LaporanPengeluaranController extends Controller
             $query->where('laporan.id_usaha', $usaha);
         }
 
-        if ($filterBulan != 'Semua') {
-            $query->whereMonth('laporan.tanggal_laporan', $filterBulan);
-        }
+        if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir')) {
+            if ($filterBulan != 'Semua') {
+                $query->whereMonth('laporan.tanggal_laporan', $filterBulan);
+            }
 
-        if ($filterTahun != 'Semua') {
-            $query->whereYear('laporan.tanggal_laporan', $filterTahun);
+            if ($filterTahun != 'Semua') {
+                $query->whereYear('laporan.tanggal_laporan', $filterTahun);
+            }
+        } else {
+            $query->whereDate('laporan.tanggal_laporan', '2023-11-09');
         }
 
         if ($selectedAkun != 'Semua') {
@@ -115,9 +128,32 @@ class LaporanPengeluaranController extends Controller
         $jumlah = $data->sum('nominal');
         // dd($jumlah);
 
-        $pdf = PDF::loadView('print.print_pengeluaran_pdf', compact('data', 'selectedKlasifikasi', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'filterDate', 'pengeluaranBelumActive', 'count', 'jumlah'));
+        $periode = '';
+        if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir')) {
+            if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
+            } elseif ($filterBulan == 'Semua') {
+                $periode = $filterTahun;
+            } elseif ($filterTahun == 'Semua') {
+                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
+                $periode = $namaBulan;
+            } else {
+                $periode = 'Semua';
+            }
+        } else {
+            $periode = $filterDate;
+        }
+
+        $pdf = PDF::loadView('print.print_pengeluaran_pdf', compact('data', 'selectedKlasifikasi', 'selectedSubAkun', 'selectedAkun', 'selectedUsaha', 'filterBulan', 'filterTahun', 'filterDate', 'pengeluaranBelumActive', 'count', 'jumlah', 'periode'));
         $pdf->setPaper('A4', 'landscape');
-        return $pdf->stream('Print Pemasukan.pdf');
+        if ($pengeluaranBelumActive == true) {
+            return $pdf->stream('Print Pengeluaran'. '-' .'Belum Dicek'. '-'. $selectedUsaha . '-'. $periode .'.pdf');
+            } else {
+                return $pdf->stream('Print Pengeluaran'. '-' .'Sudah Dicek'. '-'. $selectedUsaha . '-'. $periode .'.pdf');
+            }
         // Generate the PDF
         // return $pdf->download('Print Pemasukan.pdf');
     }
@@ -348,7 +384,7 @@ class LaporanPengeluaranController extends Controller
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
         $session != 'SEMUA') {
-            $query->where('usaha.id_usaha', session('id_usaha'));
+            $query->where('laporan.id_usaha', session('id_usaha'));
         }
 
         $jumlahBelumDicek = $query->count();
@@ -359,10 +395,16 @@ class LaporanPengeluaranController extends Controller
         public function getAkunPengeluaran($klasifikasi_laporan)
         {
             $id_klasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', $klasifikasi_laporan)->value('id_klasifikasi');
-
-            $getAkun = Akun::where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', session('id_usaha'))
+            $nama_usaha = Usaha::where('nama_usaha', 'SEMUA')->value('id_usaha');
+            if ($klasifikasi_laporan == 'Pengeluaran NOP')
+            {
+                $getAkun = Akun::where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', $nama_usaha)
                         ->pluck('akun', 'akun');
-            
+            } else {
+                $getAkun = Akun::where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', session('id_usaha'))
+                ->pluck('akun', 'akun');
+            }
+
             return response()->json($getAkun);
         }
 
@@ -386,23 +428,35 @@ class LaporanPengeluaranController extends Controller
             return response()->json($getSubAkun);
         }
 
-        public function getPengeluaranAkun($klasifikasi_laporan, $nama_usaha)
+        public function getPengeluaranAkun($klasifikasi_laporan)
         {
-            $id_klasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', $klasifikasi_laporan)->value('id_klasifikasi');
-            $id_usaha = Usaha::where('nama_usaha', $nama_usaha)->value('id_usaha');
+            // dd($klasifikasi_laporan);
+            // if ($klasifikasi_laporan == 'Pengeluaran NOP') {
+            //     $id_usaha = Usaha::where('nama_usaha', 'SEMUA')->value('id_usaha');
+            // } else {
+            //     $id_usaha = Usaha::where('nama_usaha', $nama_usaha)->value('id_usaha');
+            // }
 
-            $getAkun = DB::table('akun')->where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', $id_usaha)
+            $id_klasifikasi = KlasifikasiLaporan::where('klasifikasi_laporan', $klasifikasi_laporan)->value('id_klasifikasi');
+
+            $getAkun = DB::table('akun')->where('id_klasifikasi', $id_klasifikasi)
                         ->pluck('akun', 'akun');
             
             return response()->json($getAkun);
         }
 
-        public function getPengeluaranAkunn($id_usaha, $id_klasifikasi)
+        public function getPengeluaranAkunn( $id_klasifikasi)
         {
-            $id_usaha = Usaha::where('id_usaha', $id_usaha)->value('id_usaha');
+            // $nama_klasifikasi = KlasifikasiLaporan::where('id_klasifikasi', $id_klasifikasi)->value('nama_klasifikasi');
+            // if ($nama_klasifikasi == 'Pegeluaran NOP') {
+            //     $id_usaha = Usaha::where('nama_usaha', 'SEMUA')->value('id_usaha');
+            // } else {
+            //     $id_usaha = Usaha::where('id_usaha', $id_usaha)->value('id_usaha');
+            // }
+
             $id_klasifikasi = KlasifikasiLaporan::where('id_klasifikasi', $id_klasifikasi)->value('id_klasifikasi');
 
-            $getAkun = DB::table('akun')->where('id_usaha', $id_usaha)->where('id_klasifikasi', $id_klasifikasi)
+            $getAkun = DB::table('akun')->where('id_klasifikasi', $id_klasifikasi)
                         ->pluck('akun', 'id_akun')->toArray();
             
             return response()->json($getAkun);
@@ -410,11 +464,16 @@ class LaporanPengeluaranController extends Controller
 
         public function ambilAkun($id_klasifikasi)
         {
-            $id_klasifikasi = KlasifikasiLaporan::where('id_klasifikasi', $id_klasifikasi)->value('id_klasifikasi');
-
-            $getAkun = Akun::where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', session('id_usaha'))
+            $nama_klasifikasi = KlasifikasiLaporan::where('id_klasifikasi', $id_klasifikasi)->value('klasifikasi_laporan');
+            $nama_usaha = Usaha::where('nama_usaha', 'SEMUA')->value('id_usaha');
+            if ($nama_klasifikasi == 'Pengeluaran NOP') 
+            {
+                $getAkun = Akun::where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', $nama_usaha)
                         ->pluck('akun', 'id_akun');
-            
+            } else {
+                $getAkun = Akun::where('id_klasifikasi', $id_klasifikasi)->where('id_usaha', session('id_usaha'))
+                        ->pluck('akun', 'id_akun');
+            }
             return response()->json($getAkun);
         }
 

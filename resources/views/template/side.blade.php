@@ -86,7 +86,7 @@
             @endif
 
             <br>
-            <a class="btn btn-white btn-sm btn-hilang"><i class="fas fa-cog"></i>
+            <a href="/data-detail-karyawan/{{ session('id_karyawan') }}" class="btn btn-white btn-sm btn-hilang"><i class="fas fa-cog"></i>
                 <p> Pengaturan</p>
             </a>
             <a href="{{ route('logout') }}" class="btn btn-white btn-sm btn-hilang"><i class="fa fa-sign-out-alt"></i>
@@ -129,7 +129,7 @@
                     </li>
                     <li class="nav-item @yield('karyawan')">
                         <a href="{{ route('karyawan') }}"
-                            class="nav-link @if (Request::url() == route('karyawan')) active @endif">
+                            class="nav-link @if (Request::url() == route('karyawan') || Request::routeIs('detail.karyawan')) active @endif">
                             <i class="bi bi-person-fill custom-icon"></i>
                             <p>
                                 Data Karyawan

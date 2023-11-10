@@ -44,6 +44,17 @@
     </script>
 @endif
 
+@if (session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: '{{ session('error') }}',
+            timer: 5000 // Waktu tampilan alert (dalam milidetik)
+        });
+    </script>
+@endif
+
 <script>
     $(document).ready(function() {
         $.ajax({

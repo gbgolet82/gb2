@@ -16,19 +16,6 @@
     @php
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
-        if (($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) || (isset($selectedRole) && $selectedRole != 'kasir')) {
-            if ($filterBulan != 'Semua' && $filterTahun != 'Semua') {
-                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
-                $periode = $namaBulan . ' ' . $filterTahun; // Gunakan titik (.) untuk menggabungkan string
-            } elseif ($filterBulan == 'Semua') {
-                $periode = $filterTahun;
-            } elseif ($filterTahun == 'Semua') {
-                $namaBulan = \Carbon\Carbon::createFromFormat('m', $filterBulan)->format('F');
-                $periode = $namaBulan;
-            } else {
-                $periode = 'Semua';
-            }
-        }
     @endphp
 
     <div>

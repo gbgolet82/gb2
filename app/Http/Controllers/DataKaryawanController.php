@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -40,8 +41,15 @@ class DataKaryawanController extends Controller
         
         $karyawan = $karyawan->get();
 
+        $jumlah_karyawan = $karyawan->count();
+        $jumlah_manajer = $karyawan->where('manajer', 1)->count();
+        $jumlah_kasir = $karyawan->where('kasir', 1)->count();
+        $jumlah_owner = $karyawan->where('owner', 1)->count();
+        $manajer_kasir = $karyawan->where('manajer', 1)->where('kasir', 1)->count();
+        // dd($manajer_kasir);
+
         $active_page = "DATA KARYAWAN";
-        return view('contents.karyawan',compact('active_page', 'unit_usaha', 'karyawan'));
+        return view('contents.karyawan',compact('active_page', 'unit_usaha', 'karyawan', 'jumlah_manajer', 'jumlah_kasir', 'jumlah_owner', 'manajer_kasir', 'jumlah_karyawan'));
     }
 
     public function detail($id_karyawan){
@@ -202,5 +210,25 @@ class DataKaryawanController extends Controller
         // dd($user);
         // Redirect or display success message
         return redirect()->back()->with('success', 'Password berhasil diubah.');
+    }
+
+    public function delete($id_karyawan)
+    {
+        $employee = Karyawan::find($id_karyawan);
+        // dd($employee);
+
+        $laporan = Laporan::where('id_kasir', $id_karyawan)
+        ->orWhere('id_manager', $id_karyawan)
+        ->exists();
+        // dd($laporan);
+
+        if ($laporan) {
+            return redirect()->back()->with('error', 'Data karyawan tidak dapat dihapus karena telah digunakan dalam laporan.');
+        } 
+
+        $employee->delete();
+
+
+        return redirect()->back()->with('success', 'Data karyawan berhasil dihapus.');
     }
 }

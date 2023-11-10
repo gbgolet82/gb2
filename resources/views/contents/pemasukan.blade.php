@@ -111,7 +111,8 @@
                                                         <div class="row">
                                                             <div class="col-6">
                                                                 <select class="custom-select" name="bulan" id="Bulan">
-                                                                    <option disabled selected hidden>Bulan</option>
+                                                                    <option value="Semua" disabled selected hidden>Bulan
+                                                                    </option>
                                                                     <option value="Semua">Semua</option>
                                                                     <option value="01">Januari</option>
                                                                     <option value="02">Februari</option>
@@ -129,8 +130,9 @@
                                                             </div>
                                                             <div class="col-6">
                                                                 <select class="custom-select" name="tahun" id="Tahun">
+                                                                    <option value="Semua" disabled selected hidden>Tahun
+                                                                    </option>
                                                                     <option value="Semua">Semua</option>
-                                                                    <option disabled selected hidden>Tahun</option>
                                                                     @foreach ($tahun_get as $th)
                                                                         <option value="{{ $th->tahun }}">
                                                                             {{ $th->tahun }}
@@ -309,8 +311,7 @@
                                                             </button>
                                                         </div> --}}
                                                         <div class="col-6">
-                                                            <a href="{{ route('export_excel_laporan_pemasukan_a4', ['id' => $laporan->id_laporan]) }}"
-                                                                class="btn btn-outline-success"
+                                                            <a href="#" class="btn btn-outline-success"
                                                                 style="border-radius: 10px; width: 100%">
                                                                 <i class="fas fa-file-excel"></i> Excel
                                                             </a>
@@ -435,7 +436,9 @@
                         </div>
                     </div>
 
-                    @if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner') && $pemasukanBelumActive == false)
+                    @if (
+                        (($karyawanRoles->count() == 1 && $karyawanRoles->contains('owner')) || $selectedRole == 'owner') &&
+                            $pemasukanBelumActive == false)
                         <div class="row">
                             <div class="col-12 col-sm-6">
                                 <div class="card">
@@ -485,34 +488,55 @@
 
 @push('script')
     <script>
-        $(document).ready(function() {
-            // Simpan instance DataTable dalam variabel
-            var table = $('#example2').DataTable();
-            // Tangani perubahan nilai pada select bulan dan tahun
-            $('select[name="bulan"]').change(function() {
-                var bulan = $('select[name="bulan"]').val();
-                var filterBulan = '/' + bulan + '/';
+        @php
+            $selectedRole = session('selectedRole');
+            $karyawanRoles = session('karyawanRoles');
+        @endphp
 
-                if (bulan === 'Semua') {
-                    // Clear the Akun filter
-                    table.columns(2).search('').draw();
-                } else {
-                    table.columns(2).search(filterBulan).draw();
+        @if (
+            ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
+                (isset($selectedRole) && $selectedRole != 'kasir'))
+            $(document).ready(function() {
+                var table = $('#example2').DataTable();
+
+                // Set default values for month and year
+                var currentMonth = new Date().getMonth() + 1; // Adding 1 because months are zero-indexed
+                var currentYear = new Date().getFullYear();
+
+                // Set default values in dropdowns
+                $('#Bulan').val(currentMonth);
+                $('#Tahun').val(currentYear);
+
+                // Apply initial filter on DataTable
+                applyDataTableFilter();
+
+                // Handle changes in the month and year dropdowns
+                $('#Bulan, #Tahun').on('change', function() {
+                    applyDataTableFilter();
+                });
+
+                // Function to apply filter on DataTable
+                function applyDataTableFilter() {
+                    var month = $('#Bulan').val();
+                    var year = $('#Tahun').val();
+
+                    // Check if "Semua" is selected for either month or year
+                    if (month === 'Semua' && year !== 'Semua') {
+                        // Filter DataTable based on selected year
+                        table.columns(2).search(year).draw();
+                    } else if (month !== 'Semua' && (year === null || year === 'Semua')) {
+                        // Filter DataTable based on selected month
+                        table.columns(2).search(month).draw();
+                    } else if ((month !== null || month !== 'Semua') && year !== 'Semua') {
+                        // Filter DataTable based on selected month and year
+                        table.columns(2).search(month + '/' + year).draw();
+                    } else {
+                        // If both are "Semua", show all data
+                        table.columns(2).search('').draw();
+                    }
                 }
             });
-
-            $('select[name="tahun"]').change(function() {
-                var tahun = $('select[name="tahun"]').val();
-                var filterTahun = tahun;
-
-                if (tahun === 'Semua') {
-                    // Clear the Akun filter
-                    table.columns(2).search('').draw();
-                } else {
-                    table.columns(2).search(filterTahun).draw();
-                }
-            });
-        });
+        @endif
     </script>
 
     <script>
