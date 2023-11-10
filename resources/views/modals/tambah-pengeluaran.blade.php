@@ -166,7 +166,7 @@
                                 class="fa fa-ban"></i>
                             Batal</button>
                         <button type="submit" class="btn btn-success text-white toastrDefaultSuccess"
-                            id="simpanPemasukan"><i class="fas fa-save" onclick="validateForm()"></i>
+                            id="simpanPengeluaran"><i class="fas fa-save" onclick="validateForm()"></i>
                             Simpan</button>
                     </div>
                 </div>
@@ -176,6 +176,43 @@
 </form>
 
 @push('script')
+    <script>
+        // Fungsi untuk mereset nilai-nilai formulir input ke nilai default
+        function resetForm() {
+            document.getElementById("Input_Usaha").selectedIndex = 0; // Reset pilihan "Usaha" ke yang pertama
+            document.getElementById("inputGroupKlasifikasi").selectedIndex = 0; // Reset pilihan "Akun" ke yang pertama
+            // Reset pilihan "Sub Akun 1" ke yang pertama
+            $('#inputGroupAkun').val('Pilih Akun').trigger('change');
+            $('#inputGroupSubAkun1').val('Pilih Sub Akun 1').trigger('change');
+
+            // Reset pilihan "Sub Akun 2" ke yang pertama
+            $('#inputGroupSubAkun2').val('Pilih Sub Akun 2').trigger('change');
+
+            // Reset pilihan "Sub Akun 3" ke yang pertama
+            $('#inputGroupSubAkun3').val('Pilih Sub Akun 3').trigger('change');
+            document.getElementById("besarNominal").value = ''; // Reset nilai "Nominal" menjadi kosong
+
+            // Mengambil elemen input file
+            var inputElement = document.getElementById("customFileInput");
+
+            // Membuat salinan elemen input file
+            var newInput = inputElement.cloneNode(true);
+
+            // Mengganti elemen input file dengan salinan baru
+            inputElement.parentNode.replaceChild(newInput, inputElement);
+
+            // Menghapus event listener yang mungkin terpasang pada input file lama
+            newInput.removeEventListener("change", updateLabel);
+
+            // Mengembalikan label ke teks awal
+            newInput.nextElementSibling.innerText = "Pilih file";
+
+            document.getElementById('simpanPengeluaran').disabled = true;
+        }
+
+        // Event listener untuk tombol "Batal"
+        document.getElementById("resetData").addEventListener("click", resetForm);
+    </script>
     <script>
         $(document).ready(function() {
             $("#toggleForm").click(function(e) {
@@ -521,5 +558,41 @@
                 });
             });
         @endif
+    </script>
+    <script>
+        // Function to validate the form fields
+        function validateForm() {
+            // Get the values of the relevant form fields
+            var klasifikasiValue = document.getElementById('inputGroupKlasifikasi').value;
+            var akunValue = document.getElementById('inputGroupAkun').value;
+            var subAkun1Value = document.getElementById('inputGroupSubAkun1').value;
+            var subAkun2Value = document.getElementById('inputGroupSubAkun2').value;
+            var subAkun3Value = document.getElementById('inputGroupSubAkun3').value;
+            var nominalValue = document.getElementById('besarNominal').value;
+            var gambarBuktiValue = document.getElementById('customFileInput').value;
+
+            // Check if any of the required fields are empty
+            if (klasifikasiValue === '' || akunValue === '' || subAkun1Value === '' || subAkun2Value === '' ||
+                subAkun3Value === '' || nominalValue ===
+                '' || gambarBuktiValue === '') {
+                // If any field is empty, disable the "Simpan" button
+                document.getElementById('simpanPengeluaran').disabled = true;
+            } else {
+                // If all required fields are filled, enable the "Simpan" button
+                document.getElementById('simpanPengeluaran').disabled = false;
+            }
+        }
+
+        // Add event listeners to form fields for input changes
+        document.getElementById('inputGroupKlasifikasi').addEventListener('change', validateForm);
+        document.getElementById('inputGroupAkun').addEventListener('change', validateForm);
+        document.getElementById('inputGroupSubAkun1').addEventListener('change', validateForm);
+        document.getElementById('inputGroupSubAkun2').addEventListener('change', validateForm);
+        document.getElementById('inputGroupSubAkun3').addEventListener('change', validateForm);
+        document.getElementById('besarNominal').addEventListener('input', validateForm);
+        document.getElementById('customFileInput').addEventListener('change', validateForm);
+
+        // Initially, disable the "Simpan" button when the page loads
+        document.getElementById('simpanPengeluaran').disabled = true;
     </script>
 @endpush

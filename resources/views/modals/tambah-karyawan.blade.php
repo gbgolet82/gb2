@@ -5,8 +5,7 @@
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="nama">NAMA &nbsp;</label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <input type="text" class="form-control @error('nama') is-invalid @enderror" id="namaa"
                         placeholder="Masukan nama usaha" name="nama" value=""
                         onkeydown="return /[a-z, ]/i.test(event.key)">
@@ -18,8 +17,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label for="nomor_hp">NOMOR HP &nbsp;</label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <input type="text" class="form-control @error('nomor_hp') is-invalid @enderror" id="nomorHP"
                         placeholder="Masukan nomor hp" name="nohp" value=""
                         oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
@@ -33,8 +31,7 @@
             <div class="form-row ">
                 <div class="form-group col-md-6">
                     <label for="email">EMAIL &nbsp;</label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <input type="email" class="form-control @error('email') is-invalid @enderror" id="emaill"
                         placeholder="Masukan email" name="email" value="">
                     @error('email')
@@ -45,8 +42,7 @@
                 </div>
                 <div class="form-group col-md-6">
                     <label for="password">PASSWORD &nbsp;</label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <div class="input-group">
                         <input type="password" class="form-control @error('password') is-invalid @enderror"
                             id="passwordd" placeholder="Masukan password" name="password" value="">
@@ -68,8 +64,7 @@
             <div class="form-row">
                 <div class="form-group col-md-12">
                     <label for="unit_usaha">UNIT USAHA &nbsp;</label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <select class="form-control" id="unitUsaha" name="id_usaha">
                         @foreach ($unit_usaha as $item)
                             <option value="" disabled selected hidden>Pilih unit usaha
@@ -91,16 +86,14 @@
             <div class="form-row">
                 <div class="form-group col-md-12">
                     <label for="alamat">ALAMAT </label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <textarea class="form-control" id="alamatt" name="alamat" rows="2" placeholder="Masukkan alamat"></textarea>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-12">
                     <label for="alamat">ROLE</label>
-                    <sup class="badge rounded-pill badge-danger text-white"
-                        style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                    <span style="color:rgba(230, 82, 82)">*</span>
                     <br>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" id="manajer" name="manajer">
@@ -119,8 +112,8 @@
 
             <div class="d-flex bd-highlight justify-content-end mt-3">
                 <div class="bd-highlight">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-ban"></i>
-                        Tutup</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetDat"><i class="fa fa-ban"></i>
+                        Batal</button>
                     <button type="submit" class="btn btn-success text-white toastrDefaultSuccess" id="simpan"><i
                             class="fas fa-save" onclick="validateForm()"></i> Simpan</button>
                 </div>
@@ -130,6 +123,24 @@
 </form>
 
 @push('script')
+    <script>
+        // Fungsi untuk mereset nilai-nilai formulir input ke nilai default
+        function resetForm() {
+            document.getElementById("namaa").value = ''; // Reset nilai "Nominal" menjadi kosong
+            document.getElementById("nomorHP").value = ''; // Reset nilai "Nominal" menjadi kosong
+            document.getElementById("emaill").value = ''; // Reset nilai "Nominal" menjadi kosong
+            document.getElementById("passwordd").value = ''; // Reset nilai "Nominal" menjadi kosong
+            document.getElementById("alamatt").value = ''; // Reset nilai "Nominal" menjadi kosong
+            document.getElementById("unitUsaha").selectedIndex = 0; // Reset pilihan "Usaha" ke yang pertama
+            var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+
+            document.getElementById('simpan').disabled = true;
+        }
+        document.getElementById("resetDat").addEventListener("click", resetForm);
+    </script>
     <script>
         function togglePasswordVisibility() {
             var passwordInput = document.getElementById("passwordd");
@@ -150,7 +161,6 @@
             $('#simpan').prop('disabled', true);
 
             function validateForm() {
-                // Lakukan validasi input di sini, misalnya:
                 var nama = $("#namaa").val();
                 var nomorHP = $("#nomorHP").val();
                 var emaill = $("#emaill").val();
@@ -158,9 +168,13 @@
                 var alamatt = $("#alamatt").val();
                 var paswordd = $("#paswordd").val();
 
-                // Cek apakah semua input telah diisi
+                // Periksa apakah salah satu kotak centang telah dicentang
+                var isRoleSelected = $("#manajer").is(":checked") || $("#kasir").is(":checked") || $("#owner").is(
+                    ":checked");
+
+                // Cek apakah semua input telah diisi dan minimal satu kotak centang telah dicentang
                 if (nama !== '' && nomorHP !== '' && emaill !== '' && unitUsaha !== '' && alamatt !== '' &&
-                    passwordd !== '') {
+                    paswordd !== '' && isRoleSelected) {
                     // Aktifkan tombol Simpan jika semua input valid
                     $('#simpan').prop('disabled', false);
                 } else {
@@ -169,13 +183,9 @@
                 }
             }
 
-            // Panggil fungsi validateForm saat input berubah
-            $('#nama').on('change', validateForm);
-            $('#nomorHP').on('change', validateForm);
-            $('#emaill').on('change', validateForm);
-            $('#unitUsaha').on('change', validateForm);
-            $('#alamatt').on('change', validateForm);
-            $('#paswordd').on('change', validateForm);
+            // Panggil fungsi validateForm saat input berubah atau kotak centang dicentang/unchecked
+            $('#namaa, #nomorHP, #emaill, #unitUsaha, #alamatt, #paswordd, #manajer, #kasir, #owner').on('change',
+                validateForm);
         });
     </script>
 @endpush

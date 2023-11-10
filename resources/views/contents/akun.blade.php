@@ -51,7 +51,7 @@
                                                             <span class="input-group-text"
                                                                 for="klasifikasi">Klasifikasi</span>
                                                         </div>
-                                                        <select class="custom-select" id="klasifikasi">
+                                                        <select class="custom-select" id="klasifikasi" name="klasifikasi">
                                                             <option value="" selected>Semua Data</option>
                                                             @php
                                                                 $uniqueKlasifikasi = [];
@@ -132,22 +132,10 @@
                                             </div>
                                             <div class="row ">
                                                 <div class="col-12 col-md-3 ml-auto">
-                                                    {{-- <div class="row">
-                                                        <div class="col-6">
-                                                            <button class="btn btn-outline-danger"
-                                                                style="border-radius: 10px; width: 100%;" type="button"
-                                                                id="previewPdfButton">
-                                                                <i class="fas fa-file-pdf"></i> Pdf
-                                                            </button>
-                                                        </div> --}}
-                                                    {{-- <div class="col-12"> --}}
-                                                    <button id="exportButton" class="btn btn-outline-success"
-                                                        style="border-radius: 10px; width:100%" type="button"
-                                                        data-export="klasifikasiAkun">
+                                                    <button id="exportButtonAkun" class="btn btn-outline-success"
+                                                        style="border-radius: 10px; width:100%" type="button">
                                                         <i class="fas fa-file-excel"></i> Export
                                                     </button>
-                                                    {{-- </div> --}}
-                                                    {{-- </div> --}}
                                                 </div>
                                             </div>
                                         </div>
@@ -174,7 +162,7 @@
                                                         <li>Tambahkan akun jika tidak ada dalam opsi yang sesuai.</li>
                                                         <li>Pilih sub akun yang sesuai</li>
                                                         <li>Tambahkan sub akun jika tidak ada pada pilihan yang sesuai.</li></ol>"></i>
-                                            <h6 class="info-kanan">info</h6>
+                                            {{-- <h6 class="info-kanan">info</h6> --}}
                                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"
                                                 id="resetData1">
                                                 <span aria-hidden="true">&times;</span>
@@ -299,12 +287,9 @@
 
         .fa-info-circle {
             position: absolute;
-            right: 90px;
-            /* Sesuaikan posisi horizontal ikon info sesuai kebutuhan */
+            right: 50px;
             top: 50%;
-            /* Untuk menengahkan ikon secara vertikal */
             transform: translateY(-50%);
-            /* Menengahkan ikon secara vertikal */
         }
 
         .info-kanan {
@@ -328,15 +313,43 @@
         }
     </style>
 
+    {{-- Export Excel --}}
+    {{-- <script>
+        $(document).ready(function() {
+            $('#exportButtonAkun').on('click', function() {
+                // Mendapatkan nilai filter
+                var filterKlasifikasi = $('#klasifikasi').val();
+                var filterUsaha = $('#inputGroupSelect01').val();
+                var filterAkun = $('#inputGroupSelect02').val();
+
+                // Mendapatkan data dari DataTable
+                var table = $('#klasifikasiAkun').DataTable();
+                var data = table.rows().data().toArray();
+
+                // Membangun URL untuk ekspor
+                var exportUrl =
+                    `/export-excel?klasifikasi=${filterKlasifikasi}&usaha=${filterUsaha}&akun=${filterAkun}`;
+
+
+                // Auto redirect ke exportUrl
+                window.location.href = exportUrl;
+            });
+        });
+    </script> --}}
 
     {{-- export data --}}
     <script>
         $(document).ready(function() {
-            $('#exportButton').click(function() {
+            $('#exportButtonAkun').click(function() {
                 // Get the selected filter values
                 var klasifikasi = $('#klasifikasi').val();
                 var usaha = $('#inputGroupSelect01').val();
                 var akun = $('#inputGroupSelect02').val();
+
+                // Set default values to "Semua Data" if the filters are null
+                klasifikasi = klasifikasi || 'Semua Data';
+                usaha = usaha || 'Semua Data';
+                akun = akun || 'Semua Data';
 
                 // Create a flag to determine if any filters are applied
                 var filtersApplied = (klasifikasi !== 'Semua Data' || usaha !== 'Semua Data' || akun !==
@@ -349,7 +362,7 @@
                 if (!filtersApplied) {
                     exportTable.table2excel({
                         name: "Akun",
-                        filename: "Akun.xlsx"
+                        filename: "Akun & Sub Akun.xlsx"
                     });
                 } else {
                     // If any filter is applied, remove rows that don't match the selected filters
@@ -373,7 +386,7 @@
                     });
 
                     // Export the filtered table to Excel
-                    var filename = "Akun.xlsx";
+                    var filename = "Akun & Sub Akun.xlsx";
                     exportTable.table2excel({
                         name: "Akun",
                         filename: filename
@@ -382,6 +395,59 @@
             });
         });
     </script>
+
+    {{-- <script>
+        $(document).ready(function() {
+            $('#exportButtonAkun').click(function() {
+                // Get the selected filter values
+                var klasifikasi = $('#klasifikasi').val();
+                var usaha = $('#inputGroupSelect01').val();
+                var akun = $('#inputGroupSelect02').val();
+
+                // Create a flag to determine if any filters are applied
+                var filtersApplied = (klasifikasi !== 'Semua Data' || usaha !== 'Semua Data' || akun !==
+                    'Semua Data');
+
+                // Create a new table for exporting
+                var exportTable = $('#klasifikasiAkun').clone();
+
+                // Check if no filters are applied, export all data
+                if (!filtersApplied) {
+                    exportTable.table2excel({
+                        name: "Akun",
+                        filename: "Akun & Sub Akun.xlsx"
+                    });
+                } else {
+                    // If any filter is applied, remove rows that don't match the selected filters
+                    exportTable.find('tbody tr').each(function() {
+
+                        var row = $(this);
+                        var klasifikasiColumn = row.find('td:eq(1)').text();
+                        var usahaColumn = row.find('td:eq(2)').text();
+                        var akunColumn = row.find('td:eq(3)').text();
+
+                        // Check if the row matches the selected filters
+                        if ((klasifikasi === 'Semua Data' || klasifikasi === klasifikasiColumn) ||
+                            (usaha === 'Semua Data' || usaha === usahaColumn) ||
+                            (akun === 'Semua Data' || akun === akunColumn)) {
+                            // If the row matches the selected filters, keep it
+                            // Do nothing to this row, it will be included in the export
+                        } else {
+                            // If the row does not match the selected filters, remove it
+                            row.remove();
+                        }
+                    });
+
+                    // Export the filtered table to Excel
+                    var filename = "Akun & Sub Akun.xlsx";
+                    exportTable.table2excel({
+                        name: "Akun",
+                        filename: filename
+                    });
+                }
+            });
+        });
+    </script> --}}
 
     {{-- modal tambah sub akun 1 --}}
     <script>
@@ -486,8 +552,9 @@
                 akunDropdown.appendChild(akunOption);
             });
         });
+    </script>
 
-
+    <script>
         $(document).ready(function() {
             let id; // Variabel di luar event handler
 

@@ -7,8 +7,7 @@
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label for="nama">NAMA &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white"
-                                style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <input type="text" class="form-control @error('nama') is-invalid @enderror"
                                 id="nama" placeholder="Masukan nama usaha" name="nama"
                                 value="{{ $karyawan->nama }}" onkeydown="return /[a-z, ]/i.test(event.key)">
@@ -20,8 +19,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="nomor_hp">NOMOR HP &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white"
-                                style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <input type="text" class="form-control @error('nohp') is-invalid @enderror"
                                 id="nohp" placeholder="Masukan nomor hp" name="nohp"
                                 value="{{ $karyawan->nohp }}"
@@ -36,8 +34,7 @@
                     <div class="form-row ">
                         <div class="form-group col-md-6">
                             <label for="email">EMAIL &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white"
-                                style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                 id="email" placeholder="Masukan email" name="email"
                                 value="{{ $karyawan->email }}">
@@ -49,8 +46,7 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="unit_usaha">UNIT USAHA &nbsp;</label>
-                            <sup class="badge rounded-pill badge-danger text-white"
-                                style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <select class="form-control" id="unit_usaha" name="id_usaha">
                                 @foreach ($unit_usaha as $item)
                                     <option value="{{ $item->id_usaha }}"
@@ -69,16 +65,14 @@
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="alamat">ALAMAT </label>
-                            <sup class="badge rounded-pill badge-danger text-white"
-                                style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <textarea class="form-control" id="alamat" name="alamat" rows="2" placeholder="Masukkan alamat">{{ $karyawan->alamat }}</textarea>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-12">
                             <label for="alamat">ROLE</label>
-                            <sup class="badge rounded-pill badge-danger text-white"
-                                style="background-color: rgba(230, 82, 82); font-size: 10px; padding: 4px 8px;">WAJIB</sup>
+                            <span style="color:rgba(230, 82, 82)">*</span>
                             <br>
                             <div class="form-check form-check-inline">
                                 <input class="form-check-input" type="checkbox" id="manajer" name="manajer"
@@ -97,14 +91,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card card-body p-2 pl-3 pr-3" style="background-color:#cbf2d6;">
-                        <div class="row">
-                            <small>
-                                <b>INFORMASI!</b><br>
-                                Silakan masukan data di atas secara lengkap!<br>
-                            </small>
-                        </div>
-                    </div>
                     <div class="d-flex bd-highlight justify-content-end mt-3">
                         <div class="bd-highlight">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal"><i
@@ -120,5 +106,47 @@
     </div>
 </form>
 
+@push('script')
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi tombol "Simpan" sebagai nonaktif
+            $('#simpan').prop('disabled', true);
 
+            // Fungsi untuk memeriksa perubahan pada input form
+            function checkChanges() {
+                var nama = $("#nama").val();
+                var nohp = $("#nohp").val();
+                var email = $("#email").val();
+                var id_usaha = $("#unit_usaha").val();
+                var alamat = $("#alamat").val();
+                var manajer = $("#manajer").prop('checked');
+                var kasir = $("#kasir").prop('checked');
+                var owner = $("#owner").prop('checked');
 
+                // Cek apakah ada data yang diubah atau ada data yang kosong
+                if (
+                    nama === '' || nohp === '' || email === '' || id_usaha === '' || alamat === ''
+                ) {
+                    $('#simpan').prop('disabled', true);
+                } else if (
+                    nama !== '{{ $karyawan->nama }}' ||
+                    nohp !== '{{ $karyawan->nohp }}' ||
+                    email !== '{{ $karyawan->email }}' ||
+                    id_usaha !== '{{ $karyawan->id_usaha }}' ||
+                    alamat !== '{{ $karyawan->alamat }}' ||
+                    manajer !== {{ $karyawan->manajer }} ||
+                    kasir !== {{ $karyawan->kasir }} ||
+                    owner !== {{ $karyawan->owner }}
+                ) {
+                    $('#simpan').prop('disabled', false);
+                } else {
+                    $('#simpan').prop('disabled', true);
+                }
+            }
+
+            // Panggil fungsi checkChanges saat input/form berubah
+            $('#nama, #nohp, #email, #unit_usaha, #alamat, #manajer, #kasir, #owner').on('input change',
+                checkChanges);
+        });
+    </script>
+@endpush

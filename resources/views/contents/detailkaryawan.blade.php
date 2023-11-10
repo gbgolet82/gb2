@@ -34,7 +34,7 @@
         }
 
         .camera-icon i {
-            color: white;
+            color: rgb(61, 61, 61);
             font-size: 24px;
             /* Sesuaikan ukuran ikon sesuai kebutuhan Anda */
             cursor: pointer;
@@ -116,11 +116,12 @@
                                                     <input type="file" accept="image/*" name="foto"
                                                         id="profile-pic-input" onchange="form.submit()" hidden>
                                                     <label for="profile-pic-input" class="camera-icon"
-                                                        id="change-profile-pic">
+                                                        id="change-profile-pic" style="font-size: 24px; color: #000;">
                                                         <i class="fa fa-camera"></i>
                                                     </label>
                                                     <div class="text">Ubah Foto</div>
                                                 </div>
+
                                             </div>
                                         </div>
 
@@ -152,18 +153,8 @@
                                                 class="float-right">{{ $karyawan->nohp }}</span>
                                         </li>
                                         <li class="list-group-item">
-                                            <span class="font-weight-bold">Status</span>
-                                            {{-- <button
-                                                class="btn btn-outline-success float-right"
-                                                style="font-size: 12px; border-radius: 10px;"><i class="fa fa-user" aria-hidden="true"></i> AKTIF</button> --}}
-                                            <button class="btn btn-outline-success float-right"
-                                                style="font-size: 12px; border-radius: 10px;">
-                                                <i class="fa fa-user" aria-hidden="true"></i> <span id="statusText"
-                                                    class="text-uppercase">{{ $karyawan->status }}</span>
-                                            </button>
-                                            {{-- <span class="font-weight-bold">Status</span> <button
-                                                class="btn btn-outline-success float-right"
-                                                style="font-size: 12px; border-radius: 10px;"><i class="fa fa-user-times" aria-hidden="true"></i> AKTIF</button> --}}
+                                            <span class="font-weight-bold">Alamat</span> <span
+                                                class="float-right">{{ $karyawan->alamat }}</span>
                                         </li>
                                     </ul>
                                     <button class="btn btn-block text-white mt-4"
@@ -175,7 +166,7 @@
                                     <div class="modal fade" id="perbaruiData" data-backdrop="static" data-keyboard="false"
                                         aria-labelledby="staticBackdropLabel" aria-hidden="true"
                                         data-target="#staticBackdrop">
-                                        <div class="modal-dialog">
+                                        <div class="modal-dialog modal-lg">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="staticBackdropLabel">

@@ -4,5 +4,5 @@
     PT. Golet Digital Solusi
   </div>
   <!-- Default to the left -->
-  <span>Copyright &copy; 2022 <b class="text-primary">Guna Bakti Cilacap</b>.</span> All rights reserved.
+  <span>Copyright &copy; 2023 <b class="text-primary">Guna Bakti Cilacap</b>.</span> All rights reserved.
 </footer>
