@@ -23,6 +23,7 @@ class LaporanPengeluaranController extends Controller
         
         $filterBulan = '';
         $filterTahun = '';
+        $filterDate = '';
         // dd($filterDaterange);
         if (
             ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||

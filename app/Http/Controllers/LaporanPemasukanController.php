@@ -27,6 +27,7 @@ class LaporanPemasukanController extends Controller
         // dd($filterDaterange);
         $filterBulan = '';
         $filterTahun = '';
+        $filterDate = '';
         
         if (
             ($karyawanRoles->count() == 1 && !$karyawanRoles->contains('kasir')) ||
@@ -85,6 +86,7 @@ class LaporanPemasukanController extends Controller
         } else {
             $query->where('laporan.status_cek', 'Sudah Dicek');
         }
+        
 
         if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir')
         {

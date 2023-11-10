@@ -11,7 +11,7 @@ class LabaRugiController extends Controller
     public function laba_rugi(Request $request)
     {
 
-        $active_page = 'Laba Rugi';
+        $active_page = 'LABA RUGI';
         $usahaOption = Usaha::select('id_usaha', 'nama_usaha')
             ->where('nama_usaha', '!=', 'SEMUA') // Exclude "SEMUA" option
             ->orderBy('nama_usaha', 'asc')
