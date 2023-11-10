@@ -307,6 +307,7 @@
 
 
 
+
                             <div class="container-fluid">
                                 <div class="row">
                                     <div class="col-xl-3 col-md-6 mb-2">
@@ -314,17 +315,45 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h6 mb-3">Keuntungan Tertinggi
+                                                        <div class="h6">Keuntungan Tertinggi
+
                                                         </div>
                                                         @if ($bulan && $tahun)
+                                                            <b> Rp.
+                                                                {{ number_format($max_keuntungan_harian, 0, ',', '.') }}</b>
+
+                                                            @php
+
+                                                                $bulan = $bulan; // Bulan
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $keuntungan_max_tgl = date('j F Y', strtotime("$tahun-$bulan-$tgl_max_keuntungan"));
+
+                                                            @endphp
+
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                {{ $nominal_keuntungan_harian_max }}</div>
+                                                                {{ $keuntungan_max_tgl }}</div>
                                                         @elseif($bulan == null && $tahun)
+                                                        <b> Rp.
+                                                            {{ number_format($max_keuntungan_bulanan, 0, ',', '.') }}</b>
+
+                                                            @php
+
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $keuntungan_max_bulan = date('F Y', strtotime("$tahun-$bulans_max_keuntungan"));
+
+                                                            @endphp
+
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Bulan</div>
+                                                                {{ $keuntungan_max_bulan }}</div>
                                                         @else
+                                                            <b> Rp.
+                                                                {{ number_format($max_keuntungan_tahunan, 0, ',', '.') }}
+                                                            </b>
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Tahun</div>
+
+                                                                Tahun {{ $tahun_max_keuntungan }}</div>
                                                         @endif
                                                     </div>
                                                     <div class="col-auto">
@@ -339,17 +368,99 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h6 mb-3">Keuntungan Terendah
+                                                        <div class="h6">Keuntungan Terendah
+
+                                                        </div>
+
+                                                        @if ($bulan && $tahun)
+                                                            <b> Rp.
+                                                                {{ number_format($min_keuntungan_harian, 0, ',', '.') }}</b>
+
+                                                            @php
+
+                                                                $bulan = $bulan; // Bulan
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $keuntungan_min_tgl = date('j F Y', strtotime("$tahun-$bulan-$tgl_min_keuntungan"));
+
+                                                            @endphp
+
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                {{ $keuntungan_min_tgl }}</div>
+                                                        @elseif($bulan == null && $tahun)
+                                                        <b> Rp.
+                                                            {{ number_format($min_keuntungan_bulanan, 0, ',', '.') }}</b>
+                                                            @php
+
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $keuntungan_min_bulan = date('F Y', strtotime("$tahun-$bulans_min_keuntungan"));
+
+                                                            @endphp
+
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+                                                                {{ $keuntungan_min_bulan }}</div>
+                                                        @else
+                                                            <b> Rp.
+                                                                {{ number_format($min_keuntungan_tahunan, 0, ',', '.') }}
+                                                            </b>
+                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
+
+                                                                Tahun {{ $tahun_min_keuntungan }}</div>
+                                                        @endif
+
+                                                    </div>
+                                                    <div class="col-auto">
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-6 mb-2">
+                                        <div class="card ">
+                                            <div class="card-body">
+                                                <div class="row no-gutters align-items-center">
+                                                    <div class="col mr-2">
+                                                        <div class="h6"> Pemasukan Tertinggi
+
                                                         </div>
                                                         @if ($bulan && $tahun)
+                                                            <b> Rp.
+                                                                {{ number_format($max_pemasukan_harian, 0, ',', '.') }}</b>
+                                                            @php
+
+                                                                $bulan = $bulan; // Bulan
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $pemasukan_max_tgl = date('j F Y', strtotime("$tahun-$bulan-$tgl_max_pemasukan"));
+
+                                                            @endphp
+
+
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                {{ $nominal_keuntungan_harian_min }}</div>
+                                                                {{ $pemasukan_max_tgl }}
+                                                            </div>
                                                         @elseif($bulan == null && $tahun)
+                                                        <b> Rp.
+                                                            {{ number_format($max_pemasukan_bulanan, 0, ',', '.') }}</b>
+                                                            @php
+
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $pemasukan_max_bulan = date('F Y', strtotime("$tahun-$bulans_max_pemasukan"));
+
+                                                            @endphp
+
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Bulan</div>
+                                                                {{ $pemasukan_max_bulan }}</div>
                                                         @else
+                                                            <b> Rp.
+                                                                {{ number_format($max_pemasukan_tahunan, 0, ',', '.') }}
+                                                            </b>
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Tahun</div>
+
+                                                                Tahun {{ $tahun_max_pemasukan }}</div>
                                                         @endif
                                                     </div>
                                                     <div class="col-auto">
@@ -364,44 +475,44 @@
                                             <div class="card-body">
                                                 <div class="row no-gutters align-items-center">
                                                     <div class="col mr-2">
-                                                        <div class="h6 mb-3"> Pemasukan Tertinggi
+                                                        <div class="h6">Pemasukan Terendah
 
                                                         </div>
                                                         @if ($bulan && $tahun)
-                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                {{ $nominal_pemasukan_harian_max }}</div>
-                                                        @elseif($bulan == null && $tahun)
-                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Bulan</div>
-                                                        @else
-                                                            <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Tahun</div>
-                                                        @endif
-                                                    </div>
-                                                    <div class="col-auto">
+                                                            <b> Rp.
+                                                                {{ number_format($min_pemasukan_harian, 0, ',', '.') }}</b>
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-xl-3 col-md-6 mb-2">
-                                        <div class="card ">
-                                            <div class="card-body">
-                                                <div class="row no-gutters align-items-center">
-                                                    <div class="col mr-2">
-                                                        <div class="h6 mb-3">Pemasukan Terendah
+                                                            @php
 
-                                                        </div>
-                                                        @if ($bulan && $tahun)
+                                                                $bulan = $bulan; // Bulan
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $pemasukan_min_tgl = date('j F Y', strtotime("$tahun-$bulan-$tgl_min_pemasukan"));
+
+                                                            @endphp
+
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                {{ $nominal_pemasukan_harian_min }}</div>
+                                                                {{ $pemasukan_min_tgl }}</div>
                                                         @elseif($bulan == null && $tahun)
+                                                        <b> Rp.
+                                                            {{ number_format($min_pemasukan_bulanan, 0, ',', '.') }}</b>
+                                                            @php
+
+                                                                $tahun = $tahun; // Tahun
+                                                                // Mengubah format tanggal dan bulan
+                                                                $pemasukan_min_bulan = date('F Y', strtotime("$tahun-$bulans_min_pemasukan"));
+
+                                                            @endphp
+
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Bulan</div>
+                                                                {{ $pemasukan_min_bulan }}</div>
                                                         @else
+                                                            <b> Rp.
+                                                                {{ number_format($min_pemasukan_tahunan, 0, ',', '.') }}
+                                                            </b>
                                                             <div class="h6 mb-0 mb-1" style="color: #28a745">
-                                                                Tampil Tahun</div>
+
+                                                                Tahun {{ $tahun_min_pemasukan }}</div>
                                                         @endif
                                                     </div>
                                                     <div class="col-auto">
@@ -494,7 +605,7 @@
                             fill: false,
                             xAxisID: "axis-bar", // Menggunakan sumbu waktu yang sama dengan Dataset2 dan Dataset3
                             data: [
-                                <?php foreach ($nominal_bulan_keuntungan as $keuntungan_bulanan) : ?>
+                                <?php foreach ($nominal_bulanan_keuntungan as $keuntungan_bulanan) : ?>
                                 <?= $keuntungan_bulanan ?>,
                                 <?php endforeach; ?>
                             ] // Inisialisasi data dengan nilai 0
@@ -508,7 +619,7 @@
                             fill: true,
                             xAxisID: "axis-bar",
                             data: [
-                                <?php foreach ($nominal_bulan_pemasukan as $nominal_pemasukan_bulanan) : ?>
+                                <?php foreach ($nominal_bulanan_pemasukan as $nominal_pemasukan_bulanan) : ?>
                                 <?= $nominal_pemasukan_bulanan ?>,
                                 <?php endforeach; ?>
                             ]
@@ -522,7 +633,7 @@
                             fill: true,
                             xAxisID: "axis-bar",
                             data: [
-                                <?php foreach ($nominal_bulan_pengeluaran as $nominal_pengeluaran_bulanan) : ?>
+                                <?php foreach ($nominal_bulanan_pengeluaran as $nominal_pengeluaran_bulanan) : ?>
                                 <?= $nominal_pengeluaran_bulanan ?>,
                                 <?php endforeach; ?>
                             ]
@@ -620,7 +731,7 @@
             var dataKeuntungan = [];
             var dataPemasukan = [];
             var dataPengeluaran = [];
-         
+
 
             // Data untuk grafik
             var config = {
@@ -663,7 +774,7 @@
                             borderWidth: 3,
                             fill: true,
                             xAxisID: "axis-bar",
-                            data:[
+                            data: [
                                 <?php foreach ($nominal_tahun_pengeluaran as $nominal_pengeluaran_th) : ?>
                                 <?= $nominal_pengeluaran_th ?>,
                                 <?php endforeach; ?>

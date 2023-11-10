@@ -6,7 +6,11 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DataUsahaController;
 use App\Http\Controllers\DataKaryawanController;
-use App\Http\Controllers\ExcelPemasukanBelumDicekController;
+use App\Http\Controllers\ExcelAkunController;
+use App\Http\Controllers\ExcelPemasukanAccController;
+use App\Http\Controllers\ExcelPemasukanBelumAccController;
+use App\Http\Controllers\ExcelPengeluaranAccController;
+use App\Http\Controllers\ExcelPengeluaranBelumAccController;
 use App\Http\Controllers\LaporanPemasukanController;
 use App\Http\Controllers\KlasifikasiLaporanController;
 use App\Http\Controllers\LabaRugiController;
@@ -97,6 +101,11 @@ Route::group(['middleware' => 'role:manajer|kasir|owner'], function () {
     Route::post('/edit-karyawan/{id_karyawan}', [DataKaryawanController::class, 'update'])->name('update.karyawan');
     Route::post('/upload-karyawan/{id_karyawan}', [DataKaryawanController::class, 'uploadFoto'])->name('upload.foto');
     Route::post('/update-password/{id_karyawan}', [DataKaryawanController::class, 'proses_ubah_password'])->name('update.password');
+
+    Route::get('/export-excel-pemasukan-acc', [ExcelPemasukanAccController::class, 'exportData'])->name('export.excel-pemasukan-acc');
+    Route::get('/export-excel-pemasukan-belum-acc', [ExcelPemasukanBelumAccController::class, 'exportData'])->name('export.excel-pemasukan-belum-acc');
+    Route::get('/export-excel-pengeluaran-acc', [ExcelPengeluaranAccController::class, 'exportData'])->name('export.excel-pengeluaran-acc');
+    Route::get('/export-excel-pengeluaran-belum-acc', [ExcelPengeluaranBelumAccController::class, 'exportData'])->name('export.excel-pengeluaran-belum-acc');
 });
 
 Route::group(['middleware' => 'role:owner'], function () {

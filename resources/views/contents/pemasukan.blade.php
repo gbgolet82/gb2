@@ -300,23 +300,24 @@
                                                                     </button>
                                                                 @endif
                                                             </form>
-
                                                         </div>
-                                                        {{-- <div class="col-6">
-                                                            <button class="btn btn-outline-success"
-                                                                style="border-radius: 10px; width: 100%;" type="button"
-                                                                data-toggle="modal" data-target="#eksporData"
-                                                                aria-expanded="false">
-                                                                <i class="fas fa-file-excel"></i> Excel
-                                                            </button>
-                                                        </div> --}}
                                                         <div class="col-6">
-                                                            <a href="#" class="btn btn-outline-success"
-                                                                style="border-radius: 10px; width: 100%">
-                                                                <i class="fas fa-file-excel"></i> Excel
-                                                            </a>
+                                                            @if ($pemasukanBelumActive == true)
+                                                                <button id="exportButtonPemasukanBelum"
+                                                                    class="btn btn-outline-success"
+                                                                    style="border-radius: 10px; width:100%"
+                                                                    type="button">
+                                                                    <i class="fas fa-file-excel"></i> Export
+                                                                </button>
+                                                            @else
+                                                                <button id="exportButtonPemasukanAcc"
+                                                                    class="btn btn-outline-success"
+                                                                    style="border-radius: 10px; width:100%"
+                                                                    type="button">
+                                                                    <i class="fas fa-file-excel"></i> Export
+                                                                </button>
+                                                            @endif
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -672,7 +673,6 @@
         });
     </script>
 
-
     <script>
         // Memasukkan kode di dalam fungsi ready
         $(document).ready(function() {
@@ -710,6 +710,7 @@
             subSelect.trigger('change');
         });
     </script>
+
     <script>
         // Memasukkan kode di dalam fungsi ready
         $(document).ready(function() {
@@ -759,6 +760,55 @@
             akunSelect.trigger('change');
             subSelect.trigger('change');
             usahaSelect.trigger('change');
+        });
+    </script>
+
+    {{-- Export Excel --}}
+    <script>
+        $(document).ready(function() {
+            $('#exportButtonPemasukanBelum').on('click', function() {
+                // Mendapatkan nilai filter
+                var filterBulan = $('select[name="bulan"]').val();
+                console.log(filterBulan);
+                var filterTahun = $('select[name="tahun"]').val();
+                var selectedUsaha = $('#namaUsaha').val();
+                var selectedAkun = $('#namaAkun').val();
+                var selectedSubAkun = $('#namaSub').val();
+
+                // Mendapatkan data dari DataTable
+                var table = $('#example2').DataTable();
+                var data = table.rows().data().toArray();
+
+                // Membangun URL untuk ekspor
+                var exportUrl =
+                    `/export-excel-pemasukan-belum-acc?filter_bulan=${filterBulan}&filter_tahun=${filterTahun}&usaha=${selectedUsaha}&akun=${selectedAkun}&sub_akun_1=${selectedSubAkun}`;
+
+
+                // Auto redirect ke exportUrl
+                window.location.href = exportUrl;
+            });
+
+            $('#exportButtonPemasukanAcc').on('click', function() {
+                // Mendapatkan nilai filter
+                var filterBulan = $('select[name="bulan"]').val();
+                
+                var filterTahun = $('select[name="tahun"]').val();
+                var selectedUsaha = $('#namaUsaha').val();
+                var selectedAkun = $('#namaAkun').val();
+                var selectedSubAkun = $('#namaSub').val();
+
+                // Mendapatkan data dari DataTable
+                var table = $('#example2').DataTable();
+                var data = table.rows().data().toArray();
+
+                // Membangun URL untuk ekspor
+                var exportUrl =
+                    `/export-excel-pemasukan-acc?filter_bulan=${filterBulan}&filter_tahun=${filterTahun}&usaha=${selectedUsaha}&akun=${selectedAkun}&sub_akun_1=${selectedSubAkun}`;
+
+
+                // Auto redirect ke exportUrl
+                window.location.href = exportUrl;
+            });
         });
     </script>
 @endpush
