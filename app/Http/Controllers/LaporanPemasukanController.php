@@ -99,7 +99,7 @@ class LaporanPemasukanController extends Controller
                 $query->whereYear('laporan.tanggal_laporan', $filterTahun);
             }
         } else {
-            $query->whereDate('laporan.tanggal_laporan', '2023-11-09');
+            $query->whereDate('laporan.tanggal_laporan', $filterDaterange);
         }
 
         if ($selectedUsaha != 'Semua') {
@@ -157,6 +157,7 @@ class LaporanPemasukanController extends Controller
             ->selectRaw('YEAR(tanggal_laporan) as tahun')
             ->get();
 
+        $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
         // buat ambil rute yang aktif
@@ -233,6 +234,10 @@ class LaporanPemasukanController extends Controller
         ->where('laporan.status_cek', 'Belum Dicek')
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->orderBy('laporan.tanggal_laporan', 'desc');
+
+        if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') {
+            $data->whereDate('laporan.tanggal_laporan', $filterDaterange);
+        }
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
         $session != 'SEMUA') {
@@ -480,9 +485,14 @@ class LaporanPemasukanController extends Controller
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
         $session = session('nama_usaha');
+        $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan', 'Pemasukan')
         ->where('status_cek', 'Belum dicek');
+
+        if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') {
+            $query->whereDate('laporan.tanggal_laporan', $filterDaterange);
+        }
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
         $session != 'SEMUA') {

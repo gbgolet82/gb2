@@ -164,6 +164,7 @@ class LaporanPengeluaranController extends Controller
             ->selectRaw('YEAR(tanggal_laporan) as tahun')
             ->get();
 
+        $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
         $pengeluaranBelumActive = $request->url() == route('pengeluaran_blm');
@@ -241,6 +242,10 @@ class LaporanPengeluaranController extends Controller
         ->where('klasifikasi_laporan', '!=', 'Pemasukan')
         ->where('laporan.status_cek', 'Belum Dicek')
         ->orderBy('laporan.tanggal_laporan', 'desc');
+
+        if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') {
+            $data->whereDate('laporan.tanggal_laporan', $filterDaterange);
+        }
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
         $session != 'SEMUA') {
@@ -359,9 +364,14 @@ class LaporanPengeluaranController extends Controller
         $selectedRole = session('selectedRole');
         $karyawanRoles = session('karyawanRoles');
         $session = session('nama_usaha');
+        $filterDaterange = \Carbon\Carbon::now()->format('Y-m-d');
         $query = Laporan::join('klasifikasi_laporan', 'klasifikasi_laporan.id_klasifikasi', '=', 'laporan.id_klasifikasi')
         ->where('klasifikasi_laporan','!=', 'Pemasukan')
         ->where('status_cek', 'Belum dicek');
+
+        if (($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') {
+            $query->whereDate('laporan.tanggal_laporan', $filterDaterange);
+        }
 
         if ((($karyawanRoles->count() == 1 && $karyawanRoles->contains('kasir')) || $selectedRole == 'kasir') &&
         $session != 'SEMUA') {
