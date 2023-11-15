@@ -33,8 +33,28 @@ class ExcelPemasukanAccController extends Controller
         $query = DB::table('laporan')->join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
             ->where('klasifikasi_laporan', 'Pemasukan')->where('laporan.status_cek', 'Sudah Dicek');
 
+        // Array untuk mencocokkan angka bulan dengan nama bulan
+        $namaBulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
         if ($filterBulan != 'Semua') {
-            $query->whereMonth('tanggal_laporan', $filterBulan);
+            // Ubah filterBulan dari angka menjadi nama bulan
+            $filterBulan = $namaBulan[$filterBulan];
+
+            // Gunakan $filterBulan dalam query
+            $query->whereRaw("MONTHNAME(tanggal_laporan) = ?", [$filterBulan]);
         }
 
         if ($filterTahun != 'Semua') {
@@ -51,11 +71,12 @@ class ExcelPemasukanAccController extends Controller
         }
 
         $data = $query->get();
-        // dd($data);
+        $jumlahData = count($data);
+        $jumlahNominal = $data->sum('nominal');
 
         // Nama file Excel yang akan dihasilkan
         $fileName = sprintf(
-            'Laporan Pemasukan-sudah dicek-%s-%s-%s .xlsx',
+            'Laporan Pemasukan-Sudah dicek-%s-%s-%s .xlsx',
             $usaha,
             $filterBulan,
             $filterTahun
@@ -65,22 +86,41 @@ class ExcelPemasukanAccController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        // Set bold font for some cells
+        $sheet->getStyle('B1')->getFont()->setBold(true);
+        $sheet->getStyle('G1')->getFont()->setBold(true);
+        $sheet->getStyle('G3')->getFont()->setBold(true);
+
         // Menuliskan header kolom
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Kode Laporan');
-        $sheet->setCellValue('C1', 'Tanggal Cek');
-        $sheet->setCellValue('D1', 'Tanggal Laporan');
-        $sheet->setCellValue('E1', 'Kasir');
-        $sheet->setCellValue('F1', 'Klasifikasi');
-        $sheet->setCellValue('G1', 'Usaha');
-        $sheet->setCellValue('H1', 'Akun');
-        $sheet->setCellValue('I1', 'Sub Akun 1');
-        $sheet->setCellValue('J1', 'Sub Akun 2');
-        $sheet->setCellValue('K1', 'Sub Akun 3');
-        $sheet->setCellValue('L1', 'Nominal');
+        $sheet->setCellValue('B1', 'Laporan Pemasukan');
+        $sheet->setCellValue('B2', 'Status');
+        $sheet->setCellValue('C2', ':');
+        $sheet->setCellValue('D2', 'Sudah Dicek');
+        $sheet->setCellValue('B3', 'Unit Usaha');
+        $sheet->setCellValue('C3', ':');
+        $sheet->setCellValue('D3', $usaha);
+        $sheet->setCellValue('B4', 'Akun');
+        $sheet->setCellValue('C4', ':');
+        $sheet->setCellValue('D4', $akun);
+        $sheet->setCellValue('A6', 'No');
+        $sheet->setCellValue('B6', 'Kode Laporan');
+        $sheet->setCellValue('C6', 'Tanggal Cek');
+        $sheet->setCellValue('D6', 'Tanggal Laporan');
+        $sheet->setCellValue('E6', 'Kasir');
+        $sheet->setCellValue('G1', 'Total Data');
+        $sheet->setCellValue('G2', $jumlahData);
+        $sheet->setCellValue('G3', 'Total Nominal');
+        $sheet->setCellValue('G4', $jumlahNominal);
+        $sheet->setCellValue('F6', 'Klasifikasi');
+        $sheet->setCellValue('G6', 'Usaha');
+        $sheet->setCellValue('H6', 'Akun');
+        $sheet->setCellValue('I6', 'Sub Akun 1');
+        $sheet->setCellValue('J6', 'Sub Akun 2');
+        $sheet->setCellValue('K6', 'Sub Akun 3');
+        $sheet->setCellValue('L6', 'Nominal');
 
         // Menuliskan data ke Excel
-        $row = 2;
+        $row = 7;
         $no = 1;
         // dd($data);
 

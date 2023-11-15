@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Akun;
 use App\Models\Karyawan;
 use App\Models\KlasifikasiLaporan;
+use App\Models\Laporan;
 use App\Models\Usaha;
 use App\Models\SubAkun1;
 use App\Models\SubAkun2;
@@ -15,32 +16,51 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+use function Laravel\Prompts\select;
+
 class ExcelPemasukanBelumAccController extends Controller
 {
     public function exportData(Request $request)
     {
-        // dd('baba');
         // Mendapatkan nilai filter lainnya
         $filterBulan = $request->input('filter_bulan');
         $filterTahun = $request->input('filter_tahun');
-        // dd($filterTahun);
         $usaha = $request->input('usaha');
         $akun = $request->input('akun');
         $subAkun1 = $request->input('sub_akun_1');
 
         $usahaId = Usaha::where('nama_usaha', $usaha)->value('id_usaha');
-        // dd($usahaId);
         $akunId = Akun::where('akun', $akun)->value('id_akun');
         $subAkun1Id = SubAkun1::where('sub_akun_1', $subAkun1)->value('id_sub_akun_1');
-
+        // dd($subAkun1Id);
 
         $query = DB::table('laporan')
             ->join('klasifikasi_laporan', 'laporan.id_klasifikasi', '=', 'klasifikasi_laporan.id_klasifikasi')
             ->where('klasifikasi_laporan', 'Pemasukan')
             ->where('laporan.status_cek', 'Belum Dicek');
 
+        // Array untuk mencocokkan angka bulan dengan nama bulan
+        $namaBulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+
         if ($filterBulan != 'Semua') {
-            $query->whereMonth('tanggal_laporan', $filterBulan);
+            // Ubah filterBulan dari angka menjadi nama bulan
+            $filterBulan = $namaBulan[$filterBulan];
+
+            // Gunakan $filterBulan dalam query
+            $query->whereRaw("MONTHNAME(tanggal_laporan) = ?", [$filterBulan]);
         }
 
         if ($filterTahun != 'Semua') {
@@ -57,74 +77,99 @@ class ExcelPemasukanBelumAccController extends Controller
         }
 
         $data = $query->get();
-        // dd($data);
+        $jumlahData = count($data);
+        $jumlahNominal = $data->sum('nominal');
+        // dd($jumlahNominal);
 
         // Nama file Excel yang akan dihasilkan
         $fileName = sprintf(
-            'Laporan Pemasukan-belum dicek-%s-%s-%s .xlsx',
+            'Laporan Pemasukan-Belum dicek-%s-%s-%s .xlsx',
             $usaha,
             $filterBulan,
             $filterTahun
         );
 
+
         // Membuat objek Spreadsheet
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        // Set autosize for all columns
+        foreach (range('A', $sheet->getHighestDataColumn()) as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Set bold font for some cells
+        $sheet->getStyle('B1')->getFont()->setBold(true);
+        $sheet->getStyle('G1')->getFont()->setBold(true);
+        $sheet->getStyle('G3')->getFont()->setBold(true);
+
         // Menuliskan header kolom
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Kode Laporan');
-        $sheet->setCellValue('C1', 'Tanggal Cek');
-        $sheet->setCellValue('D1', 'Tanggal Laporan');
-        $sheet->setCellValue('E1', 'Kasir');
-        $sheet->setCellValue('F1', 'Klasifikasi');
-        $sheet->setCellValue('G1', 'Usaha');
-        $sheet->setCellValue('H1', 'Akun');
-        $sheet->setCellValue('I1', 'Sub Akun 1');
-        $sheet->setCellValue('J1', 'Sub Akun 2');
-        $sheet->setCellValue('K1', 'Sub Akun 3');
-        $sheet->setCellValue('L1', 'Nominal');
+        $sheet->setCellValue('B1', 'Laporan Pemasukan');
+        $sheet->setCellValue('B2', 'Status');
+        $sheet->setCellValue('C2', ':');
+        $sheet->setCellValue('D2', 'Belum Dicek');
+        $sheet->setCellValue('B3', 'Unit Usaha');
+        $sheet->setCellValue('C3', ':');
+        $sheet->setCellValue('D3', $usaha);
+        $sheet->setCellValue('B4', 'Akun');
+        $sheet->setCellValue('C4', ':');
+        $sheet->setCellValue('D4', $akun);
+        $sheet->setCellValue('A6', 'No');
+        $sheet->setCellValue('B6', 'Kode Laporan');
+        $sheet->setCellValue('C6', 'Tanggal Laporan');
+        $sheet->setCellValue('D6', 'Kasir');
+        $sheet->setCellValue('G1', 'Total Data');
+        $sheet->setCellValue('G2', $jumlahData);
+        $sheet->setCellValue('G3', 'Total Nominal');
+        $sheet->setCellValue('G4', $jumlahNominal);
+        $sheet->setCellValue('E6', 'Klasifikasi');
+        $sheet->setCellValue('F6', 'Usaha');
+        $sheet->setCellValue('G6', 'Akun');
+        $sheet->setCellValue('H6', 'Sub Akun 1');
+        $sheet->setCellValue('I6', 'Sub Akun 2');
+        $sheet->setCellValue('J6', 'Sub Akun 3');
+        $sheet->setCellValue('K6', 'Nominal');
 
         // Menuliskan data ke Excel
-        $row = 2;
+        $row = 7;
         $no = 1;
         // dd($data);
 
         foreach ($data as $item) {
             $sheet->setCellValue('A' . $row, $no++);
             $sheet->setCellValue('B' . $row, $item->kode_laporan);
-            $sheet->setCellValue('C' . $row, $item->tanggal_cek);
-            $sheet->setCellValue('D' . $row, $item->tanggal_laporan);
+            $sheet->setCellValue('C' . $row, $item->tanggal_laporan);
 
             $karyawan = Karyawan::where('id_karyawan', $item->id_kasir)->first();
             $nama_kasir = $karyawan->nama;
-            $sheet->setCellValue('E' . $row, $nama_kasir);
+            $sheet->setCellValue('D' . $row, $nama_kasir);
 
             $klasifikasi_laporan = KlasifikasiLaporan::where('id_klasifikasi', $item->id_klasifikasi)->first();
             $klasifikasi = $klasifikasi_laporan->klasifikasi_laporan;
-            $sheet->setCellValue('F' . $row, $klasifikasi);
+            $sheet->setCellValue('E' . $row, $klasifikasi);
 
             $usaha = Usaha::where('id_usaha', $item->id_usaha)->first();
             $nama_usaha = $usaha->nama_usaha;
-            $sheet->setCellValue('G' . $row, $nama_usaha);
+            $sheet->setCellValue('F' . $row, $nama_usaha);
 
             $akun = Akun::where('id_akun', $item->id_akun)->first();
             $nama_akun = $akun->akun;
-            $sheet->setCellValue('H' . $row, $nama_akun);
+            $sheet->setCellValue('G' . $row, $nama_akun);
 
             $sub_akun_1 = SubAkun1::where('id_sub_akun_1', $item->id_sub_akun_1)->first();
             $nama_sub_akun_1 = $sub_akun_1 ? $sub_akun_1->sub_akun_1 : '-';
-            $sheet->setCellValue('I' . $row, $nama_sub_akun_1);
+            $sheet->setCellValue('H' . $row, $nama_sub_akun_1);
 
             $sub_akun_2 = SubAkun2::where('id_sub_akun_2', $item->id_sub_akun_2)->first();
             $nama_sub_akun_2 = $sub_akun_2 ? $sub_akun_2->sub_akun_2 : '-';
-            $sheet->setCellValue('J' . $row, $nama_sub_akun_2);
+            $sheet->setCellValue('I' . $row, $nama_sub_akun_2);
 
             $sub_akun_3 = SubAkun3::where('id_sub_akun_3', $item->id_sub_akun_3)->first();
             $nama_sub_akun_3 = $sub_akun_3 ? $sub_akun_3->sub_akun_3 : '-';
-            $sheet->setCellValue('K' . $row, $nama_sub_akun_3);
+            $sheet->setCellValue('J' . $row, $nama_sub_akun_3);
 
-            $sheet->setCellValue('L' . $row, $item->nominal);
+            $sheet->setCellValue('K' . $row, $item->nominal);
 
             // Tambahkan baris lain sesuai kebutuhan
             $row++;

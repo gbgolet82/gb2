@@ -829,12 +829,18 @@
                 var data = table.rows().data().toArray();
 
                 // Membangun URL untuk ekspor
-                var exportUrl =
-                    `/export-excel-pengeluaran-belum-acc?filter_bulan=${filterBulan}&filter_tahun=${filterTahun}&klasifikasi=${selectedKlasifikasi}&usaha=${selectedUsaha}&akun=${selectedAkun}&sub_akun_1=${selectedSubAkun}`;
+                if (data.length > 0) {
+                    // Membangun URL untuk ekspor
+                    var exportUrl =
+                        `/export-excel-pengeluaran-belum-acc?filter_bulan=${filterBulan}&filter_tahun=${filterTahun}&klasifikasi=${selectedKlasifikasi}&usaha=${selectedUsaha}&akun=${selectedAkun}&sub_akun_1=${selectedSubAkun}`;
 
 
-                // Auto redirect ke exportUrl
-                window.location.href = exportUrl;
+                    // Auto redirect ke exportUrl
+                    window.location.href = exportUrl;
+                } else {
+                    // Display an alert if there is no data to export
+                    alert('No data to export.');
+                }
             });
 
             $('#exportButtonPengeluaranAcc').on('click', function() {
@@ -850,13 +856,17 @@
                 var table = $('#example2').DataTable();
                 var data = table.rows().data().toArray();
 
-                // Membangun URL untuk ekspor
-                var exportUrl =
-                    `/export-excel-pengeluaran-acc?filter_bulan=${filterBulan}&filter_tahun=${filterTahun}&klasifikasi=${selectedKlasifikasi}&usaha=${selectedUsaha}&akun=${selectedAkun}&sub_akun_1=${selectedSubAkun}`;
-
-
-                // Auto redirect ke exportUrl
-                window.location.href = exportUrl;
+                // Check if data is empty
+                if (data.length > 0) {
+                    // Membangun URL untuk ekspor
+                    var exportUrl =
+                        `/export-excel-pengeluaran-acc?filter_bulan=${filterBulan}&filter_tahun=${filterTahun}&klasifikasi=${selectedKlasifikasi}&usaha=${selectedUsaha}&akun=${selectedAkun}&sub_akun_1=${selectedSubAkun}`;
+                    // Auto redirect ke exportUrl
+                    window.location.href = exportUrl;
+                } else {
+                    // Display an alert if there is no data to export
+                    alert('No data to export.');
+                }
             });
         });
     </script>

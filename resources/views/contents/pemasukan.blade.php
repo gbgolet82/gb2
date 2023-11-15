@@ -792,7 +792,6 @@
             $('#exportButtonPemasukanAcc').on('click', function() {
                 // Mendapatkan nilai filter
                 var filterBulan = $('select[name="bulan"]').val();
-                
                 var filterTahun = $('select[name="tahun"]').val();
                 var selectedUsaha = $('#namaUsaha').val();
                 var selectedAkun = $('#namaAkun').val();

@@ -66,14 +66,6 @@
                         </div>
                     </div>
 
-                    <div class="card card-body p-2 pl-3 pr-3" style="background-color:#cbf2d6;">
-                        <div class="row">
-                            <small>
-                                <b>INFORMASI!</b><br>
-                                Silakan masukan data diatas secara lengkap!<br>
-                            </small>
-                        </div>
-                    </div>
                     {{-- <div class="d-flex bd-highlight justify-content-end mt-3">
                         <div class="bd-highlight">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal" id="resetData"><i

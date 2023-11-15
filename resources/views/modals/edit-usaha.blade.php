@@ -1,4 +1,4 @@
-<form action="{{ route('edit.usaha', $usaha->id_usaha) }}" method="POST">
+<form action="{{ route('edit.usaha', $usaha->id_usaha) }}" method="POST" id="editUsahaForm">
     @csrf
     <div id="form-lama">
         <div class="form-row">
@@ -7,7 +7,7 @@
                 <span style="color:rgba(230, 82, 82)">*</span>
                 <input type="text" class="form-control @error('nama_usaha_edit') is-invalid @enderror"
                     id="namaUsaha_edit" placeholder="Masukan nama usaha" name="nama_usaha_edit"
-                    value="{{ $usaha->nama_usaha }}">
+                    value="{{ old('nama_usaha_edit', $usaha->nama_usaha) }}">
                 @error('nama_usaha_edit')
                     <div class="invalid-feedback" role="alert">
                         {{ $message }}
@@ -20,7 +20,7 @@
                 <label for="cariUnitUsaha">ALAMAT USAHA &nbsp;</label>
                 <span style="color:rgba(230, 82, 82)">*</span>
                 <textarea class="form-control" id="alamatUsaha_edit" name="alamat_usaha_edit" rows="3"
-                    placeholder="Masukkan alamat usaha">{{ $usaha->alamat_usaha }}</textarea>
+                    placeholder="Masukkan alamat usaha">{{ old('alamat_usaha_edit', $usaha->alamat_usaha) }}</textarea>
                 @error('alamat_usaha_edit')
                     <div class="invalid-feedback" role="alert">
                         {{ $message }}
@@ -34,7 +34,7 @@
                 <span style="color:rgba(230, 82, 82)">*</span>
                 <input type="text" class="form-control @error('jenis_usaha_edit') is-invalid @enderror"
                     id="jenisUsaha_edit" placeholder="Masukan jenis usaha" name="jenis_usaha_edit"
-                    value="{{ $usaha->jenis_usaha }}">
+                    value="{{ old('jenis_usaha_edit', $usaha->jenis_usaha) }}">
                 @error('jenis_usaha_edit')
                     <div class="invalid-feedback" role="alert">
                         {{ $message }}
@@ -48,7 +48,7 @@
                 <span style="color:rgba(230, 82, 82)">*</span>
                 <input type="text" class="form-control @error('produk_usaha_edit') is-invalid @enderror"
                     id="produkUsaha_edit" placeholder="Masukan produk usaha" name="produk_usaha_edit"
-                    value="{{ $usaha->produk_usaha }}">
+                    value="{{ old('produk_usaha_edit', $usaha->produk_usaha) }}">
                 @error('produk_usaha_edit')
                     <div class="invalid-feedback" role="alert">
                         {{ $message }}
@@ -56,68 +56,19 @@
                 @enderror
             </div>
         </div>
-
-        <div class="card card-body p-2 pl-3 pr-3" style="background-color:#cbf2d6;">
-            <div class="row">
-                <small>
-                    <b>INFORMASI!</b><br>
-                    Silakan lakukan perubahan data diatas!<br>
-                </small>
-            </div>
-        </div>
     </div>
-    {{-- <div class="modal-footer"> --}}
-    <div class="d-flex bd-highlight justify-content-end mt-3">
+
+    
+</form>
+
+@push('script')
+    {{-- <div class="d-flex bd-highlight justify-content-end mt-3">
         <button type="button" class="btn btn-secondary mr-3" data-dismiss="modal"><i class="fas fa-ban"></i>
             Tutup</button>
         <button type="submit" class="btn btn-success text-white" id="simpanPerubahan" onclick="validasiForm()">
             <i class="fas fa-save"></i> Simpan Perubahan
         </button>
-    </div>
-
-    {{-- <div class="d-flex bd-highlight justify-content-end mt-3">
-        <div class="bd-highlight">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                <i class="fa fa-ban"></i> Tutup
-            </button>
-            <button type="button" class="btn btn-success text-white" id="simpanButtonEdit" data-toggle="modal"
-                data-target="#validasiModalEdit" data-id-usaha="{{ $usaha->id_usaha }}">
-                <i class="fas fa-save"></i> Simpan Perubahan
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal fade" id="validasiModalEdit" tabindex="-1" role="dialog" aria-labelledby="validasiModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="validasiModalEditLabel">Konfirmasi Simpan Perubahan</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeEdit">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Apakah Anda yakin ingin menyimpan perubahan?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                        id="batalButtonEdit">Batal</button>
-                    <button type="submit" class="btn btn-success" id="konfirmasiSimpan">Ya, Simpan Perubahan</button>
-                </div>
-            </div>
-        </div>
     </div> --}}
-</form>
-
-@push('script')
-    {{-- <script>
-        document.getElementById("validasiModal").addEventListener("click", function() {
-            console.log('bhasbdjahsdakjh');
-            document.getElementById("validasiModalEdit").style.display = "display";
-        });
-    </script> --}}
 
     {{-- <script>
         $(document).ready(function() {

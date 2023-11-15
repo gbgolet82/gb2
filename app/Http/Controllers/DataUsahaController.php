@@ -72,21 +72,17 @@ class DataUsahaController extends Controller
     {
         // dd($id_usaha);
         // Validasi inputan jika diperlukan
+        // Validate the form data
         $validatedData = $request->validate([
-            'nama_usaha_edit' => 'required',
-            'alamat_usaha_edit' => 'required',
-            'jenis_usaha_edit' => 'required',
-            'produk_usaha_edit' => 'required',
+            'nama_usaha_edit' => 'required|string|max:255',
+            'alamat_usaha_edit' => 'required|string',
+            'jenis_usaha_edit' => 'required|string|max:255',
+            'produk_usaha_edit' => 'required|string|max:255',
         ]);
-        // dd($validatedData);
 
-        // Simpan perubahan data usaha
+        // Update the record in the database
         $usaha = Usaha::find($id);
-        $usaha->nama_usaha = $request->nama_usaha_edit;
-        $usaha->alamat_usaha = $request->alamat_usaha_edit;
-        $usaha->jenis_usaha = $request->jenis_usaha_edit;
-        $usaha->produk_usaha = $request->produk_usaha_edit;
-        $usaha->save();
+        $usaha->update($validatedData);
 
         // Redirect atau berikan respons sukses kepada pengguna
         return redirect()->route('usaha')->with('success', 'Data usaha berhasil disimpan');

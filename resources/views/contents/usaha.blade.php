@@ -255,15 +255,54 @@
                                                 <!-- Isi dengan formulir edit data sesuai kebutuhan Anda -->
                                                 @include('modals.edit-usaha')
                                             </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                    <i class="fa fa-ban"></i> Tutup
+                                                </button>
+                                                <button type="button" class="btn btn-success text-white"
+                                                    id="validasiModalEditButton_{{ $usaha->id_usaha }}"
+                                                    data-toggle="modal" data-target="#validasiModalEdit"
+                                                    data-id-usaha="{{ $usaha->id_usaha }}">
+                                                    <i class="fas fa-save"></i> Simpan Perubahan
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
+                            <!-- Modal -->
+                            <div class="modal fade" id="validasiModalEdit" tabindex="-1" role="dialog"
+                                aria-labelledby="validasiModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="validasiModalEditLabel">Konfirmasi Simpan
+                                                Perubahan</h5>
+                                            <button type="button" class="close" data-dismiss="modal"
+                                                aria-label="Close" id="closeEdit">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Apakah Anda yakin ingin menyimpan perubahan?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                id="batalButtonEdit"><i class="fas fa-sync-alt"></i> Batal</button>
+                                            <button type="button" class="btn btn-success" id="konfirmasiSimpan"
+                                                data-id-usaha="" onclick="submitEditForm()">
+                                                <i class="fas fa-check"></i> Ya, Simpan Perubahan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
 
                             @foreach ($dataUsaha as $usaha)
                                 <!-- Modal konfirmasi hapus -->
-                                <div class="modal fade" id="hapusModal{{ $usaha->id_usaha }}" tabindex="-1" role="dialog"
-                                    aria-labelledby="modalHapusLabel" aria-hidden="true">
+                                <div class="modal fade" id="hapusModal{{ $usaha->id_usaha }}" tabindex="-1"
+                                    role="dialog" aria-labelledby="modalHapusLabel" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
@@ -305,6 +344,58 @@
 @endsection
 
 @push('script')
+    <script>
+        function submitEditForm(id_usaha) {
+            // Set the id_usaha value in the data-id-usaha attribute
+            $('#konfirmasiSimpan').attr('data-id-usaha', id_usaha);
+
+            // Trigger the click event on the "Simpan Perubahan" button
+            var d = $('#konfirmasiSimpan').click();
+            console.log(d);
+        }
+    </script>
+
+    <script>
+        function submitEditForm() {
+            // Get the id_usaha from the data-id-usaha attribute
+            var id_usaha = $('#konfirmasiSimpan').data('id-usaha');
+
+            // Perform any other actions or submit the form using the id_usaha value
+            console.log("ID Usaha:", id_usaha);
+
+            // Clear the data-id-usaha attribute for future use
+            $('#konfirmasiSimpan').attr('data-id-usaha', '');
+        }
+    </script>
+
+
+
+    {{-- <script>
+        // Ambil modal editModal{{ $usaha->id_usaha }}
+        var editModal = $('#editModal{{ $usaha->id_usaha }}');
+
+        // Ambil modal validasiModalEdit
+        var validasiModalEdit = $('#validasiModalEdit');
+
+        // Tambahkan event listener ke tombol submit form edit
+        $('#validasiModalEditButton_{{ $usaha->id_usaha }}').on('click', function() {
+            // Tutup modal editModal
+            editModal.modal('hide');
+
+            // Tampilkan modal validasiModalEdit
+            validasiModalEdit.modal('show');
+            // Optionally, you can handle the form submission when the modal is closed
+            $('#closeEdit').on('click', function() {
+                // Do something when the modal is closed (if needed)
+            });
+
+            // Optionally, you can handle the form submission when the "Batal" button is clicked
+            $('#batalButtonEdit').on('click', function() {
+                // Do something when the "Batal" button is clicked (if needed)
+            });
+        });
+    </script> --}}
+
     <script>
         $(document).ready(function() {
             // Tangani klik tombol Simpan
